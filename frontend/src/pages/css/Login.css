@@ -45,6 +45,12 @@
     transition: background-color 0.1s, border-color 0.1s, color 0.1s;
 }
 
+.login-details-container > #username-input:disabled {
+    background-color: var(--background-dark-color);
+    user-select: none;
+    pointer-events: none;
+}
+
 .login-details-container > #username-input.username-error {
     background-color: var(--error-background-color);
     border-color: var(--error-border-color);
@@ -52,6 +58,8 @@
 }
 
 .login-details-container > #login-button {
+    display: flex;
+    height: 28px;
     padding: 4px 16px;
     background-color: var(--background-light-color);
     border-radius: 6px;
@@ -59,11 +67,22 @@
     cursor: pointer;
     font-weight: bolder;
     color: var(--text-color);
+    overflow: hidden;
     transition: background-color 0.4s;
 }
 
 .login-details-container > #login-button:hover {
     background-color: var(--background-dark-color);
+}
+
+.login-details-container > #login-button:disabled {
+    background-color: var(--background-dark-color);
+    cursor: auto;
+}
+
+.login-details-container > #login-button > svg {
+    align-self: center;
+    animation: sway infinite 1s linear;
 }
 
 .login-details-container > .remember-me-container {
@@ -76,6 +95,7 @@
 
 .remember-me-container > .remember-me-label {
     font-size: 0.9em;
+    cursor: pointer;
 }
 
 .remember-me-container > #remember-me-toggle {
@@ -85,6 +105,7 @@
     border: var(--border-dark-color) 2px solid;
     border-radius: 4px;
     outline: none;
+    cursor: pointer;
 }
 
 .remember-me-container > #remember-me-toggle:checked {

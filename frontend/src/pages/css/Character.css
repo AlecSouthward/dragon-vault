@@ -1,0 +1,91 @@
+.character-page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+    color: var(--text-color);
+    user-select: none;
+}
+
+.character-page-container > .stats-container {
+    background-color: var(--background-light-color);
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    padding: 18px;
+    border: var(--border-light-color) 2px solid;
+    border-radius: 8px;
+}
+
+.stats-container > .stat-row-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+.stat-row-container > .stat-row-value-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.stat-row-value-container > .stat-row-value-number {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+.stat-row-value-container > .stat-row-value-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    width: 32px;
+    cursor: pointer;
+    outline: none;
+    border: var(--border-light-color) 2px solid;
+    border-radius: 8px;
+    color: var(--icon-light-color);
+    background-color: var(--background-light-color);
+    transition: background-color 0.4s;
+}
+
+.stat-row-value-container > .stat-row-value-button:hover {
+    background-color: var(--background-dark-color);
+}
+
+.character-page-container > .items-container {
+    background-color: var(--background-light-color);
+    display: flex;
+    flex-direction: column;
+    margin-top: 32px;
+    width: 160px;
+    padding: 18px;
+    border: var(--border-light-color) 2px solid;
+    border-radius: 8px;
+}
+
+.items-container > .items-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.items-list-container > .item-row-container {
+    display: flex;
+    border: 2px solid var(--border-light-color);
+    border-radius: 8px;
+    height: 26px;
+    align-items: center;
+    padding: 0 4px;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.items-list-container > .item-row-container.selected {
+    background-color: var(--background-dark-color);
+}
