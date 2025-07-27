@@ -1,0 +1,16 @@
+.no-page-container {
+    color: var(--color-grey);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    padding-top: 50%;
+}
+
+.no-page-container > .dice-icon {
+    width: 64px;
+    height: 64px;
+}

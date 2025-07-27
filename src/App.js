@@ -1,24 +1,32 @@
-import logo from './logo.svg';
 import './App.css';
 
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
+
+import NoPage from './pages/NoPage';
+import RollDice from './pages/RollDice';
+import Login from './pages/Login';
+
+import { USER_ID_STORAGE_KEY } from './constants';
+
 function App() {
+  const [userId, setUserId] = useState(undefined);
+
+  const updateUserId = (newUserId, storeInLocalStorage = false) => {
+    setUserId(newUserId);
+    
+    if (!storeInLocalStorage) return;
+    localStorage.setItem(USER_ID_STORAGE_KEY, newUserId);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Login updateUserId={updateUserId} />} />
+        <Route path="dice" element={<RollDice userId={userId} />} />
+        <Route path="*" element={<NoPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
