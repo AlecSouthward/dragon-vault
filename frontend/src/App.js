@@ -1,6 +1,6 @@
 import './App.css';
 
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 
 import NoPage from './pages/NoPage';
@@ -9,9 +9,13 @@ import Login from './pages/Login';
 import Character from './pages/Character';
 
 import { USER_ID_STORAGE_KEY } from './constants';
+import Navbar from './components/Navbar';
 
 function App() {
   const [authToken, setAuthToken] = useState(undefined);
+
+  const location = useLocation();
+  const hideNavbar = location.pathname === "/";
 
   const updateAuthToken = (newAuthToken) => {
     setAuthToken(newAuthToken);
@@ -20,14 +24,16 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
+    <>
+      {!hideNavbar && <Navbar />}
+
       <Routes>
         <Route index element={<Login updateAuthToken={updateAuthToken} />} />
-        <Route path="dice" element={<RollDice userId={authToken} />} />
+        <Route path="roll" element={<RollDice userId={authToken} />} />
         <Route path="character" element={<Character userId={authToken} />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 

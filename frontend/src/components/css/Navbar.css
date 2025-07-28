@@ -1,0 +1,28 @@
+.nav-menu-container {
+    position: absolute;
+    top: 8px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.nav-menu-container > .nav-menu {
+    display: flex;
+    gap: 32px;
+    padding: 8px 32px;
+    background-color: var(--background-light-color);
+    border: var(--border-light-color) 2px solid;
+    border-radius: 8px;
+}
+
+.nav-menu > a {
+    color: var(--text-color);
+    font-weight: bold;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    transition: text-shadow 0.4s;
+}
+
+.nav-menu > a:hover {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
