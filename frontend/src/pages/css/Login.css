@@ -29,13 +29,16 @@
     border: solid 2px var(--border-light-color);
 }
 
-.login-details-container > #username-label {
+.login-details-container > #username-label,
+.login-details-container > #password-label {
     align-self: flex-start;
     margin-bottom: 4px;
     font-weight: 500;
 }
 
-.login-details-container > #username-input {
+.login-details-container > #username-input,
+.login-details-container > #password-input {
+    color: var(--text-color);
     margin-bottom: 8px;
     padding: 4px 6px;
     border: var(--border-light-color) 2px solid;
@@ -45,13 +48,15 @@
     transition: background-color 0.1s, border-color 0.1s, color 0.1s;
 }
 
-.login-details-container > #username-input:disabled {
+.login-details-container > #username-input:disabled,
+.login-details-container > #password-input:disabled {
     background-color: var(--background-dark-color);
     user-select: none;
     pointer-events: none;
 }
 
-.login-details-container > #username-input.username-error {
+.login-details-container > #username-input.input-error,
+.login-details-container > #password-input.input-error {
     background-color: var(--error-background-color);
     border-color: var(--error-border-color);
     color: white;

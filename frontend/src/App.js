@@ -11,21 +11,20 @@ import Character from './pages/Character';
 import { USER_ID_STORAGE_KEY } from './constants';
 
 function App() {
-  const [userId, setUserId] = useState(undefined);
+  const [authToken, setAuthToken] = useState(undefined);
 
-  const updateUserId = (newUserId, storeInLocalStorage = false) => {
-    setUserId(newUserId);
-    
-    if (!storeInLocalStorage) return;
-    localStorage.setItem(USER_ID_STORAGE_KEY, newUserId);
+  const updateAuthToken = (newAuthToken) => {
+    setAuthToken(newAuthToken);
+
+    sessionStorage.setItem(USER_ID_STORAGE_KEY, newAuthToken);
   }
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Login updateUserId={updateUserId} />} />
-        <Route path="dice" element={<RollDice userId={userId} />} />
-        <Route path="character" element={<Character userId={userId} />} />
+        <Route index element={<Login updateAuthToken={updateAuthToken} />} />
+        <Route path="dice" element={<RollDice userId={authToken} />} />
+        <Route path="character" element={<Character userId={authToken} />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </BrowserRouter>
