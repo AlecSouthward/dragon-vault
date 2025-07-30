@@ -8,7 +8,6 @@ import userRoutes from "./routes/user.js";
 import authentication from "./routes/authentication.js";
 
 import { connectDB } from "./db.js";
-// import { redis } from "./cache.js";
 
 const fastify = Fastify({ logger: true });
 
@@ -21,7 +20,6 @@ await fastify.register(userRoutes, { prefix: "/user" });
 const start = async () => {
   try {
     await connectDB();
-    // await redis.ping();
     await fastify.listen({ port: 8080, host: "0.0.0.0" });
   } catch (err) {
     fastify.log.error(err);
