@@ -7,4 +7,5 @@ Website created to manage Dungeon & Dragon sessions remotely and easily.
 __Backend__:
 ```env
 JWT_SECRET=
+‎DATABASE_URL‎=
 ```
