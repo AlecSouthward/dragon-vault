@@ -44,7 +44,7 @@ const ItemWindow = ({ itemName, itemDescription, hidden }) => (
     </div>
 );
 
-export default function Character({ userId }) {
+export default function Character() {
     const [canIncreaseStats, setCanIncreaseStats] = useState(true);
     const [selectedItem, setSelectedItem] = useState(undefined);
 

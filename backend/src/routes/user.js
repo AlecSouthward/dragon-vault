@@ -15,10 +15,16 @@ export default async function (fastify) {
     if (!match) return reply.code(401).send({ error: "Invalid credentials" });
 
     const token = fastify.jwt.sign({ id: user.id, username: user.username });
-    reply.send({ token });
+
+    reply.setCookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "Strict",
+      path: "/"
+    });
   });
 
-  fastify.post("/create", async (req, res) => {
+  fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, _res) => {
     const { username, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 12);
 

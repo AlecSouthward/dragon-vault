@@ -8,7 +8,7 @@ import { FaDice } from "react-icons/fa";
 
 import { retrieveAuthToken } from "../service/userService";
 
-export default function Login({ updateAuthToken }) {
+export default function Login() {
     const [username, setUsername] = useState(undefined);
     const [password, setPassword] = useState(undefined);
     const [loading, setLoading] = useState(false);
@@ -33,22 +33,6 @@ export default function Login({ updateAuthToken }) {
         setPassword(newPassword);
     };
 
-    const handleRetrieveAuthToken = async () => {
-        setLoading(true);
-
-        try {
-            const authToken = await retrieveAuthToken(username, password);
-
-            return authToken;
-        } catch (err) {
-            setErrorMessage(err.message);
-
-            return null;
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleLoginClick = async (evt) => {
         evt.preventDefault();
 
@@ -60,13 +44,18 @@ export default function Login({ updateAuthToken }) {
             return;
         }
 
-        const authToken = await handleRetrieveAuthToken();
+        setLoading(true);
 
-        if (!authToken) {
+        try {
+            await retrieveAuthToken(username, password);
+        } catch (err) {
+            setErrorMessage(err.message);
+
             return;
+        } finally {
+            setLoading(false);
         }
 
-        updateAuthToken(authToken);
         navigate("/dice");
     };
 
