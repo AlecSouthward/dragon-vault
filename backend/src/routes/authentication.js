@@ -4,7 +4,7 @@ export default async function authentication(fastify) {
         try {
             await request.jwtVerify();
         } catch (err) {
-            reply.code(401).send({ error: 'Unauthorized' });
+            reply.code(401).send({ error: "Unauthorized" });
         }
     });
 }

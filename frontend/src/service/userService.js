@@ -1,20 +1,15 @@
-import { BACKEND_PATH } from "../constants";
+import fetchApi from "./fetchApi";
 
-export const retrieveAuthToken = async (username, password) => {
-    const response = await fetch(
-        BACKEND_PATH + "/user/login",
-        {
-            method: "POST",
-            body: JSON.stringify({ username, password }),
-            headers: { 'Content-Type': 'application/json' }
-        }
-    );
+export const sendLoginRequest = async (username, password) => {
+    const response = await fetchApi({
+        path: "/user/login",
+        method: "POST",
+        body: { username, password }
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
         throw new Error(data.error);
     }
-    
-    return data.token;
 };

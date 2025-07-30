@@ -6,9 +6,9 @@ import PropTypes from "prop-types";
 
 import { FaDice } from "react-icons/fa";
 
-import { retrieveAuthToken } from "../service/userService";
+import { sendLoginRequest } from "../service/userService";
 
-export default function Login() {
+export default function Login({ setUser }) {
     const [username, setUsername] = useState(undefined);
     const [password, setPassword] = useState(undefined);
     const [loading, setLoading] = useState(false);
@@ -47,7 +47,9 @@ export default function Login() {
         setLoading(true);
 
         try {
-            await retrieveAuthToken(username, password);
+            const user = await sendLoginRequest(username, password);
+
+            setUser(user);
         } catch (err) {
             setErrorMessage(err.message);
 

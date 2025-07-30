@@ -4,8 +4,9 @@ import Fastify from "fastify";
 import jwt from "fastify-jwt";
 import cors from "@fastify/cors";
 
-import userRoutes from "./routes/user.js";
 import authentication from "./routes/authentication.js";
+import pingRoutes from "./routes/ping.js";
+import userRoutes from "./routes/user.js";
 
 import { connectDB } from "./db.js";
 
@@ -15,6 +16,7 @@ await fastify.register(cors, { origin: "*" });
 await fastify.register(jwt, { secret: process.env.JWT_TOKEN });
 await fastify.register(authentication);
 
+await fastify.register(pingRoutes, { prefix: "/" });
 await fastify.register(userRoutes, { prefix: "/user" });
 
 const start = async () => {

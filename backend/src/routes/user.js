@@ -22,6 +22,8 @@ export default async function (fastify) {
       sameSite: "Strict",
       path: "/"
     });
+
+    reply.send({ username: user.username }); // Return profile picture, role, etc. later
   });
 
   fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, _res) => {
