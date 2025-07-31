@@ -23,7 +23,7 @@ export default async function (fastify) {
       path: "/"
     });
 
-    reply.send({ username: user.username }); // Return profile picture, role, etc. later
+    reply.send({ username: user.username, isAdmin: user.is_admin }); // Return profile picture, role, etc. later
   });
 
   fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, _res) => {

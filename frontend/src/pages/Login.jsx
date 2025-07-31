@@ -58,7 +58,7 @@ export default function Login({ setUser }) {
             setLoading(false);
         }
 
-        navigate("/dice");
+        navigate("/character");
     };
 
     return (
@@ -101,5 +101,5 @@ export default function Login({ setUser }) {
 }
 
 Login.propTypes = {
-    updateAuthToken: PropTypes.func.isRequired
+    setUser: PropTypes.func.isRequired
 };

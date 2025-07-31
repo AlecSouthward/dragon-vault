@@ -12,4 +12,6 @@ export const sendLoginRequest = async (username, password) => {
     if (!response.ok) {
         throw new Error(data.error);
     }
+
+    return data;
 };

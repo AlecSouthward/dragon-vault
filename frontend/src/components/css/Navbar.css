@@ -4,6 +4,9 @@
     display: flex;
     justify-content: center;
     width: 100%;
+    z-index: 1;
+    user-select: none;
+    pointer-events: none;
 }
 
 .nav-menu-container > .nav-menu {
@@ -13,6 +16,7 @@
     background-color: var(--background-light-color);
     border: var(--border-light-color) 2px solid;
     border-radius: 8px;
+    pointer-events: all;
 }
 
 .nav-menu > a {
