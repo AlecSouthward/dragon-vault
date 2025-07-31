@@ -8,6 +8,7 @@ import cookie from '@fastify/cookie';
 import authentication from "./routes/authenticate.js";
 import pingRoutes from "./routes/ping.js";
 import userRoutes from "./routes/user.js";
+import campaignRoutes from "./routes/campaign.js";
 
 import { connectDB } from "./db.js";
 
@@ -26,6 +27,7 @@ await fastify.register(authentication);
 
 await fastify.register(pingRoutes, { prefix: "/" });
 await fastify.register(userRoutes, { prefix: "/user" });
+await fastify.register(campaignRoutes, { prefix: "/campaign" });
 
 const start = async () => {
   try {

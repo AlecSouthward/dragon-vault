@@ -6,13 +6,14 @@
   --background-light-color: rgb(255, 255, 255);
   --background-dark-color: rgb(225, 225, 225);
   --icon-color: rgb(75, 75, 75);
-  --error-text-color: rgb(175, 65, 75);
-  --error-background-color: rgb(220, 135, 146);
+  --error-text-color: rgb(255, 229, 229);
+  --error-background-color: rgb(207, 104, 117);
   --error-border-color: rgb(185, 75, 85);
 }
 
 * {
   font-family: 'Fira Sans', sans-serif;
+  scrollbar-width: thin;
 }
 
 #root {
@@ -47,5 +48,17 @@ body {
   }
   to {
     transform: translateX(35px);
+  }
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }
