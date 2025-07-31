@@ -7,5 +7,42 @@ Website created to manage Dungeon & Dragon sessions remotely and easily.
 __Backend__:
 ```env
 JWT_SECRET=
-‎DATABASE_URL‎=
+DATABASE_URL=
+```
+
+## Running for Development
+
+__This requires a pre-existing service/container of postgres to be running.__
+If you do not have a PostgreSQL instance running, follow these steps to set it up for Dragon Vault:
+
+1. Startup/create an instance of Postgres with default settings.
+2. Create this database `dragon_vault`.
+3. Create a user named `dragon_vault_user` that can access the database. (__Make sure to keep the password as you'll need that in the `.env` file under `frontend/`__) 
+
+Then, you will have to start the 2 layers separately.
+
+To start the frontend:
+```bash
+cd frontend/;
+
+npm install; # Make sure to install all the npm_modules
+
+npm start;
+```
+
+To start the backend:
+```bash
+cd backend/;
+
+npm install; # Make sure to install all the npm_modules
+
+npm run dev;
+```
+
+## Running for Production
+
+Simply run:
+
+```bash
+docker compose up -d --build;
 ```

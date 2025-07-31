@@ -1,0 +1,47 @@
+version: '0.1'
+
+secrets:
+  jwt_token:
+    environment: "DV_JWT_TOKEN"
+  db_url:
+    environment: "DV_DB_URL"
+
+services:
+  database:
+    container_name: dragon_vault_database
+    image: postgres:17.5-alpine3.22
+    networks: 
+      - dragon_vault
+    volumes:
+      - ./database/data:/var/lib/postgresql/data/
+      - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dragon_vault_user -d dragon_vault"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  backend:
+    container_name: dragon_vault_backend
+    image: node:24.4.1-alpine3.22
+    build: ./backend
+    networks: 
+      - dragon_vault
+    depends_on:
+      - database
+
+  frontend:
+    container_name: dragon_vault_frontend
+    image: nginx:1.29.0-alpine3.22-slim
+    build: ./frontend
+    ports:
+      - "443:443"
+      - "80:80"
+    networks:
+      - dragon_vault
+    depends_on:
+      - backend
+
+networks:
+  dragon_vault: {}
