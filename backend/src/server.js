@@ -5,7 +5,7 @@ import jwt from "fastify-jwt";
 import cors from "@fastify/cors";
 import cookie from '@fastify/cookie';
 
-import authentication from "./routes/authenticate.js";
+import preHandlers from "./routes/preHandlers.js";
 import pingRoutes from "./routes/ping.js";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
@@ -23,7 +23,7 @@ await fastify.register(cors, {
 
 await fastify.register(jwt, { secret: process.env.JWT_TOKEN });
 await fastify.register(cookie, { secret: process.env.COOKIE_TOKEN });
-await fastify.register(authentication);
+await fastify.register(preHandlers);
 
 await fastify.register(pingRoutes, { prefix: "/" });
 await fastify.register(userRoutes, { prefix: "/user" });
