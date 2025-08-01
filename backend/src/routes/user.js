@@ -5,11 +5,11 @@ import { database } from "../database.js";
 export default async function (fastify) {
   fastify.post("/login", async (req, reply) => {
     const { username, password } = req.body;
-    const databaseResponse = await database.query("SELECT * FROM users WHERE username = $1 LIMIT 1", [username]);
+    const databaseResult = await database.query("SELECT * FROM users WHERE username = $1 LIMIT 1", [username]);
 
-    if (!databaseResponse.rows.length) return reply.code(401).send({ error: "User not found" });
+    if (!databaseResult.rows.length) return reply.code(401).send({ error: "User not found" });
 
-    const user = databaseResponse.rows[0];
+    const user = databaseResult.rows[0];
     const match = await bcrypt.compare(password, user.password);
 
     if (!match) return reply.code(401).send({ error: "Invalid credentials" });
@@ -30,12 +30,12 @@ export default async function (fastify) {
     const { username, password } = req.body;
     const passwordHash = await bcrypt.hash(password, 12);
 
-    const userId = Date.now().toString(36) + Math.random().toString(36).slice(2);
+    const databaseResult = await database.query(
+      "INSERT INTO users (username, password, is_admin) VALUES ($1, $2, $3) RETURNING id",
+      [username, passwordHash, false]
+    );
+    const userId = databaseResult.rows[0].id;
 
-    return {
-      id: userId,
-      username,
-      password: passwordHash
-    };
+    return { userId };
   });
 }

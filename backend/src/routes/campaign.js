@@ -4,9 +4,9 @@ export default async function (fastify) {
   fastify.get("/retrieve-for-user", { preHandler: [fastify.authenticate] }, async (req, reply) => {
     const { id: userId } = req.user;
 
-    const databaseResponse = await database.query("SELECT id, name FROM campaigns WHERE owner_id = $1", [userId]);
+    const databaseResult = await database.query("SELECT id, name FROM campaigns WHERE owner_id = $1", [userId]);
 
-    reply.code(200).send({ campaigns: databaseResponse.rows });
+    reply.code(200).send({ campaigns: databaseResult.rows });
   });
   
   fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, reply) => {
