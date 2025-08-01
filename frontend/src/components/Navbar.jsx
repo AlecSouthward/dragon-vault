@@ -9,7 +9,7 @@ export default function Navbar({ user, campaign }) {
         <div className="nav-menu-container">
             <div className="nav-menu">
                 {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
-                <NavLink to="/campaigns">Campaigns</NavLink>
+                {campaign ? <NavLink to="/campaign">Campaign</NavLink> : <NavLink to="/campaigns">Campaigns</NavLink>}
                 {campaign && <NavLink to="/roll">Roll</NavLink>}
                 {campaign && <NavLink to="/character">Character</NavLink>}
             </div>

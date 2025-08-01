@@ -6,7 +6,8 @@
   --background-light-color: rgb(255, 255, 255);
   --background-dark-color: rgb(225, 225, 225);
   --icon-color: rgb(75, 75, 75);
-  --error-text-color: rgb(255, 229, 229);
+  --error-light-text-color: rgb(255, 229, 229);
+  --error-dark-text-color: rgb(253, 90, 90);
   --error-background-color: rgb(207, 104, 117);
   --error-border-color: rgb(185, 75, 85);
 }

@@ -1,0 +1,32 @@
+.user-item-list {
+    max-height: 316px;
+    overflow-y: auto;
+}
+
+.user-item:not(:nth-last-child(1)):not(:only-child) {
+    border-bottom: var(--border-dark-color) 2px solid;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+
+.user-item > p {
+    color: var(--text-color);
+    font-weight: 500;
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 120px;
+}
+
+.profile-picture {
+    width: 32px;
+    height: 32px;
+    align-self: center;
+    border-radius: 100%;
+    box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.4);
+    user-select: none;
+    pointer-events: none;
+    object-fit: contain;
+    image-rendering: optimizeSpeed;
+}

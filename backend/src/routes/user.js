@@ -26,8 +26,20 @@ export default async function (fastify) {
     reply.send({ username: user.username, isAdmin: user.is_admin }); // Return profile picture, role, etc. later
   });
 
-  fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, _res) => {
+  fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, res) => {
     const { username, password } = req.body;
+
+    const usernameResult = await database.query(
+      "SELECT EXISTS (SELECT 1 FROM users WHERE username = $1)",
+      [username]
+    );
+    
+    if (usernameResult.rows[0].exists) {
+      res.code(409).send({ message: "Username is taken" });
+
+      return;
+    }
+
     const passwordHash = await bcrypt.hash(password, 12);
 
     const databaseResult = await database.query(
@@ -37,5 +49,12 @@ export default async function (fastify) {
     const userId = databaseResult.rows[0].id;
 
     return { userId };
+  });
+
+  fastify.get("/retrieve-all", { preHandler: [fastify.authenticate, fastify.adminValidation] }, async (_req, _res) => {
+    const databaseResult = await database.query("SELECT id, username FROM users");
+    const users = databaseResult.rows;
+
+    return { users };
   });
 }
