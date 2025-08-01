@@ -27,6 +27,7 @@ function App() {
 
   useEffect(() => {
     sendPingRequest()
+      .then(res => setUser(res))
       .catch(() => navigate("/"));
   }, []);
 
