@@ -10,7 +10,7 @@ import pingRoutes from "./routes/ping.js";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
 
-import { connectDB } from "./db.js";
+import { connectToDatabase } from "./database.js";
 
 const fastify = Fastify({ logger: true });
 
@@ -31,7 +31,7 @@ await fastify.register(campaignRoutes, { prefix: "/campaign" });
 
 const start = async () => {
   try {
-    await connectDB();
+    await connectToDatabase();
     await fastify.listen({ port: 8080, host: "0.0.0.0" });
   } catch (err) {
     fastify.log.error(err);

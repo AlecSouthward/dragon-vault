@@ -1,11 +1,11 @@
 import bcrypt from "bcrypt";
 
-import { db } from "../db.js";
+import { database } from "../database.js";
 
 export default async function (fastify) {
   fastify.post("/login", async (req, reply) => {
     const { username, password } = req.body;
-    const databaseResponse = await db.query("SELECT * FROM users WHERE username = $1 LIMIT 1", [username]);
+    const databaseResponse = await database.query("SELECT * FROM users WHERE username = $1 LIMIT 1", [username]);
 
     if (!databaseResponse.rows.length) return reply.code(401).send({ error: "User not found" });
 

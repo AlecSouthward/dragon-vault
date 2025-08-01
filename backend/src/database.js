@@ -10,4 +10,4 @@ export const connectDB = async () => {
   console.log('Connected to Postgres');
 };
 
-export const db = pool;
+export const database = pool;
