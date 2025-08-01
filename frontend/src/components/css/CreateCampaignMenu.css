@@ -7,7 +7,7 @@
     width: 100%;
     z-index: 2;
     justify-content: center;
-    pointer-events: none;
+    pointer-events: all;
     background-color: rgba(0, 0, 0, 0.2);
 }
 
@@ -45,7 +45,7 @@
 }
 
 .create-campaign-menu > input.error {
-    color: var(--error-text-color);
+    color: var(--error-light-text-color);
     background-color: var(--error-background-color);
     border-color: var(--error-border-color);
 }
@@ -69,6 +69,7 @@
     width: 96px;
     align-self: center;
     cursor: pointer;
+    user-select: none;
     transition: box-shadow 0.2s;
 }
 

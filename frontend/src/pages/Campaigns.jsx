@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 import { sendRetrieveCampaignsRequest } from "../service/campaignService";
 
-import CreateCampaignMenu from "../components/admin/CreateCampaignMenu";
+import CreateCampaignMenu from "../components/CreateCampaignMenu";
 import { useNavigate } from "react-router-dom";
 
 export default function Campaigns({ currentCampaign, setCampaign }) {
@@ -19,7 +19,20 @@ export default function Campaigns({ currentCampaign, setCampaign }) {
         setLoading(true);
 
         sendRetrieveCampaignsRequest()
-            .then((res) => setCampaigns(res))
+            .then((res) => {
+                setCampaigns(res);
+
+                if (res.length !== 1) {
+                    return;
+                } else if (currentCampaign) {
+                    navigate("/campaign");
+
+                    return;
+                }
+                
+                setCampaign(res[0]);
+                navigate("/character");
+            })
             .finally(() => setLoading(false));
     }, []);
 

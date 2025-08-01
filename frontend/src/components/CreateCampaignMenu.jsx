@@ -3,7 +3,7 @@ import "./css/CreateCampaignMenu.css";
 import { useState } from "react";
 import PropTypes from "prop-types";
 
-import { sendCreateCampaignRequest } from "../../service/campaignService";
+import { sendCreateCampaignRequest } from "../service/campaignService";
 
 export default function CreateCampaignMenu({ hideMenu }) {
     const [name, setName] = useState(undefined);
