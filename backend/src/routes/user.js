@@ -14,7 +14,7 @@ export default async function (fastify) {
 
     if (!match) return reply.code(401).send({ error: "Invalid credentials" });
 
-    const token = fastify.jwt.sign({ id: user.id, username: user.username });
+    const token = fastify.jwt.sign({ id: user.id, username: user.username, isAdmin: user.is_admin });
 
     reply.setCookie("token", token, {
       httpOnly: true,

@@ -58,7 +58,7 @@ export default function Login({ setUser }) {
             setLoading(false);
         }
 
-        navigate("/character");
+        navigate("/campaigns");
     };
 
     return (
