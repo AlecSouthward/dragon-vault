@@ -22,19 +22,14 @@ export default function Campaigns({ currentCampaign, setCampaign }) {
             .then((res) => {
                 setCampaigns(res);
 
-                if (res.length !== 1) {
-                    return;
-                } else if (currentCampaign) {
-                    navigate("/campaign");
-
+                if (!currentCampaign) {
                     return;
                 }
                 
-                setCampaign(res[0]);
-                navigate("/character");
+                navigate("/campaign");
             })
             .finally(() => setLoading(false));
-    }, []);
+    }, [showCreateCampaignMenu]);
 
     const handleCampaignEnterClick = (campaign) => {
         navigate("/character");
