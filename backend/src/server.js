@@ -12,6 +12,7 @@ import campaignRoutes from "./routes/campaign.js";
 
 import { connectToDatabase } from "./database.js";
 
+const basePrefixPath = "/api";
 const fastify = Fastify({ logger: true });
 
 await fastify.register(cors, {
@@ -25,9 +26,9 @@ await fastify.register(jwt, { secret: process.env.JWT_TOKEN });
 await fastify.register(cookie, { secret: process.env.COOKIE_TOKEN });
 await fastify.register(preHandlers);
 
-await fastify.register(pingRoutes, { prefix: "/" });
-await fastify.register(userRoutes, { prefix: "/user" });
-await fastify.register(campaignRoutes, { prefix: "/campaign" });
+await fastify.register(pingRoutes, { prefix: `${basePrefixPath}/` });
+await fastify.register(userRoutes, { prefix: `${basePrefixPath}/user` });
+await fastify.register(campaignRoutes, { prefix: `${basePrefixPath}/campaign` });
 
 const start = async () => {
   try {
