@@ -9,6 +9,22 @@ export default async function (fastify) {
     reply.code(200).send({ campaigns: databaseResult.rows });
   });
   
+  fastify.post("/retrieve-all-users", { preHandler: [fastify.authenticate] }, async (req, reply) => {
+    const { id: campaignId } = req.body.campaign;
+
+    const databaseResult = await database.query(
+      `
+        SELECT users.id, users.username
+        FROM characters
+        JOIN users ON characters.user_id = users.id
+        WHERE characters.campaign_id = $1
+      `,
+      [campaignId]
+    );
+
+    reply.code(200).send({ users: databaseResult.rows });
+  });
+  
   fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, reply) => {
     const { name } = req.body;
     const { id: userId } = req.user;
