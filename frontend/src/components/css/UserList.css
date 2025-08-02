@@ -3,6 +3,22 @@
     overflow-y: auto;
 }
 
+.user-item-list > .loading-message {
+    color: var(--text-color);
+    align-self: center;
+    font-weight: bold;
+    user-select: none;
+    animation: fade-in-out 1s ease infinite;
+}
+
+.user-item-list > .none-found-message {
+    color: var(--text-color);
+    align-self: center;
+    font-weight: bold;
+    text-decoration: underline;
+    user-select: none;
+}
+
 .user-item:not(:nth-last-child(1)):not(:only-child) {
     border-bottom: var(--border-dark-color) 2px solid;
     border-bottom-left-radius: 3px;

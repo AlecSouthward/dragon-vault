@@ -14,10 +14,12 @@ const UserItem = ({ user }) => (
     </div>
 );
 
-export default function UserList({ users }) {
+export default function UserList({ users, loading = false }) {
     return (
         <div className="user-item-list">
-            {users.map(user => <UserItem key={user.id} user={user} />)}
+            {loading && <p className="loading-message">Loading...</p>}
+            {!loading && users.map(user => <UserItem key={user.id} user={user} />)}
+            {!loading && users.length === 0 && <p className="none-found-message">No users found.</p>}
         </div>
     );
 }
@@ -27,5 +29,6 @@ UserItem.propTypes = {
 };
 
 UserList.propTypes = {
-    users: PropTypes.array.isRequired
+    users: PropTypes.array.isRequired,
+    loading: PropTypes.bool
 };

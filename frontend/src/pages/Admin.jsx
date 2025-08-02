@@ -17,7 +17,7 @@ export default function Admin() {
 
         sendRetrieveAllUsersRequest()
             .then(setUsers)
-            .finally(() => setLoading(true));
+            .finally(() => setLoading(false));
     }, []);
 
     return (
@@ -26,7 +26,7 @@ export default function Admin() {
                 <h1>Admin Screen</h1>
 
                 <div className="user-section">
-                    <UserList users={users} />
+                    <UserList users={users} loading={loading} />
                     <button onClick={() => setShowCreateUserMenu(true)}>Create User</button>
                 </div>
             </div>
