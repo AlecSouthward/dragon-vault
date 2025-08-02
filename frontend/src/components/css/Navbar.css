@@ -1,15 +1,4 @@
-.nav-menu-container {
-    position: absolute;
-    top: 8px;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    z-index: 1;
-    user-select: none;
-    pointer-events: none;
-}
-
-.nav-menu-container > .nav-menu {
+.nav-menu {
     display: flex;
     gap: 32px;
     padding: 8px 32px;

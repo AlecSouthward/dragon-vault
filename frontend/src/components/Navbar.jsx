@@ -6,13 +6,11 @@ import { NavLink } from 'react-router-dom';
 
 export default function Navbar({ user, campaign }) {
     return (
-        <div className="nav-menu-container">
-            <div className="nav-menu">
-                {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
-                {campaign ? <NavLink to="/campaign">Campaign</NavLink> : <NavLink to="/campaigns">Campaigns</NavLink>}
-                {campaign && <NavLink to="/roll">Roll</NavLink>}
-                {campaign && <NavLink to="/character">Character</NavLink>}
-            </div>
+        <div className="nav-menu">
+            {user?.isAdmin && <NavLink to="/admin">Admin</NavLink>}
+            {campaign ? <NavLink to="/campaign">Campaign</NavLink> : <NavLink to="/campaigns">Campaigns</NavLink>}
+            {campaign && <NavLink to="/roll">Roll</NavLink>}
+            {campaign && <NavLink to="/character">Character</NavLink>}
         </div>
     );
 }

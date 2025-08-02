@@ -16,6 +16,18 @@ export const sendLoginRequest = async (username, password) => {
     return data;
 };
 
+export const sendLogOutRequest = async () => {
+    const response = await fetchApi({
+        path: "/user/log-out",
+        method: "GET"
+    });
+
+    if (!response.ok) {
+        const data = await response.json();
+        console.error(data.error);
+    }
+};
+
 export const sendCreateUserRequest = async (username, password) => {
     const response = await fetchApi({
         path: "/user/create",

@@ -26,6 +26,10 @@ export default async function (fastify) {
     reply.send({ username: user.username, isAdmin: user.is_admin }); // Return profile picture, role, etc. later
   });
 
+  fastify.get("/log-out", async (_req, res) => {
+    res.clearCookie("token");
+  });
+
   fastify.post("/create", { preHandler: [fastify.authenticate] }, async (req, res) => {
     const { username, password } = req.body;
 

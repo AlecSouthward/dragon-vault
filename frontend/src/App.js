@@ -8,9 +8,11 @@ import Login from "./pages/Login";
 import Character from "./pages/Character";
 import Admin from "./pages/Admin";
 import Campaigns from "./pages/Campaigns";
+import LogoutButton from "./components/LogoutButton";
 
 import sendPingRequest from "./service/pingRequest";
 import useSessionState from "./utils/useSessionStorage";
+import { sendLogOutRequest } from "./service/userService";
 
 import { CAMPAIGN_KEY, USER_KEY } from "./constants";
 
@@ -29,9 +31,22 @@ function App() {
       .catch(() => navigate("/"));
   }, []);
 
+  const clearLoginDetails = async () => {
+    navigate("/");
+
+    setUser(null);
+    setCampaign(null);
+    await sendLogOutRequest();
+  };
+
   return (
     <>
-      {!hideNavbar && <Navbar user={user} campaign={campaign} />}
+      {!hideNavbar && (
+        <div className="top-menu-container">
+          <Navbar user={user} campaign={campaign} />
+          <LogoutButton clearLoginDetails={clearLoginDetails} />
+        </div>
+      )}
 
       <Routes>
         <Route index element={<Login setUser={setUser} />} />

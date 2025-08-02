@@ -23,6 +23,17 @@
   width: 100vw;
 }
 
+.top-menu-container {
+  position: fixed;
+  top: 8px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  z-index: 1;
+  user-select: none;
+  gap: 16px;
+}
+
 body {
   background-color: lightgray;
   margin: 0;

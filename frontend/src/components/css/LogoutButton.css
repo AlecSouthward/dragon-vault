@@ -1,0 +1,22 @@
+.logout-button {
+    display: flex;
+    border: var(--border-light-color) 2px solid;
+    color: var(--icon-color);
+    border-radius: 6px;
+    background-color: var(--background-light-color);
+    width: 32px;
+    height: 32px;
+    align-self: center;
+    align-items: center;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+}
+
+.logout-button:hover {
+    box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.2);
+}
+
+.logout-button > svg {
+    height: 100%;
+    width: 100%;
+}
