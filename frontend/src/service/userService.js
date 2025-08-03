@@ -18,8 +18,8 @@ export const sendLoginRequest = async (username, password) => {
 
 export const sendLogOutRequest = async () => {
     const response = await fetchApi({
-        path: "/user/log-out",
-        method: "GET"
+        path: "/user/logout",
+        method: "POST"
     });
 
     if (!response.ok) {

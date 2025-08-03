@@ -1,16 +1,20 @@
 import { database } from "../database.js";
 
 export default async function (fastify) {
-  fastify.get("/retrieve-for-user", { preHandler: [fastify.authenticate] }, async (req, reply) => {
-    const { id: userId } = req.user;
+  fastify.get("/retrieve-all-for-user/:userId", { preHandler: [fastify.authenticate] }, async (req, reply) => {
+    const { userId } = req.params;
 
-    const databaseResult = await database.query("SELECT id, name FROM campaigns WHERE creator_user_id = $1", [userId]);
+    // TODO: Adjust to select from created and user character campaigns
+    const databaseResult = await database.query(
+      "SELECT id, name FROM campaigns WHERE creator_user_id = $1",
+      [userId]
+    );
 
     reply.code(200).send({ campaigns: databaseResult.rows });
   });
   
-  fastify.post("/retrieve-all-users", { preHandler: [fastify.authenticate] }, async (req, reply) => {
-    const { id: campaignId } = req.body.campaign;
+  fastify.get("/retrieve-users/:campaignId", { preHandler: [fastify.authenticate] }, async (req, reply) => {
+    const { campaignId } = req.params;
 
     const databaseResult = await database.query(
       `

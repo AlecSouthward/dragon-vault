@@ -51,7 +51,7 @@ function App() {
       <Routes>
         <Route index element={<Login setUser={setUser} />} />
         {user?.isAdmin && <Route path="admin" element={<Admin />} />}
-        <Route path="campaigns" element={<Campaigns currentCampaign={campaign} setCampaign={setCampaign} />} />
+        <Route path="campaigns" element={<Campaigns currentCampaign={campaign} setCampaign={setCampaign} currentUser={user} />} />
         <Route path="roll" element={<RollDice />} />
         <Route path="character" element={<Character />} />
         <Route path="*" element={<NoPage />} />

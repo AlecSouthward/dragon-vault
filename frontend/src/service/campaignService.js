@@ -13,8 +13,10 @@ export const sendCreateCampaignRequest = async (name) => {
     }
 };
 
-export const sendRetrieveCampaignsRequest = async () => {
-    const response = await fetchApi({ path: "/campaign/retrieve-for-user" });
+export const sendRetrieveCampaignsRequest = async (userId) => {
+    const response = await fetchApi({
+        path: `/campaign/retrieve-all-for-user/${userId}`
+    });
     
     const data = await response.json();
 

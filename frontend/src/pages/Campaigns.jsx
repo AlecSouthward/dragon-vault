@@ -8,7 +8,7 @@ import { sendRetrieveCampaignsRequest } from "../service/campaignService";
 import CreateCampaignMenu from "../components/CreateCampaignMenu";
 import { useNavigate } from "react-router-dom";
 
-export default function Campaigns({ currentCampaign, setCampaign }) {
+export default function Campaigns({ currentCampaign, setCampaign, currentUser }) {
     const navigate = useNavigate();
 
     const [campaigns, setCampaigns] = useState([]);
@@ -18,7 +18,7 @@ export default function Campaigns({ currentCampaign, setCampaign }) {
     useEffect(() => {
         setLoading(true);
 
-        sendRetrieveCampaignsRequest()
+        sendRetrieveCampaignsRequest(currentUser.id)
             .then((res) => {
                 setCampaigns(res);
 
@@ -78,5 +78,6 @@ export default function Campaigns({ currentCampaign, setCampaign }) {
 
 Campaigns.propTypes = {
     currentCampaign: PropTypes.object.isRequired,
-    setCampaign: PropTypes.func.isRequired
+    setCampaign: PropTypes.func.isRequired,
+    currentUser: PropTypes.object.isRequired
 };

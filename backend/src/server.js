@@ -9,6 +9,7 @@ import preHandlers from "./routes/preHandlers.js";
 import pingRoutes from "./routes/ping.js";
 import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
+import characterRoutes from "./routes/character.js";
 
 import { connectToDatabase } from "./database.js";
 
@@ -29,6 +30,7 @@ await fastify.register(preHandlers);
 await fastify.register(pingRoutes, { prefix: `${basePrefixPath}/` });
 await fastify.register(userRoutes, { prefix: `${basePrefixPath}/user` });
 await fastify.register(campaignRoutes, { prefix: `${basePrefixPath}/campaign` });
+await fastify.register(characterRoutes, { prefix: `${basePrefixPath}/character` });
 
 const start = async () => {
   try {

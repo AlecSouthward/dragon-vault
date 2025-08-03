@@ -7,7 +7,9 @@ export default async function (fastify) {
     const { username, password } = req.body;
     const databaseResult = await database.query("SELECT * FROM users WHERE username = $1 LIMIT 1", [username]);
 
-    if (!databaseResult.rows.length) return reply.code(401).send({ error: "User not found" });
+    if (databaseResult.rows.length === 0) {
+      return reply.code(401).send({ error: "User not found" });
+    }
 
     const user = databaseResult.rows[0];
     const match = await bcrypt.compare(password, user.password);
@@ -26,7 +28,7 @@ export default async function (fastify) {
     reply.send({ username: user.username, isAdmin: user.is_admin }); // Return profile picture, role, etc. later
   });
 
-  fastify.get("/log-out", async (_req, res) => {
+  fastify.post("/logout", async (_req, res) => {
     res.clearCookie("token");
   });
 
@@ -62,7 +64,7 @@ export default async function (fastify) {
     return { users };
   });
 
-  fastify.get("/set-admin", { preHandler: [fastify.authenticate, fastify.adminValidation] }, async (req, _res) => {
+  fastify.post("/set-admin", { preHandler: [fastify.authenticate, fastify.adminValidation] }, async (req, _res) => {
     const { id: userId } = req.body.user;
 
     await database.query(
