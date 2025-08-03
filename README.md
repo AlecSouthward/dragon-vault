@@ -8,7 +8,7 @@ __Backend__:
 ```env
 PORT=8080
 DATABASE_URL=postgresql://user:password@host:port/database
-REDIS_URL=redis://host:6379
+REDIS_URL=redis://host:port
 JWT_SECRET=
 DATABASE_URL=
 ```
