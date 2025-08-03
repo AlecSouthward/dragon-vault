@@ -29,7 +29,7 @@ export default fp(async function preHandlers(fastify) {
       }
 
       const userOwnsCampaign = await db.query(
-        "SELECT EXISTS (SELECT 1 FROM campaigns WHERE owner_id = $1 AND id = $2 LIMIT 1);",
+        "SELECT EXISTS (SELECT 1 FROM campaigns WHERE owner_id = $1 AND id = $2 LIMIT 1)",
         [user.id, campaign.id]
       );
 
@@ -57,7 +57,7 @@ export default fp(async function preHandlers(fastify) {
       }
 
       const userOwnsCampaign = await db.query(
-        "SELECT EXISTS (SELECT 1 FROM characters WHERE owner_id = $1 AND id = $2 LIMIT 1);",
+        "SELECT EXISTS (SELECT 1 FROM characters WHERE owner_id = $1 AND id = $2 LIMIT 1)",
         [user.id, character.id]
       );
 

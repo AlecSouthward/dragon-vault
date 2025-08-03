@@ -49,7 +49,7 @@ CREATE TABLE "characters" (
 
 CREATE TABLE "items" (
   "id" SERIAL PRIMARY KEY,
-  "owner_user_id" INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  "owner_user_id" INT REFERENCES users(id) ON DELETE CASCADE,
   "name" VARCHAR(128) NOT NULL,
   "description" TEXT,
   "stats" JSON DEFAULT '[]'::jsonb, -- [{"name": "Cost", "value": 2}, {"name": "Rarity", "value": "Mystical"}]

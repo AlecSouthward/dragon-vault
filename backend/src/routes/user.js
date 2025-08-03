@@ -61,4 +61,15 @@ export default async function (fastify) {
 
     return { users };
   });
+
+  fastify.get("/set-admin", { preHandler: [fastify.authenticate, fastify.adminValidation] }, async (req, _res) => {
+    const { id: userId } = req.body.user;
+
+    await database.query(
+      "UPDATE users SET is_admin = TRUE WHERE id = $1",
+      [userId]
+    );
+
+    return { message: "Successfully set the user to be Admin" };
+  });
 }
