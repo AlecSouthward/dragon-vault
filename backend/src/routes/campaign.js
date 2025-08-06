@@ -4,43 +4,43 @@ export default async function (fastify) {
   fastify.get(
     "/retrieve-all-for-user/:userId",
     { preHandler: [fastify.authenticate] },
-    async (req, reply) => {
+    async (req, res) => {
       const { userId } = req.params;
 
       // TODO: Adjust to select from created and user character campaigns
-      const databaseResult = await database.query(
+      const retrieveUsersResult = await database.query(
         "SELECT id, name FROM campaigns WHERE creator_user_id = $1",
         [userId]
       );
 
-      reply.code(200).send({ campaigns: databaseResult.rows });
+      return res.send({ campaigns: retrieveUsersResult.rows });
     }
   );
 
   fastify.get(
     "/retrieve-users/:campaignId",
     { preHandler: [fastify.authenticate] },
-    async (req, reply) => {
+    async (req, res) => {
       const { campaignId } = req.params;
 
-      const databaseResult = await database.query(
+      const retrieveUsersResult = await database.query(
         `
-        SELECT users.id, users.username
-        FROM characters
-        JOIN users ON characters.user_id = users.id
-        WHERE characters.campaign_id = $1
-      `,
+          SELECT users.id, users.username
+          FROM characters
+          JOIN users ON characters.user_id = users.id
+          WHERE characters.campaign_id = $1
+        `,
         [campaignId]
       );
 
-      reply.code(200).send({ users: databaseResult.rows });
+      return res.send({ users: retrieveUsersResult.rows });
     }
   );
 
   fastify.post(
     "/create",
     { preHandler: [fastify.authenticate] },
-    async (req, reply) => {
+    async (req, res) => {
       const { name } = req.body;
       const { id: userId } = req.user;
 
@@ -49,32 +49,32 @@ export default async function (fastify) {
         [name, userId]
       );
 
-      reply.code(200).send({ message: "Successfully created Campagin" });
+      return res.send({ message: "Successfully created Campaign" });
     }
   );
 
+  // This route creates a character for a specific user, which adds them to the campaign
   fastify.post(
     "/add-user",
     { preHandler: [fastify.authenticate, fastify.authenticateForCampaign] },
-    async (req, reply) => {
+    async (req, res) => {
       const { id: campaignId } = req.campaign;
       const { id: userId } = req.user;
 
       await database.query(
-        "INSERT INTO characters (name, campaign_id, user_id) VALUES ($1, $2, $3)",
-        ["Unnamed", userId, campaignId]
+        "INSERT INTO characters (campaign_id, user_id) VALUES ($1, $2)",
+        [userId, campaignId]
       );
 
-      reply
-        .code(200)
-        .send({ message: "Successfully created a character for user" });
+      return res.send({ message: "Successfully created Character for user" });
     }
   );
 
+  // Creates a new row in the campaign admins table for the user and campaign
   fastify.post(
     "/add-admin",
     { preHandler: [fastify.authenticate, fastify.authenticateForCampaign] },
-    async (req, reply) => {
+    async (req, res) => {
       const { id: newAdminUserId } = req.body;
       const { id: campaignId } = req.campaignId;
 
@@ -83,11 +83,9 @@ export default async function (fastify) {
         [newAdminUserId, campaignId]
       );
 
-      reply
-        .code(200)
-        .send({
-          message: "Successfully made the User and Admin in the Campaign",
-        });
+      return res.send({
+        message: "Successfully set user to be admin in the Campaign",
+      });
     }
   );
 }

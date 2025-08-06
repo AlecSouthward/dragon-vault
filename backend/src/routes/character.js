@@ -4,15 +4,15 @@ export default async function (fastify) {
   fastify.get(
     "/retrieve-for-user/:userId",
     { preHandler: [fastify.authenticate, fastify.authenticateForCharacter] },
-    async (req, _res) => {
-      reply.code(200).send({ character: req.character });
+    async (req, res) => {
+      return res.send({ character: req.character });
     }
   );
 
   fastify.put(
     "/update",
     { preHandler: [fastify.authenticate, fastify.authenticateForCharacter] },
-    async (req, _res) => {
+    async (req, res) => {
       const {
         name,
         description,
@@ -20,12 +20,12 @@ export default async function (fastify) {
         race,
         level,
         alive,
-        health_bars,
+        healthBars,
         stats,
         skills,
       } = req.character;
 
-      const query = `
+      const characterUpdateQuery = `
         UPDATE characters
         SET
           name = $1,
@@ -37,24 +37,25 @@ export default async function (fastify) {
           health_bars = $7::jsonb,
           stats = $8::jsonb,
           skills = $9::jsonb
-        WHERE id = $10
-        RETURNING *;
+        WHERE id = $10;
       `;
 
-      const values = [
+      const characterUpdateValues = [
         name,
         description,
         charClass,
         race,
         level,
         alive,
-        JSON.stringify(health_bars),
+        JSON.stringify(healthBars),
         JSON.stringify(stats),
         JSON.stringify(skills),
         id,
       ];
 
-      await database.query(query, values);
+      await database.query(characterUpdateQuery, characterUpdateValues);
+
+      return res.send({ message: "Successfully updated Character" });
     }
   );
 }

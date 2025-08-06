@@ -31,7 +31,7 @@ CREATE TABLE "characters" (
   "id" SERIAL PRIMARY KEY,
   "campaign_id" INT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
   "user_id" INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  "name" VARCHAR(64) NOT NULL,
+  "name" VARCHAR(64),
   "description" TEXT,
   "class" VARCHAR(32),
   "race" VARCHAR(64),

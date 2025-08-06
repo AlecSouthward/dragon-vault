@@ -3,36 +3,44 @@ import bcrypt from "bcrypt";
 import { database } from "../database.js";
 
 export default async function (fastify) {
-  fastify.post("/login", async (req, reply) => {
+  fastify.post("/login", async (req, res) => {
     const { username, password } = req.body;
-    const databaseResult = await database.query(
-      "SELECT * FROM users WHERE username = $1 LIMIT 1",
+
+    const selectUserResult = await database.query(
+      "SELECT * FROM users WHERE username = $1",
       [username]
     );
 
-    if (databaseResult.rows.length === 0) {
-      return reply.code(401).send({ error: "User not found" });
+    if (selectUserResult.rowCount === 0) {
+      return res.code(401).send({ error: "User not found" });
+    } else if (selectUserResult.rowCount > 1) {
+      return res.code(409).send({ error: "More than one user was found" });
     }
 
-    const user = databaseResult.rows[0];
+    const user = selectUserResult.rows[0];
+
+    // Validate the user's password against the saved password
     const match = await bcrypt.compare(password, user.password);
 
-    if (!match) return reply.code(401).send({ error: "Invalid credentials" });
+    if (!match) return res.code(401).send({ error: "Invalid credentials" });
 
+    // Create a JWT auth token
     const token = fastify.jwt.sign({
       id: user.id,
       username: user.username,
       isAdmin: user.is_admin,
     });
 
-    reply.setCookie("token", token, {
+    // Set the auth token as a cookie on the user's browser
+    res.setCookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "Strict",
       path: "/",
     });
 
-    reply.send({ username: user.username, isAdmin: user.is_admin }); // Return profile picture, role, etc. later
+    // Return profile picture, role, etc. later
+    return res.send({ username: user.username, isAdmin: user.is_admin });
   });
 
   fastify.post("/logout", async (_req, res) => {
@@ -45,53 +53,52 @@ export default async function (fastify) {
     async (req, res) => {
       const { username, password } = req.body;
 
-      const usernameResult = await database.query(
+      const usernameExistsResult = await database.query(
         "SELECT EXISTS (SELECT 1 FROM users WHERE username = $1)",
         [username]
       );
 
-      if (usernameResult.rows[0].exists) {
-        res.code(409).send({ message: "Username is taken" });
-
-        return;
+      if (usernameExistsResult.rows[0].exists) {
+        return res.code(409).send({ message: "Username is taken" });
       }
 
+      // Hash the user's password with 12 salt rounds (production ready)
       const passwordHash = await bcrypt.hash(password, 12);
 
-      const databaseResult = await database.query(
+      const userCreationResult = await database.query(
         "INSERT INTO users (username, password, is_admin) VALUES ($1, $2, $3) RETURNING id",
         [username, passwordHash, false]
       );
-      const userId = databaseResult.rows[0].id;
+      const newUserId = userCreationResult.rows[0].id;
 
-      return { userId };
+      return res.send({ userId: newUserId });
     }
   );
 
   fastify.get(
     "/retrieve-all",
     { preHandler: [fastify.authenticate, fastify.adminValidation] },
-    async (_req, _res) => {
-      const databaseResult = await database.query(
+    async (_req, res) => {
+      const retrieveUsersResult = await database.query(
         "SELECT id, username FROM users"
       );
-      const users = databaseResult.rows;
+      const users = retrieveUsersResult.rows;
 
-      return { users };
+      return res.send({ users });
     }
   );
 
   fastify.put(
     "/set-admin",
     { preHandler: [fastify.authenticate, fastify.adminValidation] },
-    async (req, _res) => {
+    async (req, res) => {
       const { id: userId } = req.body.user;
 
       await database.query("UPDATE users SET is_admin = TRUE WHERE id = $1", [
         userId,
       ]);
 
-      return { message: "Successfully set the user to be Admin" };
+      return res.send({ message: "Successfully set user to be admin" });
     }
   );
 }
