@@ -17,7 +17,7 @@ const basePrefixPath = "/api";
 const fastify = Fastify({ logger: true });
 
 await fastify.register(cors, {
-  origin: process.env.ORIGIN,
+  origin: process.env.CORS_ORIGIN,
   methods: ["GET", "POST", "PUT", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
