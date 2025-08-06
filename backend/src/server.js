@@ -11,13 +11,13 @@ import userRoutes from "./routes/user.js";
 import campaignRoutes from "./routes/campaign.js";
 import characterRoutes from "./routes/character.js";
 
-import { connectToDatabase } from "./database.js";
+import { testDatabaseConnection } from "./database.js";
 
 const basePrefixPath = "/api";
 const fastify = Fastify({ logger: true });
 
 await fastify.register(cors, {
-  origin: "http://localhost:3000",
+  origin: process.env.ORIGIN,
   methods: ["GET", "POST", "PUT", "OPTIONS"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -38,7 +38,7 @@ await fastify.register(characterRoutes, {
 
 const start = async () => {
   try {
-    await connectToDatabase();
+    await testDatabaseConnection();
     await fastify.listen({ port: 8080, host: "0.0.0.0" });
   } catch (err) {
     fastify.log.error(err);

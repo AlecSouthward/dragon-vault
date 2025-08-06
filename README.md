@@ -7,6 +7,7 @@ Website created to manage Dungeon & Dragon sessions remotely and easily.
 __Backend__:
 ```env
 PORT=8080
+CORS_ORIGIN=http://host:port
 DATABASE_URL=postgresql://user:password@host:port/database
 REDIS_URL=redis://host:port
 JWT_SECRET=
