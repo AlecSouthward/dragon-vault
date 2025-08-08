@@ -22,8 +22,8 @@ REACT_APP_BACKEND_PATH=http://host:port/api
 ## Running for Development
 
 ### Requirements
-- Node.js >= 20.12.0
-- npm >= 9.x
+- Node.js `^20.19.0 || >=22.12.0`
+- npm `>=9.x`
 
 __This requires a pre-existing service/container of postgres to be running.__
 If you do not have a PostgreSQL instance running, follow these steps to set it up for Dragon Vault:
