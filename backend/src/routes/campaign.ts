@@ -1,6 +1,8 @@
+import { FastifyInstance } from "fastify";
+
 import { database } from "../database.js";
 
-export default async function (fastify) {
+export default async function (fastify: FastifyInstance) {
   fastify.get(
     "/retrieve-all-for-user/:userId",
     { preHandler: [fastify.authenticate] },

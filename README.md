@@ -11,7 +11,6 @@ CORS_ORIGIN=http://host:port
 DATABASE_URL=postgresql://user:password@host:port/database
 REDIS_URL=redis://host:port
 JWT_SECRET=
-DATABASE_URL=
 ```
 
 __Frontend__:

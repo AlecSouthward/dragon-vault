@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import Fastify from "fastify";
-import jwt from "fastify-jwt";
+import jwt from "@fastify/jwt";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 

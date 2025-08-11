@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt";
+import { FastifyInstance } from "fastify";
 
 import { database } from "../database.js";
 
-export default async function (fastify) {
+export default async function (fastify: FastifyInstance) {
   fastify.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
@@ -11,7 +12,9 @@ export default async function (fastify) {
       [username]
     );
 
-    if (selectUserResult.rowCount === 0) {
+    if (selectUserResult.rowCount === null) {
+      res.code(500).send({ message: "An error ocurred when searching for the user" });
+    } else if (selectUserResult.rowCount === 0) {
       return res.code(401).send({ error: "User not found" });
     } else if (selectUserResult.rowCount > 1) {
       return res.code(409).send({ error: "More than one user was found" });
@@ -35,7 +38,7 @@ export default async function (fastify) {
     res.setCookie("token", token, {
       httpOnly: true,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "strict",
       path: "/",
     });
 

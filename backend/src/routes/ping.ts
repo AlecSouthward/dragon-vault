@@ -1,4 +1,6 @@
-export default async function (fastify) {
+import { FastifyInstance } from "fastify";
+
+export default async function (fastify: FastifyInstance) {
   // Route for validating the user's session
   // Returns data required for general requests and functionality of UI
   fastify.get(

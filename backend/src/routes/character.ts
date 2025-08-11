@@ -1,6 +1,8 @@
+import { FastifyInstance } from "fastify";
+
 import { database } from "../database.js";
 
-export default async function (fastify) {
+export default async function (fastify: FastifyInstance) {
   fastify.get(
     "/retrieve-for-user/:userId",
     { preHandler: [fastify.authenticate, fastify.authenticateForCharacter] },
@@ -23,6 +25,7 @@ export default async function (fastify) {
         healthBars,
         stats,
         skills,
+        id,
       } = req.character;
 
       const characterUpdateQuery = `
