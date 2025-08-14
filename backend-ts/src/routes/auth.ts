@@ -1,29 +1,43 @@
 import bcrypt from 'bcrypt';
 import type { FastifyInstance } from 'fastify';
 
+import { User } from '../types/domain';
+
 export default function routes(app: FastifyInstance): void {
   app.post('/auth/login', async (req, res) => {
-    const { email, password } = req.body as { email: string; password: string };
-
-    // TODO: fetch user from DB
-
-    const user = {
-      id: '123',
-      email,
-      passwordHash: await bcrypt.hash('password', 10),
+    const { username, password } = req.body as {
+      username: string;
+      password: string;
     };
 
-    const ok = await bcrypt.compare(password, user.passwordHash);
-    if (!ok) return res.status(401).send({ error: 'Invalid credentials' });
+    const selectUserResult = await app.pg.query(
+      'SELECT * FROM users WHERE username = $1',
+      [username]
+    );
 
-    const token = app.jwt.sign({ sub: user.id, email: user.email });
+    if (selectUserResult === null) {
+      res.code(500).send({ message: 'Failed to find user' });
+    } else if (selectUserResult.rowCount === 0 || !selectUserResult.rowCount) {
+      return res.code(401).send({ error: 'User not found' });
+    } else if (selectUserResult.rowCount > 1) {
+      return res.code(409).send({ error: 'More than one user found' });
+    }
+
+    const user: User = selectUserResult.rows[0];
+
+    const passwordsMatch = await bcrypt.compare(password, user.password);
+    if (!passwordsMatch)
+      return res.status(401).send({ error: 'Invalid credentials' });
+
+    const token = app.jwt.sign({ id: user.id, username: user.username });
     res.setCookie('token', token, {
       httpOnly: true,
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'strict',
       path: '/',
     });
 
-    return { ok: true };
+    res.send({ id: user.id, username: user.username, isAdmin: user.isAdmin });
   });
 
   app.get('/me', { preHandler: [app.authenticate] }, async (req) => {
