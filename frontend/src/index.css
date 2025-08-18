@@ -4,3 +4,7 @@
 @theme {
   --font-primary: 'Markazi Text', 'Lucida Console', 'sans-serif';
 }
+
+:root {
+  @apply text-zinc-300 bg-zinc-900 font-primary;
+}

@@ -1,15 +1,21 @@
-function App(): React.JSX.Element {
-  return (
-    <div className="flex h-screen w-full flex-col bg-zinc-900">
-      <h1 className="font-primary text-4xl font-bold text-zinc-300 select-none">
-        Dragon Vault
-      </h1>
+import { Route, Routes, useLocation } from 'react-router-dom';
 
-      <img
-        className="pointer-events-none w-32 fill-zinc-300 select-none"
-        src="/icon.svg"
-        alt="Dragon Vault Icon"
-      />
+import Navbar from './components/NavBar';
+
+import Login from './screens/Login';
+import NotFound from './screens/NotFound';
+
+function App(): React.JSX.Element {
+  const location = useLocation();
+
+  return (
+    <div className="flex h-screen flex-col">
+      {location.pathname !== '/' && <Navbar />}
+
+      <Routes>
+        <Route index element={<Login />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </div>
   );
 }
