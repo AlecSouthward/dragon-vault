@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import type { FastifyInstance } from 'fastify';
 
-import { User } from '../types/domain';
+import { User } from '../types/domain.js';
 
 export default function routes(app: FastifyInstance): void {
   app.post('/auth/login', async (req, res) => {

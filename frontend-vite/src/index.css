@@ -1,6 +1,0 @@
-@import url('https://fonts.googleapis.com/css2?family=Markazi+Text&display=swap');
-@import 'tailwindcss';
-
-@theme {
-  --font-primary: 'Markazi Text', 'Lucida Console', 'sans-serif';
-}
