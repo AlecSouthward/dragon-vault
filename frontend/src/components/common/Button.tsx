@@ -22,7 +22,7 @@ const Button: FC<ButtonProps> = ({
   return (
     <button
       type={type}
-      className={`m-2 flex h-8 w-50 cursor-pointer items-center justify-center rounded-sm border-2 border-zinc-300 text-center text-xl font-bold text-zinc-300 disabled:cursor-auto ${loading && 'animate-pulse'} ${hidden && 'invisible'}`}
+      className={`border-light-white text-light-white m-2 flex h-10 w-50 cursor-pointer items-center justify-center rounded-sm border-2 text-center text-xl font-bold disabled:cursor-auto ${loading && 'animate-pulse'} ${hidden && 'invisible'}`}
       onClick={onClick}
       disabled={disabled || loading}
     >

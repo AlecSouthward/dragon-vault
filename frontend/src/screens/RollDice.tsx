@@ -14,8 +14,6 @@ const RollDice = (): JSX.Element => {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
-      <p>Roll a dice!</p>
-
       <DiceToRoll rolling={isDiceRolling} />
       <Button
         displayText="Roll"

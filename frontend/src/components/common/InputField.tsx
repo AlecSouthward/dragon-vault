@@ -23,7 +23,7 @@ const InputField: FC<InputFieldProps> = ({
 
   return (
     <input
-      className="m-2 h-8 w-50 rounded-sm border-2 border-zinc-300 px-2 py-1 text-xl text-zinc-300 outline-0 disabled:pointer-events-none disabled:opacity-[0.5]"
+      className="border-light-white text-light-white m-2 h-8 w-50 rounded-sm border-2 px-2 py-4 text-xl outline-0 disabled:pointer-events-none disabled:opacity-[0.5]"
       type={type}
       value={value}
       onChange={handleOnChange}

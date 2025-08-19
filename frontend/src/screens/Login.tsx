@@ -16,7 +16,7 @@ const Login = (): JSX.Element => {
 
     evt.preventDefault();
 
-    navigate('campaigns');
+    navigate('/roll');
   };
 
   return (
@@ -25,7 +25,7 @@ const Login = (): JSX.Element => {
         <h1 className="pb-4 text-5xl font-bold select-none">Dragon Vault</h1>
 
         <img
-          className="pointer-events-none w-32 fill-zinc-300 select-none"
+          className="fill-light-white pointer-events-none w-32 select-none"
           src="/icon.svg"
           alt="Dragon Vault Icon"
         />
