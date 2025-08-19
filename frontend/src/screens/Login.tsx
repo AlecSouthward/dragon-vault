@@ -11,10 +11,18 @@ const Login = (): JSX.Element => {
   const [passwordInput, setPasswordInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  const handleLogin = (evt: React.FormEvent<HTMLFormElement>): void => {
+    if (!usernameInput || !passwordInput) return;
+
+    evt.preventDefault();
+
+    navigate('campaigns');
+  };
+
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
-      <div className="mb-8 flex flex-col items-center">
-        <h1 className="text-4xl font-bold select-none">Dragon Vault</h1>
+      <div className="mb-12 flex flex-col items-center">
+        <h1 className="pb-4 text-5xl font-bold select-none">Dragon Vault</h1>
 
         <img
           className="pointer-events-none w-32 fill-zinc-300 select-none"
@@ -23,30 +31,35 @@ const Login = (): JSX.Element => {
         />
       </div>
 
-      <InputField
-        id="username-input"
-        value={usernameInput}
-        onChange={setUsernameInput}
-        placeholder="Username"
-        disabled={isLoading}
-      />
+      <form
+        onSubmit={handleLogin}
+        className="flex flex-col items-center justify-center"
+      >
+        <InputField
+          id="username-input"
+          value={usernameInput}
+          onChange={setUsernameInput}
+          placeholder="Username"
+          disabled={isLoading}
+        />
 
-      <InputField
-        id="password-input"
-        type="password"
-        value={passwordInput}
-        onChange={setPasswordInput}
-        placeholder="Password"
-        disabled={isLoading}
-      />
+        <InputField
+          id="password-input"
+          type="password"
+          value={passwordInput}
+          onChange={setPasswordInput}
+          placeholder="Password"
+          disabled={isLoading}
+        />
 
-      <Button
-        displayText="Log In"
-        onClick={() => navigate('campaigns')}
-        disabled={!usernameInput || !passwordInput}
-        hidden={!usernameInput || !passwordInput}
-        loading={isLoading}
-      />
+        <Button
+          type="submit"
+          displayText="Log In"
+          disabled={!usernameInput || !passwordInput}
+          hidden={!usernameInput || !passwordInput}
+          loading={isLoading}
+        />
+      </form>
     </div>
   );
 };
