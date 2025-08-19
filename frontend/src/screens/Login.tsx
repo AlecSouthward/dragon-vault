@@ -9,6 +9,7 @@ const Login = (): JSX.Element => {
 
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
@@ -27,6 +28,7 @@ const Login = (): JSX.Element => {
         value={usernameInput}
         onChange={setUsernameInput}
         placeholder="Username"
+        disabled={isLoading}
       />
 
       <InputField
@@ -35,12 +37,15 @@ const Login = (): JSX.Element => {
         value={passwordInput}
         onChange={setPasswordInput}
         placeholder="Password"
+        disabled={isLoading}
       />
 
       <Button
         displayText="Log In"
         onClick={() => navigate('campaigns')}
         disabled={!usernameInput || !passwordInput}
+        hidden={!usernameInput || !passwordInput}
+        loading={isLoading}
       />
     </div>
   );
