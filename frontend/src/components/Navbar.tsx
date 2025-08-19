@@ -4,8 +4,9 @@ import NavLink from '../components/common/NavLink';
 
 const Navbar = (): JSX.Element => {
   return (
-    <nav className="w-100vw flex justify-center">
-      <NavLink to="campaigns" content="Campaigns" />
+    <nav className="w-100vw flex justify-center border-b-2 border-zinc-300">
+      <NavLink to="/campaigns" content="Campaigns" />
+      <NavLink to="/roll" content="Roll Dice" />
     </nav>
   );
 };

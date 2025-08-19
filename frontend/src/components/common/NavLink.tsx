@@ -9,7 +9,7 @@ type NavLinkProps = {
 const NavLink: FC<NavLinkProps> = ({ to, content }): JSX.Element => {
   return (
     <Link
-      className="m-4 rounded-sm bg-zinc-300 px-4 py-1 text-3xl text-zinc-900"
+      className="m-4 rounded-sm border-2 border-zinc-300 px-4 py-1 text-3xl text-zinc-300"
       to={to}
     >
       {content}
