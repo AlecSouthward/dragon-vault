@@ -21,7 +21,7 @@ const Login = (): JSX.Element => {
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
-      <div className="mb-12 flex flex-col items-center">
+      <div className="mb-6 flex flex-col items-center">
         <h1 className="pb-4 text-5xl font-bold select-none">Dragon Vault</h1>
 
         <img
