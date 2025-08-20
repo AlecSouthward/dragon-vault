@@ -54,11 +54,12 @@ const Login = (): JSX.Element => {
 
         <Button
           type="submit"
-          displayText="Log In"
           disabled={!usernameInput || !passwordInput}
           hidden={!usernameInput || !passwordInput}
           loading={isLoading}
-        />
+        >
+          Log In
+        </Button>
       </form>
     </div>
   );

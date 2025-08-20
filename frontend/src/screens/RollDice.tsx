@@ -15,11 +15,9 @@ const RollDice = (): JSX.Element => {
   return (
     <div className="flex flex-1 flex-col items-center justify-center">
       <DiceToRoll rolling={isDiceRolling} />
-      <Button
-        displayText="Roll"
-        onClick={handleStartRoll}
-        loading={isDiceRolling}
-      />
+      <Button onClick={handleStartRoll} loading={isDiceRolling}>
+        Roll
+      </Button>
     </div>
   );
 };

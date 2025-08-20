@@ -1,32 +1,34 @@
-import { FC, JSX } from 'react';
+import { FC, JSX, ReactNode } from 'react';
 
 import LoadingIcon from './LoadingIcon';
 
 type ButtonProps = {
-  displayText: string;
+  children?: ReactNode;
   onClick?: () => void;
   type?: 'submit' | 'button';
   disabled?: boolean;
   loading?: boolean;
   hidden?: boolean;
+  className?: string;
 };
 
 const Button: FC<ButtonProps> = ({
-  displayText,
+  children,
   onClick,
   type = 'button',
   disabled = false,
   loading = false,
   hidden = false,
+  className,
 }): JSX.Element => {
   return (
     <button
       type={type}
-      className={`border-light-white text-light-white m-2 flex h-9 w-50 cursor-pointer items-center justify-center rounded-sm border-2 text-center text-xl font-bold disabled:cursor-auto ${loading && 'animate-pulse'} ${hidden && 'invisible'}`}
+      className={`border-light-white text-light-white bg-light-black m-2 flex h-9 w-50 cursor-pointer items-center justify-center rounded-sm border-2 text-center text-xl font-bold disabled:cursor-auto ${loading && 'animate-pulse'} ${hidden && 'invisible'} ${className}`}
       onClick={onClick}
       disabled={disabled || loading}
     >
-      {loading ? <LoadingIcon size="xs" /> : displayText}
+      {loading ? <LoadingIcon size="xs" /> : children}
     </button>
   );
 };

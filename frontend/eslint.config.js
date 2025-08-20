@@ -48,6 +48,7 @@ export default tseslint.config([
             "Only 'console.error', 'console.warn', and 'console.info' are allowed.",
         },
       ],
+      'func-style': ['error', 'expression', { allowArrowFunctions: true }],
     },
   },
   prettierRecommended,
