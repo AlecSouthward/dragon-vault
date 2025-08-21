@@ -1,6 +1,8 @@
 import { JSX, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import RoutePaths from '../constants/RoutePaths';
+
 import Button from '../components/common/Button';
 import InputField from '../components/common/InputField';
 
@@ -9,14 +11,14 @@ const Login = (): JSX.Element => {
 
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading] = useState(false);
 
   const handleLogin = (evt: React.FormEvent<HTMLFormElement>): void => {
     if (!usernameInput || !passwordInput) return;
 
     evt.preventDefault();
 
-    navigate('/roll');
+    navigate(RoutePaths.CAMPAIGNS);
   };
 
   return (
@@ -38,7 +40,7 @@ const Login = (): JSX.Element => {
         <InputField
           id="username-input"
           value={usernameInput}
-          onChange={setUsernameInput}
+          onValueChange={setUsernameInput}
           placeholder="Username"
           disabled={isLoading}
         />
@@ -47,7 +49,7 @@ const Login = (): JSX.Element => {
           id="password-input"
           type="password"
           value={passwordInput}
-          onChange={setPasswordInput}
+          onValueChange={setPasswordInput}
           placeholder="Password"
           disabled={isLoading}
         />

@@ -1,7 +1,6 @@
-import { useState } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 
-import { Campaign } from './types/dto';
+import RoutePaths from './constants/RoutePaths';
 
 import Navbar from './components/Navbar';
 
@@ -19,8 +18,8 @@ const App = (): React.JSX.Element => {
 
       <Routes>
         <Route index element={<Login />} />
-        <Route path="/roll" element={<RollDice />} />
-        <Route path="/campaigns" element={<CampaignList />} />
+        <Route path={RoutePaths.ROLL} element={<RollDice />} />
+        <Route path={RoutePaths.CAMPAIGNS} element={<CampaignList />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

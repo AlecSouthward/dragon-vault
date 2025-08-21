@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 
 import { Campaign } from '../types/dto';
 
+import RoutePaths from '../constants/RoutePaths';
+
 import useCampaign from '../hooks/useCampaign';
 
 import Button from '../components/common/Button';
@@ -13,59 +15,12 @@ const CampaignList = (): JSX.Element => {
   const navigate = useNavigate();
   const { setSelectedCampaign } = useCampaign();
 
-  const [campaigns] = useState<Campaign[]>([
-    {
-      id: '1',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-    {
-      id: '2',
-      name: 'Shadow Slave',
-    },
-    {
-      id: '3',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-    {
-      id: '4',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-    {
-      id: '5',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-    {
-      id: '6',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-    {
-      id: '7',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-    {
-      id: '8',
-      name: 'Shadow Slave',
-      description:
-        'A dangerous world, where those known as Awakened rule over the common folk. There is also the Dream Realm, which only Awakened are able to access. The Dream Realm is filled with an uncountable number of horrific nightmarish creatures.',
-    },
-  ]);
+  const [campaigns] = useState<Campaign[]>([]);
   const [createCampaignMenuOpen, setCreateCampaignMenuOpen] = useState(false);
 
   const handleCampaignClick = (campaign: Campaign): void => {
     setSelectedCampaign(campaign);
-    navigate('/campaign');
+    navigate(RoutePaths.CAMPAIGN);
   };
 
   return (
