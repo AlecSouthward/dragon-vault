@@ -3,6 +3,7 @@ import { PiDiceFiveBold } from 'react-icons/pi';
 
 type LoadingIconProps = {
   size?: 'xs' | 'sm' | 'md' | 'lg';
+  className?: string;
 };
 
 const sizeMap = {
@@ -12,8 +13,11 @@ const sizeMap = {
   lg: 'h-24 w-24',
 };
 
-const LoadingIcon: FC<LoadingIconProps> = ({ size = 'sm' }): JSX.Element => {
-  return <PiDiceFiveBold className={`${sizeMap[size]} animate-spin`} />;
-};
+const LoadingIcon: FC<LoadingIconProps> = ({
+  size = 'sm',
+  className = '',
+}): JSX.Element => (
+  <PiDiceFiveBold className={`${sizeMap[size]} animate-spin ${className}`} />
+);
 
 export default LoadingIcon;

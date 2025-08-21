@@ -3,7 +3,7 @@ import { useContext } from 'react';
 import {
   CampaignContext,
   CampaignContextType,
-} from '../context/CampaignContext';
+} from '../context/campaignContext';
 
 const useCampaign = (): CampaignContextType => {
   const ctx = useContext(CampaignContext);
