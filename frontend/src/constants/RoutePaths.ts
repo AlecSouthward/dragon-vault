@@ -2,6 +2,7 @@ const RoutePaths = {
   LOGIN: '/',
   CAMPAIGN: '/campaign',
   CAMPAIGNS: '/campaigns',
+  CHARACTER: '/character',
   ROLL: '/roll',
 } as const;
 

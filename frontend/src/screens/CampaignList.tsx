@@ -9,6 +9,7 @@ import RoutePaths from '../constants/RoutePaths';
 import useCampaign from '../hooks/useCampaign';
 
 import Button from '../components/common/Button';
+import Container from '../components/common/Container';
 import CreateCampaignMenu from '../components/menu/CreateCampaignMenu';
 
 const CampaignList = (): JSX.Element => {
@@ -29,9 +30,9 @@ const CampaignList = (): JSX.Element => {
         <h1 className="mb-6 text-6xl font-bold">Your Campaigns</h1>
 
         {campaigns.map((campaign) => (
-          <div
+          <Container
             key={campaign.id}
-            className="bg-light-black border-light-white mb-5 flex max-h-28 w-128 items-center justify-around rounded-sm border-2 p-5"
+            className="mb-5 max-h-28 w-128 items-center justify-around p-5"
           >
             <div className="flex flex-1 flex-col justify-between">
               <p className="text-3xl">{campaign.name}</p>
@@ -46,7 +47,7 @@ const CampaignList = (): JSX.Element => {
             >
               <FaArrowRight className="h-5 w-5" />
             </button>
-          </div>
+          </Container>
         ))}
 
         {campaigns.length === 0 && <h1 className="text-4xl">None found.</h1>}
