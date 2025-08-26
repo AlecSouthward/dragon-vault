@@ -1,6 +1,8 @@
 # Dragon Vault
 
-Website created to manage Dungeon & Dragon sessions remotely and easily.
+__Dragon Vault__ is an open-source self-hosted website; created
+specifically for managing/playing Dungeons & Dragons campaigns remotely
+(through voice calls).
 
 ## Env Variables
 
