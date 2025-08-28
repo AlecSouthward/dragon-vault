@@ -1,15 +1,12 @@
 import { JSX } from 'react';
-import { FaDice } from 'react-icons/fa';
 import { PiGithubLogoLight } from 'react-icons/pi';
 
 import ExternalLinks from '../constants/ExternalLinks';
 
 const About = (): JSX.Element => (
   <div className="mt-4 flex h-full max-w-138 flex-col items-center justify-center self-center select-none">
-    <FaDice className="absolute h-64 w-64 self-center opacity-[0.1]" />
-
     <img
-      className="fill-light-white pointer-events-none mb-4 w-24 select-none"
+      className="fill-light-white pointer-events-none absolute mb-24 h-64 w-64 self-center opacity-[0.1] select-none"
       src="/icon.svg"
       alt="Dragon Vault Icon"
     />

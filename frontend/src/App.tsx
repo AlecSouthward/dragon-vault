@@ -9,6 +9,7 @@ import CampaignList from './screens/CampaignList';
 import Character from './screens/Character';
 import Login from './screens/Login';
 import NotFound from './screens/NotFound';
+import PrivacyPolicy from './screens/PrivacyPolicy';
 import RollDice from './screens/RollDice';
 
 const App = (): React.JSX.Element => {
@@ -21,6 +22,7 @@ const App = (): React.JSX.Element => {
       <Routes>
         <Route index element={<Login />} />
         <Route path={RoutePaths.ABOUT} element={<About />} />
+        <Route path={RoutePaths.PRIVACY_POLICY} element={<PrivacyPolicy />} />
         <Route path={RoutePaths.ROLL} element={<RollDice />} />
         <Route path={RoutePaths.CAMPAIGNS} element={<CampaignList />} />
         <Route path={RoutePaths.CHARACTER} element={<Character />} />

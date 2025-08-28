@@ -1,6 +1,7 @@
 const RoutePaths = {
   LOGIN: '/',
   ABOUT: '/about',
+  PRIVACY_POLICY: '/privacy-policy',
   CAMPAIGN: '/campaign',
   CAMPAIGNS: '/campaigns',
   CHARACTER: '/character',
