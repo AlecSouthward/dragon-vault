@@ -10,6 +10,7 @@ type ButtonProps = {
   disabled?: boolean;
   loading?: boolean;
   hidden?: boolean;
+  active?: boolean;
   className?: string;
 };
 
@@ -30,12 +31,13 @@ const Button: FC<ButtonProps> = ({
   disabled = false,
   loading = false,
   hidden = false,
+  active = false,
   className,
 }): JSX.Element => {
   return (
     <button
       type={type}
-      className={`border-light-white text-light-white bg-light-black m-2 flex h-9 ${widthSizeMap[width]} cursor-pointer items-center justify-center rounded-sm border-2 text-center text-xl font-bold disabled:cursor-auto ${loading && 'animate-pulse'} ${hidden && 'invisible'} ${className}`}
+      className={`${active ? 'text-light-black bg-light-white' : 'text-light-white bg-light-black'} border-light-white m-2 flex h-9 ${widthSizeMap[width]} cursor-pointer items-center justify-center rounded-sm border-2 text-center text-xl font-bold hover:opacity-85 disabled:cursor-auto ${loading && 'animate-pulse'} ${hidden && 'invisible'} ${className}`}
       onClick={onClick}
       disabled={disabled || loading}
     >

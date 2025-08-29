@@ -1,19 +1,26 @@
 import { FC, JSX, ReactNode } from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink as ReactNavLink } from 'react-router-dom';
 
 type NavLinkProps = {
   to: string;
   children?: ReactNode;
+  className?: string;
 };
 
-const NavLink: FC<NavLinkProps> = ({ to, children }): JSX.Element => {
+const NavLink: FC<NavLinkProps> = ({
+  to,
+  children,
+  className = '',
+}): JSX.Element => {
   return (
-    <Link
-      className="border-light-white text-light-white m-4 w-40 content-center rounded-sm border-2 px-3 text-center text-2xl font-bold"
+    <ReactNavLink
+      className={({ isActive }) =>
+        `${isActive ? 'text-light-black bg-light-white' : 'text-light-white'} border-light-white m-4 w-40 content-center rounded-sm border-2 px-3 text-center text-2xl font-bold hover:opacity-85 ${className}`
+      }
       to={to}
     >
       {children}
-    </Link>
+    </ReactNavLink>
   );
 };
 

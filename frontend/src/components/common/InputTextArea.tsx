@@ -6,8 +6,8 @@ type InputTextAreaProps = {
   onValueChange: (value: string) => void;
   disabled?: boolean;
   placeholder?: string;
-  lineHeight?: number;
-  width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  height?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '8xl';
   className?: string;
 };
 
@@ -18,6 +18,15 @@ const widthSizeMap = {
   lg: 'w-60',
   xl: 'w-70',
   '2xl': 'w-80',
+  '8xl': 'w-160',
+};
+
+const heightSizeMap = {
+  xs: 'h-8',
+  sm: 'h-16',
+  md: 'h-24', // default
+  lg: 'h-30',
+  xl: 'h-38',
 };
 
 const InputTextArea: FC<InputTextAreaProps> = ({
@@ -26,7 +35,7 @@ const InputTextArea: FC<InputTextAreaProps> = ({
   onValueChange,
   disabled = false,
   placeholder = '',
-  lineHeight = 2,
+  height = 'md',
   width = 'md',
   className,
 }): JSX.Element => {
@@ -37,7 +46,7 @@ const InputTextArea: FC<InputTextAreaProps> = ({
   return (
     <textarea
       id={id}
-      className={`border-light-white text-light-white m-2 resize-none pt-1 h-${lineHeight * 8} ${widthSizeMap[width]} rounded-sm border-2 px-2 py-4 text-xl outline-0 disabled:pointer-events-none disabled:opacity-[0.5] ${className}`}
+      className={`border-light-white text-light-white m-2 resize-none pt-1 leading-6 ${heightSizeMap[height]} ${widthSizeMap[width]} rounded-sm border-2 px-2 py-4 text-xl outline-0 disabled:pointer-events-none disabled:opacity-[0.5] ${className}`}
       value={value}
       onChange={handleOnChange}
       placeholder={placeholder}

@@ -5,7 +5,7 @@ type InputFieldProps = {
   value: string;
   onValueChange: (value: string) => void;
   type?: 'text' | 'password';
-  width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  width?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
   disabled?: boolean;
   placeholder?: string;
   className?: string;
@@ -18,6 +18,7 @@ const widthSizeMap = {
   lg: 'w-60',
   xl: 'w-70',
   '2xl': 'w-80',
+  full: 'w-full',
 };
 
 const InputField: FC<InputFieldProps> = ({
