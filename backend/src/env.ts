@@ -8,5 +8,6 @@ export const ENV = {
   PORT: Number(process.env.PORT),
   JWT_SECRET: process.env.JWT_SECRET!,
   DATABASE_URL: process.env.DATABASE_URL!,
+  PASSWORD_PEPPER: process.env.PASSWORD_PEPPER!,
   NODE_ENV: process.env.NODE_ENV ?? 'development',
 };

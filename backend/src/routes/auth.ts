@@ -1,7 +1,8 @@
-import bcrypt from 'bcrypt';
 import type { FastifyInstance } from 'fastify';
 
 import { User } from '../types/domain.js';
+
+import { verifyPassword } from '../plugins/password-hash.js';
 
 export default function routes(app: FastifyInstance): void {
   app.post('/auth/login', async (req, res) => {
@@ -25,7 +26,7 @@ export default function routes(app: FastifyInstance): void {
 
     const user: User = selectUserResult.rows[0];
 
-    const passwordsMatch = await bcrypt.compare(password, user.password);
+    const passwordsMatch = await verifyPassword(password, user.password);
     if (!passwordsMatch)
       return res.status(401).send({ error: 'Invalid credentials' });
 
