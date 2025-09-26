@@ -2,7 +2,7 @@ import type { FastifyInstance } from 'fastify';
 
 import { User } from '../types/domain.js';
 
-import { verifyPassword } from '../plugins/password-hash.js';
+import { verifyPassword } from '../utils/password-hash.js';
 
 export default function routes(app: FastifyInstance): void {
   app.post('/auth/login', async (req, res) => {
