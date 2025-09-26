@@ -1,6 +1,6 @@
 import argon2 from 'argon2';
 
-import { ENV } from '../env';
+import ENV from '../env';
 
 const ARGON2_OPTS = {
   type: argon2.argon2id,

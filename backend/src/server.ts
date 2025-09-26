@@ -1,13 +1,15 @@
 import Fastify from 'fastify';
 
-import { ENV } from './env';
+import ENV from './env';
 
 import db from './plugins/db';
 import security from './plugins/security';
 
 import auth from './routes/auth';
 
-const app = Fastify({ logger: true });
+const app = Fastify({
+  logger: { level: ENV.NODE_ENV === 'production' ? 'warn' : 'debug' },
+});
 
 await app.register(db);
 await app.register(security);

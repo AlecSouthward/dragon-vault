@@ -3,7 +3,7 @@ import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import fp from 'fastify-plugin';
 
-import { ENV } from '../env';
+import ENV from '../env';
 
 declare module 'fastify' {
   interface FastifyInstance {
