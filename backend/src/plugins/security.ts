@@ -1,6 +1,6 @@
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
-import jwt, { UserType } from '@fastify/jwt';
+import jwt from '@fastify/jwt';
 import fp from 'fastify-plugin';
 
 import { ENV } from '../env';
@@ -14,6 +14,7 @@ declare module 'fastify' {
 export default fp(async (app) => {
   await app.register(cors, { origin: true, credentials: true });
   await app.register(cookie, { hook: 'onRequest' });
+
   await app.register(jwt, {
     secret: ENV.JWT_SECRET,
     cookie: { cookieName: 'token', signed: false },
@@ -22,7 +23,7 @@ export default fp(async (app) => {
   app.decorate('authenticate', async (req, res) => {
     try {
       const payload = await req.jwtVerify();
-      req.user = payload as UserType;
+      req.user = payload;
     } catch {
       return res.status(401).send({ error: 'Unauthorized' });
     }
