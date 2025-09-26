@@ -17,15 +17,6 @@ export default fp(async (app) => {
 
   await app.register(jwt, {
     secret: ENV.JWT_SECRET,
-    cookie: { cookieName: 'token', signed: false },
-  });
-
-  app.decorate('authenticate', async (req, res) => {
-    try {
-      const payload = await req.jwtVerify();
-      req.user = payload;
-    } catch {
-      return res.status(401).send({ error: 'Unauthorized' });
-    }
+    cookie: { cookieName: 'token', signed: true },
   });
 });

@@ -1,11 +1,14 @@
-import type { FastifyInstance } from 'fastify';
+import { FastifyPluginAsync } from 'fastify';
 
+import { Cookie } from '../types/cookie.js';
 import { User } from '../types/domain.js';
 
-import { verifyPassword } from '../utils/password-hash.js';
+import { getUser } from '../plugins/retrieveData.js';
 
-export default function routes(app: FastifyInstance): void {
-  app.post('/auth/login', async (req, res) => {
+import { verifyPassword } from '../utils/passwordHash.js';
+
+const authRoutes: FastifyPluginAsync = async (app) => {
+  app.post('/login', async (req, res) => {
     const { username, password } = req.body as {
       username: string;
       password: string;
@@ -30,8 +33,12 @@ export default function routes(app: FastifyInstance): void {
     if (!passwordsMatch)
       return res.status(401).send({ error: 'Invalid credentials' });
 
-    const token = app.jwt.sign({ id: user.id, username: user.username });
-    res.setCookie('token', token, {
+    const userCookie: Cookie = {
+      id: user.id,
+      username: user.username,
+    };
+
+    res.setCookie('token', app.jwt.sign(userCookie), {
       httpOnly: true,
       secure: true,
       sameSite: 'strict',
@@ -41,7 +48,9 @@ export default function routes(app: FastifyInstance): void {
     res.send({ id: user.id, username: user.username, isAdmin: user.isAdmin });
   });
 
-  app.get('/me', { preHandler: [app.authenticate] }, async (req) => {
-    return { user: req.user };
+  app.get('/me', { preHandler: [getUser] }, async (req) => {
+    return { user: req.userFromCookie };
   });
-}
+};
+
+export default authRoutes;
