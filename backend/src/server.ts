@@ -9,7 +9,13 @@ import authRoutes from './routes/auth';
 import userRoutes from './routes/user';
 
 const app = Fastify({
-  logger: { level: ENV.NODE_ENV === 'production' ? 'warn' : 'debug' },
+  logger: {
+    level: ENV.NODE_ENV === 'production' ? 'warn' : 'debug',
+    transport:
+      ENV.NODE_ENV === 'production'
+        ? undefined
+        : { target: 'pino-pretty', options: { colorize: true } },
+  },
 });
 
 await app.register(db);
