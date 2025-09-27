@@ -6,9 +6,10 @@ import app from '../server';
 export const getUserFromCookie = async (
   cookie: Cookie
 ): Promise<User | null> => {
-  const userResult = await app.pg.query('SELECT * FROM users WHERE id = $1', [
-    cookie.id,
-  ]);
+  const userResult = await app.pg.query<User>(
+    'SELECT * FROM users WHERE id = $1',
+    [cookie.id]
+  );
 
   if (!userResult) {
     return null;
