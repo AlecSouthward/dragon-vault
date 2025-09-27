@@ -14,24 +14,48 @@ const authRoutes: FastifyPluginAsync = async (app) => {
       password: string;
     };
 
-    const selectUserResult = await app.pg.query(
-      'SELECT * FROM users WHERE username = $1',
-      [username]
-    );
+    let user;
 
-    if (selectUserResult === null) {
-      res.code(500).send({ message: 'Failed to find user' });
-    } else if (selectUserResult.rowCount === 0 || !selectUserResult.rowCount) {
-      return res.code(401).send({ error: 'User not found' });
-    } else if (selectUserResult.rowCount > 1) {
-      return res.code(409).send({ error: 'More than one user found' });
+    try {
+      const selectUserResult = await app.pg.query<User>(
+        'SELECT * FROM users WHERE username = $1',
+        [username]
+      );
+
+      if (selectUserResult === null) {
+        res.code(500).send({ error: 'Failed to find user' });
+      } else if (
+        selectUserResult.rowCount === 0 ||
+        !selectUserResult.rowCount
+      ) {
+        return res.code(401).send({ error: 'User not found' });
+      } else if (selectUserResult.rowCount > 1) {
+        return res.code(409).send({ error: 'More than one user found' });
+      }
+
+      user = selectUserResult.rows[0];
+    } catch (error) {
+      app.log.error({ error }, 'Failed to find user in database');
+
+      return res
+        .code(500)
+        .send({ error: 'An error occurred when fetching your user' });
     }
 
-    const user: User = selectUserResult.rows[0];
+    try {
+      const passwordsMatch = await verifyPassword(user.password, password);
 
-    const passwordsMatch = await verifyPassword(password, user.password);
-    if (!passwordsMatch)
-      return res.status(401).send({ error: 'Invalid credentials' });
+      if (!passwordsMatch) {
+        return res.status(401).send({ error: 'Invalid credentials' });
+      }
+    } catch (error) {
+      app.log.error(
+        { error, username },
+        "An error occurred when verifying user's password"
+      );
+
+      return res.status(500).send({ error: 'Failed to verify your password' });
+    }
 
     const userCookie: Cookie = {
       id: user.id,
