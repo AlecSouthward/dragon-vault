@@ -1,1 +1,3 @@
-export type Cookie = { id: number; username: string; isAdmin: boolean };
+import { UUID } from 'node:crypto';
+
+export type Cookie = { id: UUID; username: string; isAdmin: boolean };

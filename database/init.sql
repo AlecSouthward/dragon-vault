@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE users (
-    "id" SERIAL PRIMARY KEY,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
     "username" TEXT UNIQUE NOT NULL,
     "password" TEXT NOT NULL,
     "profile_picture" VARCHAR(255),
@@ -15,21 +15,15 @@ CREATE TABLE user_invites (
 );
 
 INSERT INTO
-    users (
-        id,
-        username,
-        password,
-        is_admin
-    )
+    users (username, password, is_admin)
 VALUES (
-        -1,
         'admin',
         '$argon2id$v=19$m=65536,t=2,p=1$QmFwUFpQWXI0MlJLNUxWTw$rlijNqW51LyNiiAxGxXtapCQWE0w0kdLmk2aRVTsUgU', -- root
         TRUE
     );
 
 CREATE TABLE "campaigns" (
-    "id" SERIAL PRIMARY KEY,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
     "name" VARCHAR(96) NOT NULL,
     "description" TEXT,
     "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -37,13 +31,13 @@ CREATE TABLE "campaigns" (
 );
 
 CREATE TABLE "campaign_admins" (
-    "id" SERIAL PRIMARY KEY,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
     "user_id" INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     "campaign_id" INT NOT NULL REFERENCES campaigns (id) ON DELETE CASCADE
 );
 
 CREATE TABLE "characters" (
-  "id" SERIAL PRIMARY KEY,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid (),
   "campaign_id" INT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
   "user_id" INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   "name" VARCHAR(64),
@@ -65,7 +59,7 @@ CREATE TABLE "characters" (
 );
 
 CREATE TABLE "items" (
-  "id" SERIAL PRIMARY KEY,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid (),
   "owner_user_id" INT REFERENCES users(id) ON DELETE CASCADE,
   "name" VARCHAR(128) NOT NULL,
   "description" TEXT,
@@ -78,7 +72,7 @@ CREATE TABLE "items" (
 );
 
 CREATE TABLE "enemies" (
-    "id" SERIAL PRIMARY KEY,
+    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
     "name" VARCHAR(128) NOT NULL,
     "description" TEXT
 );

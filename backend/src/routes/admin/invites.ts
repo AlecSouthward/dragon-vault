@@ -1,5 +1,5 @@
-import { UUID } from 'crypto';
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { UUID } from 'node:crypto';
 
 import { getIsAdmin, getUser } from '../../plugins/retrieveData';
 
