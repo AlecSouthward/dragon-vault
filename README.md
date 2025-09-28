@@ -32,6 +32,9 @@ cd ../frontend/
 npm install
 ```
 
+Make sure you have a PostgreSQL instance and a Dragon Vault database on it.
+If you do, then run the `database/init.sql` script to add the necessary tables and some useful data into it.
+
 ### Running
 
 This can be used for either the Frontend or Backend:
