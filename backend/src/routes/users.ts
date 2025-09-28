@@ -3,6 +3,8 @@ import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
 
+import { createUser } from '../utils/user';
+
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('preHandler', getUser);
 
@@ -31,6 +33,37 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         .send({ error: 'Failed to search for your campaigns' });
     }
   });
+
+  app.post(
+    '/invite/:id',
+    {
+      schema: {
+        params: z.object({
+          id: z.uuid(),
+        }),
+        body: z.strictObject({
+          username: z.string().nonoptional(),
+          password: z.string().nonoptional(),
+        }),
+      },
+    },
+    async (req, res) => {
+      const { id: inviteId } = req.params;
+      const { username, password } = req.body;
+
+      try {
+        await app.pg.query('DELETE FROM user_invites WHERE id = $1', [
+          inviteId,
+        ]);
+
+        return await createUser(res, username, password);
+      } catch (error) {
+        app.log.error(error, 'An error occurred when using the invite');
+
+        return res.code(500).send({ error: 'Failed to use the invite' });
+      }
+    }
+  );
 };
 
 export default usersRoutes;

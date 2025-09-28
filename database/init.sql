@@ -1,9 +1,17 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE users (
     "id" SERIAL PRIMARY KEY,
     "username" TEXT UNIQUE NOT NULL,
     "password" TEXT NOT NULL,
     "profile_picture" VARCHAR(255),
     "is_admin" BOOLEAN NOT NULL DEFAULT FALSE
+);
+
+CREATE TABLE user_invites (
+    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
+    "expiration" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "used" BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 INSERT INTO
