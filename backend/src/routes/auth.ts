@@ -39,8 +39,8 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         }
 
         user = selectUserResult.rows[0];
-      } catch (error) {
-        app.log.error({ error }, 'Failed to find user in database');
+      } catch (err) {
+        app.log.error(err, 'Failed to find user in database');
 
         return res
           .code(500)
@@ -53,9 +53,9 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         if (!passwordsMatch) {
           return res.status(401).send({ error: 'Invalid credentials' });
         }
-      } catch (error) {
+      } catch (err) {
         app.log.error(
-          { error, username },
+          { err, username },
           "An error occurred when verifying user's password"
         );
 

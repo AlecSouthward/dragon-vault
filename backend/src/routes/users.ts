@@ -22,9 +22,9 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       );
 
       return res.code(200).send({ campaigns: getCampaignsQuery.rows });
-    } catch (error) {
+    } catch (err) {
       app.log.error(
-        { error },
+        err,
         "An error occurred while searching for a user's campaigns"
       );
 
@@ -57,8 +57,8 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         ]);
 
         return await createUser(res, username, password);
-      } catch (error) {
-        app.log.error(error, 'An error occurred when using the invite');
+      } catch (err) {
+        app.log.error(err, 'An error occurred when using the invite');
 
         return res.code(500).send({ error: 'Failed to use the invite' });
       }

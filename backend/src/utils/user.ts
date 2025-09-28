@@ -39,9 +39,9 @@ export const createUser = async (
     if (usernameExistsQuery.rows.length > 0) {
       return res.code(409).send({ error: 'That username is already taken' });
     }
-  } catch (error) {
+  } catch (err) {
     app.log.error(
-      { error, username },
+      { err, username },
       'An error occurred when checking for duplicate usernames'
     );
 
@@ -55,9 +55,9 @@ export const createUser = async (
       'INSERT INTO users (username, password) VALUES ($1, $2)',
       [username, hashedPassword]
     );
-  } catch (error) {
+  } catch (err) {
     app.log.error(
-      { error, username },
+      { err, username },
       'An error occurred when creating a new user'
     );
 

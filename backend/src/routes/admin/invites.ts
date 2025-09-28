@@ -16,8 +16,8 @@ const adminInviteRoutes: FastifyPluginAsyncZod = async (app) => {
       return res
         .code(200)
         .send({ inviteKey: createUserInviteQuery.rows[0].id });
-    } catch (error) {
-      app.log.error(error, 'An error occurred when creating a user invite');
+    } catch (err) {
+      app.log.error(err, 'An error occurred when creating a user invite');
 
       return res.code(500).send({ error: 'Failed to create a user invite' });
     }

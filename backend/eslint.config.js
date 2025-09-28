@@ -26,10 +26,8 @@ export default tseslint.config([
       'no-restricted-syntax': [
         'error',
         {
-          selector:
-            "MemberExpression[object.name='console']:not([property.name='error']):not([property.name='warn']):not([property.name='info'])",
-          message:
-            "Only 'console.error', 'console.warn', and 'console.info' are allowed.",
+          selector: "MemberExpression[object.name='console']",
+          message: "Prefer using 'app.log' for logging.",
         },
       ],
     },
