@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE TABLE users (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
     "username" TEXT UNIQUE NOT NULL,
     "password" TEXT NOT NULL,
     "profile_picture" VARCHAR(255),
@@ -9,9 +9,9 @@ CREATE TABLE users (
 );
 
 CREATE TABLE user_invites (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
     "expiration" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "used" BOOLEAN NOT NULL DEFAULT FALSE
+    "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
 );
 
 INSERT INTO
@@ -23,23 +23,23 @@ VALUES (
     );
 
 CREATE TABLE "campaigns" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
     "name" VARCHAR(96) NOT NULL,
     "description" TEXT,
     "created" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "creator_user_id" INT NOT NULL REFERENCES users (id) ON DELETE CASCADE
+    "creator_user_id" UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE "campaign_admins" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
-    "user_id" INT NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    "campaign_id" INT NOT NULL REFERENCES campaigns (id) ON DELETE CASCADE
+    "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
+    "user_id" UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+    "campaign_id" UUID NOT NULL REFERENCES campaigns (id) ON DELETE CASCADE
 );
 
 CREATE TABLE "characters" (
-  "id" UUID NOT NULL DEFAULT gen_random_uuid (),
-  "campaign_id" INT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
-  "user_id" INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
+  "campaign_id" UUID NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+  "user_id" UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   "name" VARCHAR(64),
   "description" TEXT,
   "class" VARCHAR(32),
@@ -59,8 +59,8 @@ CREATE TABLE "characters" (
 );
 
 CREATE TABLE "items" (
-  "id" UUID NOT NULL DEFAULT gen_random_uuid (),
-  "owner_user_id" INT REFERENCES users(id) ON DELETE CASCADE,
+  "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
+  "owner_user_id" UUID REFERENCES users(id) ON DELETE CASCADE,
   "name" VARCHAR(128) NOT NULL,
   "description" TEXT,
   "stats" JSON DEFAULT '[]'::jsonb, -- [{"name": "Cost", "value": 2}, {"name": "Rarity", "value": "Mystical"}]
@@ -72,7 +72,7 @@ CREATE TABLE "items" (
 );
 
 CREATE TABLE "enemies" (
-    "id" UUID NOT NULL DEFAULT gen_random_uuid (),
+    "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
     "name" VARCHAR(128) NOT NULL,
     "description" TEXT
 );
