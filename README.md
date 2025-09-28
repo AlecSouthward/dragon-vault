@@ -1,4 +1,4 @@
-# Dragon Vault
+# Dragon Vault (WIP)
 
 **Dragon Vault** is an open-source self-hosted website; created
 specifically for managing/playing Dungeons & Dragons campaigns remotely
@@ -42,6 +42,8 @@ This can be used for either the Frontend or Backend:
 ```bash
 npm run dev
 ```
+
+**Please note**: The Frontend _requires_ a `.env` file in it's directory, while (for development) the Backend requires a `.env.development` file in it's directory.
 
 ## Contributing
 
