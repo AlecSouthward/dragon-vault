@@ -21,7 +21,12 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { username, password } = req.body;
-      return await createUser(res, username, password);
+      const createUserResponse = await createUser(username, password);
+
+      return res.code(createUserResponse.httpCode).send({
+        message: createUserResponse.message,
+        error: createUserResponse.error,
+      });
     }
   );
 

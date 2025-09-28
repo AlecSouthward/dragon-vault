@@ -56,7 +56,22 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
           inviteId,
         ]);
 
-        return await createUser(res, username, password);
+        const createUserResponse = await createUser(username, password);
+
+        if (!createUserResponse.ok) {
+          return res
+            .code(createUserResponse.httpCode)
+            .send({ error: createUserResponse.error });
+        }
+
+        await app.pg.query(
+          'UPDATE user_invites SET used = TRUE WHERE id = $1',
+          [inviteId]
+        );
+
+        return res
+          .code(createUserResponse.httpCode)
+          .send({ message: createUserResponse.message });
       } catch (err) {
         app.log.error(err, 'An error occurred when using the invite');
 

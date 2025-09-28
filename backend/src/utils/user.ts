@@ -1,5 +1,3 @@
-import { FastifyReply } from 'fastify';
-
 import { Cookie } from '../types/cookie';
 import { User } from '../types/domain';
 
@@ -24,10 +22,14 @@ export const getUserFromCookie = async (
 };
 
 export const createUser = async (
-  res: FastifyReply,
   username: string,
   password: string
-): Promise<FastifyReply> => {
+): Promise<{
+  ok: boolean;
+  httpCode: number;
+  message?: string;
+  error?: string;
+}> => {
   const hashedPassword = await hashPassword(password);
 
   try {
@@ -37,7 +39,11 @@ export const createUser = async (
     );
 
     if (usernameExistsQuery.rows.length > 0) {
-      return res.code(409).send({ error: 'That username is already taken' });
+      return {
+        ok: false,
+        httpCode: 409,
+        error: 'That username is already taken',
+      };
     }
   } catch (err) {
     app.log.error(
@@ -45,9 +51,11 @@ export const createUser = async (
       'An error occurred when checking for duplicate usernames'
     );
 
-    return res
-      .code(500)
-      .send({ error: 'Failed to check if the username is already taken' });
+    return {
+      ok: false,
+      httpCode: 500,
+      error: 'Failed to check if the username is already taken',
+    };
   }
 
   try {
@@ -61,8 +69,8 @@ export const createUser = async (
       'An error occurred when creating a new user'
     );
 
-    return res.code(500).send({ error: 'Failed to create a new user' });
+    return { ok: false, httpCode: 500, error: 'Failed to create a new user' };
   }
 
-  return res.code(201).send({ message: `Created new user ${username}` });
+  return { ok: true, httpCode: 201, message: `Created new user ${username}` };
 };
