@@ -3,8 +3,6 @@ import { FastifyPluginAsync } from 'fastify';
 import { Cookie } from '../types/cookie.js';
 import { User } from '../types/domain.js';
 
-import { getUser } from '../plugins/retrieveData.js';
-
 import { verifyPassword } from '../utils/passwordHash.js';
 
 const authRoutes: FastifyPluginAsync = async (app) => {
@@ -71,10 +69,6 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     });
 
     res.send({ id: user.id, username: user.username, isAdmin: user.isAdmin });
-  });
-
-  app.get('/me', { preHandler: [getUser] }, async (req) => {
-    return { user: req.userFromCookie };
   });
 };
 

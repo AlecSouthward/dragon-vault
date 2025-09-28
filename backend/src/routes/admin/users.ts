@@ -1,13 +1,13 @@
 import { FastifyPluginAsync } from 'fastify';
 
-import { getUser } from '../plugins/retrieveData';
+import { getUser } from '../../plugins/retrieveData';
 
-import { hashPassword } from '../utils/passwordHash';
+import { hashPassword } from '../../utils/passwordHash';
 
-const userRoutes: FastifyPluginAsync = async (app) => {
+const adminUserRoutes: FastifyPluginAsync = async (app) => {
   app.addHook('preHandler', getUser);
 
-  app.post('/create', async (req, res) => {
+  app.post('/users', async (req, res) => {
     const { username, password } = req.body as {
       username: string;
       password: string;
@@ -55,4 +55,4 @@ const userRoutes: FastifyPluginAsync = async (app) => {
   // TODO: Add routes for deleting/managing users
 };
 
-export default userRoutes;
+export default adminUserRoutes;

@@ -5,8 +5,7 @@ import ENV from './env';
 import db from './plugins/db';
 import security from './plugins/security';
 
-import authRoutes from './routes/auth';
-import userRoutes from './routes/user';
+import apiRoutes from './routes/api';
 
 const app = Fastify({
   logger: {
@@ -21,8 +20,7 @@ const app = Fastify({
 await app.register(db);
 await app.register(security);
 
-await app.register(authRoutes, { prefix: '/auth' });
-await app.register(userRoutes, { prefix: '/user' });
+await app.register(apiRoutes, { prefix: '/api/v1' });
 
 app.get('/health', async () => ({ ok: true }));
 
