@@ -1,64 +1,54 @@
 # Dragon Vault
 
-__Dragon Vault__ is an open-source self-hosted website; created
+**Dragon Vault** is an open-source self-hosted website; created
 specifically for managing/playing Dungeons & Dragons campaigns remotely
-(through voice calls).
+(through voice calls preferably).
 
-## Env Variables
+## Features
 
-__Backend__:
-```env
-PORT=8080
-CORS_ORIGIN=http://host:port
-DATABASE_URL=postgresql://user:password@host:port/database
-REDIS_URL=redis://host:port
-JWT_SECRET=
-```
+- Invite-only and designed to be self-hosted (though a public version may be released _if there is demand_)
+- Allows users to create and manage their own Campaign
+- Campaigns allow for custom Characters (custom types of resource pools, items, skills, etc.)
+- Manages DND Sessions easily by allowing for easy dice rolls and viewing of a character's information (and items, etc.)
+- Allows the DM (Dungeon Master), during a session, to enable a whiteboard that displays details easily in combat
 
-__Frontend__:
-```env
-REACT_APP_BACKEND_PATH=http://host:port/api
-```
+## Getting Started
 
-## Running for Development
+### Prerequisites
 
-### Requirements
-- Node.js `^20.19.0 || >=22.12.0`
-- npm `>=9.x`
+- Node.js `>=21`
+- PostgreSQL `>=17`
 
-__This requires a pre-existing service/container of postgres to be running.__
-If you do not have a PostgreSQL instance running, follow these steps to set it up for Dragon Vault:
-
-1. Startup/create an instance of Postgres with default settings.
-2. Create this database `dragon_vault`.
-3. Create a user named `dragon_vault_user` that can access the database. (__Make sure to keep the password as you'll need that in the `.env` file under `frontend/`__) 
-
-Then, you will have to start the 2 layers separately.
-
-> To start the frontend you must be using __Node 21.7.0+__!
-
-To start the frontend:
-```bash
-cd frontend/;
-
-npm install; # Make sure to install all the npm_modules
-
-npm run dev;
-```
-
-To start the backend:
-```bash
-cd backend/;
-
-npm install; # Make sure to install all the npm_modules
-
-npm run dev;
-```
-
-## Running for Production
-
-Simply run:
+### Installation
 
 ```bash
-docker compose up -d --build;
+git clone https://github.com/AlecSouthward/dragon-vault.git
+cd dragon-vault
+
+cd backend/
+npm install
+
+cd ../frontend/
+npm install
 ```
+
+### Running
+
+This can be used for either the Frontend or Backend:
+
+```bash
+npm run dev
+```
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Please also read the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+## License
+
+This project is licensed under the GNU License – see [LICENSE](LICENSE) for details.
+
+## Contact
+
+If you need help or want to report an issue, open a GitHub issue or email me at [alecsouthward@gmail.com](mailto:alecsouthward@gmail.com).
