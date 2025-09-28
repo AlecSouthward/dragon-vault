@@ -48,7 +48,6 @@ const CreateCampaignMenu: FC<CreateCampaignMenuProps> = ({
           value={campaignDescription}
           onValueChange={setCampaignDescription}
           placeholder="Campaign Description"
-          lineHeight={4}
           width="xl"
           disabled={loading}
         />

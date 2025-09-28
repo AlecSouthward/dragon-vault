@@ -21,7 +21,7 @@ const CampaignList = (): JSX.Element => {
 
   const handleCampaignClick = (campaign: Campaign): void => {
     setSelectedCampaign(campaign);
-    navigate(RoutePaths.CAMPAIGN);
+    navigate(RoutePaths.CAMPAIGNS); // TODO: Navigate to the Campaign (editor or viewer)
   };
 
   return (
