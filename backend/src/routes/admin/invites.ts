@@ -13,9 +13,7 @@ const adminInviteRoutes: FastifyPluginAsyncZod = async (app) => {
         'INSERT INTO user_invites DEFAULT VALUES RETURNING id'
       );
 
-      return res
-        .code(200)
-        .send({ inviteKey: createUserInviteQuery.rows[0].id });
+      return res.code(200).send({ inviteId: createUserInviteQuery.rows[0].id });
     } catch (err) {
       app.log.error(err, 'An error occurred when creating a user invite');
 

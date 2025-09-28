@@ -1,3 +1,5 @@
+import { UUID } from 'node:crypto';
+
 import { Cookie } from '../types/cookie';
 import { User } from '../types/domain';
 
@@ -29,6 +31,7 @@ export const createUser = async (
   httpCode: number;
   message?: string;
   error?: string;
+  newUserId?: UUID;
 }> => {
   const hashedPassword = await hashPassword(password);
 
@@ -59,10 +62,17 @@ export const createUser = async (
   }
 
   try {
-    await app.pg.query(
-      'INSERT INTO users (username, password) VALUES ($1, $2)',
+    const createUserQuery = await app.pg.query<{ id: UUID }>(
+      'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id',
       [username, hashedPassword]
     );
+
+    return {
+      ok: true,
+      httpCode: 201,
+      message: `Created new user ${username}`,
+      newUserId: createUserQuery.rows[0].id,
+    };
   } catch (err) {
     app.log.error(
       { err, username },
@@ -71,6 +81,4 @@ export const createUser = async (
 
     return { ok: false, httpCode: 500, error: 'Failed to create a new user' };
   }
-
-  return { ok: true, httpCode: 201, message: `Created new user ${username}` };
 };

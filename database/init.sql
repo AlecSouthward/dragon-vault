@@ -9,9 +9,9 @@ CREATE TABLE users (
 );
 
 CREATE TABLE user_invites (
-    "expiration" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "used" BOOLEAN NOT NULL DEFAULT FALSE
     "id" UUID NOT NULL DEFAULT gen_random_uuid () PRIMARY KEY,
+    "created_date" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    "used_by_user_id" UUID REFERENCES users (id)
 );
 
 INSERT INTO

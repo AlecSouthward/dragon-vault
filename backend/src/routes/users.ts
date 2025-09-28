@@ -1,5 +1,8 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { UUID } from 'node:crypto';
 import z from 'zod';
+
+import { INVITE_EXPIRE_OFFSET_MS } from '../config/invites';
 
 import { getUser } from '../plugins/retrieveData';
 
@@ -52,9 +55,32 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       const { username, password } = req.body;
 
       try {
-        await app.pg.query('DELETE FROM user_invites WHERE id = $1', [
-          inviteId,
-        ]);
+        const inviteExpireCheckQuery = await app.pg.query<{
+          createdDate: Date;
+          usedByUserId: UUID;
+        }>(
+          'SELECT created_date AS "createdDate", used_by_user_id AS "usedByUserId" FROM user_invites WHERE id = $1',
+          [inviteId]
+        );
+
+        if (inviteExpireCheckQuery.rows.length === 0) {
+          return res
+            .code(404)
+            .send({ error: 'No invite was found with that id' });
+        } else if (inviteExpireCheckQuery.rows[0]) {
+          const queryResult = inviteExpireCheckQuery.rows[0];
+          const expirationTime =
+            queryResult.createdDate.getTime() + INVITE_EXPIRE_OFFSET_MS;
+          const currentTime = Date.now();
+
+          if (currentTime > expirationTime) {
+            return res.code(410).send({ error: 'The invite has expired' });
+          } else if (queryResult.usedByUserId) {
+            return res
+              .code(410)
+              .send({ error: 'The invite has already been used' });
+          }
+        }
 
         const createUserResponse = await createUser(username, password);
 
@@ -65,8 +91,8 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         }
 
         await app.pg.query(
-          'UPDATE user_invites SET used = TRUE WHERE id = $1',
-          [inviteId]
+          'UPDATE user_invites SET used_by_user_id = $1 WHERE id = $2',
+          [createUserResponse.newUserId, inviteId]
         );
 
         return res
