@@ -12,7 +12,7 @@ const DiceToRoll: FC<DiceToRollProps> = ({
   dropped = false,
 }): JSX.Element => (
   <div
-    className={`border-light-white m-8 flex h-32 w-32 items-center justify-center rounded-xl border-2 text-8xl ${!rolling && dropped && 'opacity-[0.5]'} ${rolling && 'animate-[spin_500ms_ease]'}`}
+    className={`border-light-white m-8 flex h-32 w-32 items-center justify-center rounded-xl border-2 text-8xl ${!rolling && dropped && 'line-through opacity-[0.5]'} ${rolling && 'animate-[spin_500ms_ease]'}`}
   >
     <p
       className={`font-bold select-none ${!rolling && (result === 20 || result === 1) && 'underline'}`}
