@@ -60,6 +60,7 @@ const authRoutes: FastifyPluginAsync = async (app) => {
     const userCookie: Cookie = {
       id: user.id,
       username: user.username,
+      isAdmin: user.isAdmin,
     };
 
     res.setCookie('token', app.jwt.sign(userCookie), {
