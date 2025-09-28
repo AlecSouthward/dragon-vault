@@ -1,15 +1,16 @@
-import { FastifyPluginAsync } from 'fastify';
+import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
 
-const usersRoutes: FastifyPluginAsync = async (app) => {
+const usersRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('preHandler', getUser);
 
   app.get('/me', async (req, res) => {
     return res.code(200).send({ user: req.userFromCookie });
   });
 
-  app.get('/me/campaigns', { preHandler: [getUser] }, async (req, res) => {
+  app.get('/me/campaigns', async (req, res) => {
     const { id: userId } = req.userFromCookie!;
 
     try {

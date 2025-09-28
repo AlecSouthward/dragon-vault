@@ -7,7 +7,7 @@ export const getUserFromCookie = async (
   cookie: Cookie
 ): Promise<User | null> => {
   const userResult = await app.pg.query<User>(
-    'SELECT * FROM users WHERE id = $1',
+    'SELECT id, username, password, profile_picture AS "profilePicture", is_admin as "isAdmin" FROM users WHERE id = $1',
     [cookie.id]
   );
 

@@ -1,10 +1,10 @@
-import { FastifyPluginAsync } from 'fastify';
+import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
 import adminUserRoutes from './admin/users';
 import authRoutes from './auth';
 import usersRoutes from './users';
 
-const apiRoutes: FastifyPluginAsync = async (app) => {
+const apiRoutes: FastifyPluginAsyncZod = async (app) => {
   app.register(authRoutes, { prefix: '/auth' });
   app.register(adminUserRoutes, { prefix: '/admin' });
   app.register(usersRoutes, { prefix: '/users' });

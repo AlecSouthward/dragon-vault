@@ -1,4 +1,9 @@
 import Fastify from 'fastify';
+import {
+  type ZodTypeProvider,
+  serializerCompiler,
+  validatorCompiler,
+} from 'fastify-type-provider-zod';
 
 import ENV from './env';
 
@@ -15,7 +20,10 @@ const app = Fastify({
         ? undefined
         : { target: 'pino-pretty', options: { colorize: true } },
   },
-});
+}).withTypeProvider<ZodTypeProvider>();
+
+app.setValidatorCompiler(validatorCompiler);
+app.setSerializerCompiler(serializerCompiler);
 
 await app.register(db);
 await app.register(security);

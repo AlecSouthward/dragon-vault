@@ -1,9 +1,11 @@
-import { FastifyPluginAsync } from 'fastify';
+import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
 import { getUser } from '../plugins/retrieveData';
 
-const campaignRoutes: FastifyPluginAsync = async (app) => {
+const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('onRequest', getUser);
 
   // app.get('/')
 };
+
+export default campaignRoutes;
