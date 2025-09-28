@@ -11,13 +11,13 @@ on:
 jobs:
   frontend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Go to Frontend directory
-        run: cd frontend/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -35,13 +35,13 @@ jobs:
 
   backend:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Go to Backend directory
-        run: cd backend/
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
