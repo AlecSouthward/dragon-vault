@@ -16,7 +16,7 @@ specifically for managing/playing Dungeons & Dragons campaigns remotely
 
 ### Prerequisites
 
-- Node.js `>=21`
+- Node.js `>=24`
 - PostgreSQL `>=17`
 
 ### Installation
