@@ -11,6 +11,11 @@ const ENV_SCHEMA = z.strictObject({
     .min(16, 'JWT_SECRET should be at least 16 chars')
     .nonempty()
     .nonoptional(),
+  COOKIE_SECRET: z
+    .string()
+    .min(16, 'COOKIE_SECRET should be at least 16 chars')
+    .nonempty()
+    .nonoptional(),
   DATABASE_URL: z.string().includes('postgresql://').nonempty().nonoptional(),
   PASSWORD_PEPPER: z
     .string()
@@ -23,6 +28,7 @@ const ENV_SCHEMA = z.strictObject({
 const ENV = {
   PORT: Number(process.env.PORT),
   JWT_SECRET: process.env.JWT_SECRET,
+  COOKIE_SECRET: process.env.COOKIE_SECRET,
   DATABASE_URL: process.env.DATABASE_URL,
   PASSWORD_PEPPER: process.env.PASSWORD_PEPPER,
   NODE_ENV: process.env.NODE_ENV,
