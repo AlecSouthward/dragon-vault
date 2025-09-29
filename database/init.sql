@@ -18,7 +18,7 @@ INSERT INTO
     users (username, password, is_admin)
 VALUES (
         'admin',
-        '$argon2id$v=19$m=65536,t=2,p=1$QmFwUFpQWXI0MlJLNUxWTw$rlijNqW51LyNiiAxGxXtapCQWE0w0kdLmk2aRVTsUgU', -- root
+        '$argon2id$v=19$m=131072,t=3,p=1$4AGYvLd91uwQUsrIc3JQSQ$ngHVPKjYZloTtV04NpZsxPXTR9DtolDGDWdOFz17onc', -- root (assuming that PASSWORD_PEPPER is 'passpepper')
         TRUE
     );
 
