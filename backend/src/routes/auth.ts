@@ -6,6 +6,12 @@ import { User } from '../types/domain.js';
 
 import { verifyPassword } from '../utils/passwordHash.js';
 
+// TODO:
+// Implement refresh tokens
+// Store and validate refresh tokens
+// Store client IP and User alongside stored refresh token
+// Check for suspicious activity on a refresh token
+
 const authRoutes: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/login',
@@ -28,6 +34,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         );
 
         if (selectUserResult === null) {
+          app.log.error('Failed to find user in database');
           res.code(500).send({ error: 'Failed to find user' });
         } else if (
           selectUserResult.rowCount === 0 ||
