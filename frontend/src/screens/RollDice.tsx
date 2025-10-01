@@ -41,7 +41,9 @@ const RollDice = (): JSX.Element => {
 
   return (
     <div className="mt-6 flex flex-1 flex-col items-center justify-center pb-6 select-none">
-      <p className="text-light-red h-8 text-xl font-bold">
+      <p
+        className={`text-light-red h-8 text-xl font-bold transition-opacity ${rollExpressionError ? 'opacity-100' : 'opacity-0'}`}
+      >
         {rollExpressionError && 'Invalid roll expression'}
       </p>
 
