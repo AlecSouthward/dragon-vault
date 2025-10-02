@@ -1,3 +1,5 @@
+CREATE EXTENSION hstore;
+
 CREATE TABLE users (
     "id" UUID NOT NULL DEFAULT uuidv7() PRIMARY KEY,
     "username" TEXT UNIQUE NOT NULL,
