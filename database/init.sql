@@ -36,7 +36,7 @@ CREATE TABLE campaign (
     "icon" TEXT
 );
 
-CREATE TABLE campaign_admins (
+CREATE TABLE campaign_admin (
     "id" UUID NOT NULL DEFAULT uuidv7() PRIMARY KEY,
     "user_account_id" UUID NOT NULL REFERENCES user_account(id),
     "campaign_id" UUID NOT NULL REFERENCES campaign(id)
