@@ -70,10 +70,10 @@ CREATE TABLE character_template (
 CREATE TABLE character (
     "id" UUID NOT NULL DEFAULT uuidv7() PRIMARY KEY,
     "user_account_id" UUID NOT NULL REFERENCES user_account(id),
-    "template_id" UUID NOT NULL REFERENCES user_account(id),
+    "template_id" UUID NOT NULL REFERENCES character_template(id),
     "created_date" TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     "name" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
+    "description" TEXT,
     "level" SMALLINT NOT NULL DEFAULT 1,
     "alive" BOOLEAN NOT NULL DEFAULT TRUE,
     "race" TEXT,
