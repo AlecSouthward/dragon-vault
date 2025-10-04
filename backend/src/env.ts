@@ -1,9 +1,5 @@
 import z from 'zod';
 
-import DotenvFlow from 'dotenv-flow';
-
-DotenvFlow.config();
-
 const ENV_SCHEMA = z.strictObject({
   PORT: z.coerce.number().int().min(1).max(65535).nonoptional(),
   JWT_SECRET: z
