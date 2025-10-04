@@ -29,7 +29,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
       try {
         const selectUserResult = await app.pg.query<User>(
-          'SELECT id, username, password, is_admin AS "isAdmin" FROM users WHERE username = $1',
+          'SELECT id, username, password, admin FROM user_account WHERE username = $1',
           [username]
         );
 
@@ -74,7 +74,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
       const userCookie: Cookie = {
         id: user.id,
         username: user.username,
-        isAdmin: user.isAdmin,
+        admin: user.admin,
       };
 
       res.setCookie('token', app.jwt.sign(userCookie), {
@@ -84,7 +84,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         path: '/',
       });
 
-      res.send({ id: user.id, username: user.username, isAdmin: user.isAdmin });
+      res.send({ id: user.id, username: user.username, admin: user.admin });
     }
   );
 };

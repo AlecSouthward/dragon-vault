@@ -10,7 +10,7 @@ export const getUserFromCookie = async (
   cookie: Cookie
 ): Promise<User | null> => {
   const userResult = await app.pg.query<User>(
-    'SELECT id, username, password, profile_picture AS "profilePicture", is_admin as "isAdmin" FROM users WHERE id = $1',
+    'SELECT id, username, password, profile_picture AS "profilePicture", admin FROM user_account WHERE id = $1',
     [cookie.id]
   );
 
@@ -37,7 +37,7 @@ export const createUser = async (
 
   try {
     const usernameExistsQuery = await app.pg.query(
-      'SELECT 1 FROM users WHERE username = $1 LIMIT 1',
+      'SELECT 1 FROM user_account WHERE username = $1 LIMIT 1',
       [username]
     );
 
@@ -63,7 +63,7 @@ export const createUser = async (
 
   try {
     const createUserQuery = await app.pg.query<{ id: UUID }>(
-      'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id',
+      'INSERT INTO user_account (username, password) VALUES ($1, $2) RETURNING id',
       [username, hashedPassword]
     );
 

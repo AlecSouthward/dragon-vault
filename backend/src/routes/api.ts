@@ -1,15 +1,17 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 
-import adminInviteRoutes from './admin/invites';
-import adminUserRoutes from './admin/users';
+import adminRoutes from './admin';
 import authRoutes from './auth';
+import campaignRoutes from './campaigns';
+import inviteRoutes from './invites';
 import usersRoutes from './users';
 
 const apiRoutes: FastifyPluginAsyncZod = async (app) => {
   app.register(authRoutes, { prefix: '/auth' });
-  app.register(adminUserRoutes, { prefix: '/admin' });
-  app.register(adminInviteRoutes, { prefix: '/admin' });
+  app.register(adminRoutes, { prefix: '/admin' });
+  app.register(campaignRoutes, { prefix: '/campaigns' });
   app.register(usersRoutes, { prefix: '/users' });
+  app.register(inviteRoutes, { prefix: '/invites' });
 };
 
 export default apiRoutes;
