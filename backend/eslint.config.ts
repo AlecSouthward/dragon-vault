@@ -4,14 +4,16 @@ import globals from 'globals';
 
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config([
+import { defineConfig } from 'eslint/config';
+
+export default defineConfig([
   { ignores: ['dist'] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: globals.node,
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
@@ -23,6 +25,11 @@ export default tseslint.config([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+    },
+  },
+  {
+    files: ['src/**/*.ts'],
+    rules: {
       'no-restricted-syntax': [
         'error',
         {
