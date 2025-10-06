@@ -8,6 +8,9 @@ import {
 import ENV from './env';
 
 import db from './plugins/db';
+import errorHandler from './plugins/errorHandler';
+import setupErrorHandler from './plugins/errorHandler';
+import serverErrorHandler from './plugins/errorHandler';
 import security from './plugins/security';
 
 import apiRoutes from './routes/api';
@@ -24,6 +27,7 @@ const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+app.setErrorHandler(serverErrorHandler);
 
 await app.register(db);
 await app.register(security);

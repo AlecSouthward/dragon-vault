@@ -29,7 +29,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
 
       return res
         .code(500)
-        .send({ error: 'Failed to search for your campaigns' });
+        .send({ message: 'Failed to search for your campaigns' });
     }
   });
 };

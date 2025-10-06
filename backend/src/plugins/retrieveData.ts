@@ -20,7 +20,7 @@ export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
     req.userFromCookie = user;
   } catch (err) {
     app.log.error(err, 'User is unauthorized');
-    return res.status(401).send({ error: 'Unauthorized' });
+    return res.status(401).send({ message: 'Unauthorized' });
   }
 };
 
@@ -34,6 +34,6 @@ export const getIsAdmin = async (req: FastifyRequest, res: FastifyReply) => {
       { userId: req.userFromCookie.id },
       'The user is not an admin'
     );
-    return res.status(403).send({ error: 'Authorized user is not an admin' });
+    return res.status(403).send({ message: 'Authorized user is not an admin' });
   }
 };

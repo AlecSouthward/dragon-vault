@@ -35,14 +35,14 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
         if (selectUserResult === null) {
           app.log.error('Failed to find user in database');
-          res.code(500).send({ error: 'Failed to find user' });
+          res.code(500).send({ message: 'Failed to find user' });
         } else if (
           selectUserResult.rowCount === 0 ||
           !selectUserResult.rowCount
         ) {
-          return res.code(401).send({ error: 'User not found' });
+          return res.code(401).send({ message: 'User not found' });
         } else if (selectUserResult.rowCount > 1) {
-          return res.code(409).send({ error: 'More than one user found' });
+          return res.code(409).send({ message: 'More than one user found' });
         }
 
         user = selectUserResult.rows[0];
@@ -51,14 +51,14 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
         return res
           .code(500)
-          .send({ error: 'An error occurred when fetching your user' });
+          .send({ message: 'An error occurred when fetching your user' });
       }
 
       try {
         const passwordsMatch = await verifyPassword(user.password, password);
 
         if (!passwordsMatch) {
-          return res.status(401).send({ error: 'Invalid credentials' });
+          return res.status(401).send({ message: 'Invalid credentials' });
         }
       } catch (err) {
         app.log.error(
@@ -68,7 +68,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
         return res
           .status(500)
-          .send({ error: 'Failed to verify your password' });
+          .send({ message: 'Failed to verify your password' });
       }
 
       const userCookie: Cookie = {

@@ -12,7 +12,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         params: z.object({
-          id: z.uuid(),
+          id: z.uuidv7(),
         }),
         body: z.strictObject({
           username: z.string().nonoptional(),
@@ -36,7 +36,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         if (inviteExpireCheckQuery.rows.length === 0) {
           return res
             .code(404)
-            .send({ error: 'No invite was found with that id' });
+            .send({ message: 'No invite was found with that id' });
         } else if (inviteExpireCheckQuery.rows[0]) {
           const queryResult = inviteExpireCheckQuery.rows[0];
           const expirationTime =
@@ -44,11 +44,11 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
           const currentTime = Date.now();
 
           if (currentTime > expirationTime) {
-            return res.code(410).send({ error: 'The invite has expired' });
+            return res.code(410).send({ message: 'The invite has expired' });
           } else if (queryResult.usedByUserAccountId) {
             return res
               .code(410)
-              .send({ error: 'The invite has already been used' });
+              .send({ message: 'The invite has already been used' });
           }
         }
 
@@ -57,7 +57,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         if (!createUserResponse.ok) {
           return res
             .code(createUserResponse.httpCode)
-            .send({ error: createUserResponse.error });
+            .send({ message: createUserResponse.error });
         }
 
         await app.pg.query(
@@ -71,7 +71,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       } catch (err) {
         app.log.error(err, 'An error occurred when using the invite');
 
-        return res.code(500).send({ error: 'Failed to use the invite' });
+        return res.code(500).send({ message: 'Failed to use the invite' });
       }
     }
   );

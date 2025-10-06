@@ -25,8 +25,7 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
       const createUserResponse = await createUser(username, password);
 
       return res.code(createUserResponse.httpCode).send({
-        message: createUserResponse.message,
-        error: createUserResponse.error,
+        message: createUserResponse.message || createUserResponse.error,
       });
     }
   );
@@ -43,7 +42,7 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
     } catch (err) {
       app.log.error(err, 'An error occurred when creating a user invite');
 
-      return res.code(500).send({ error: 'Failed to create a user invite' });
+      return res.code(500).send({ message: 'Failed to create a user invite' });
     }
   });
 };

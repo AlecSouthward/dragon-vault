@@ -42,7 +42,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
 
         return res
           .code(404)
-          .send({ error: 'No campaign was found with that id' });
+          .send({ message: 'No campaign was found with that id' });
       }
 
       const campaign = campaignQuery.rows[0];
@@ -66,7 +66,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
 
           return res
             .code(401)
-            .send({ error: 'You do not have access to view this campaign' });
+            .send({ message: 'You do not have access to view this campaign' });
         }
       }
 
@@ -99,7 +99,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           'An error occurred when creating a new campaign'
         );
 
-        return res.code(500).send({ error: 'Failed to create campaign' });
+        return res.code(500).send({ message: 'Failed to create campaign' });
       }
 
       return res.code(201).send({
@@ -144,7 +144,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         );
 
         return res.code(401).send({
-          error: 'You do not have admin access to modify this campaign',
+          message: 'You do not have admin access to modify this campaign',
         });
       }
 
@@ -165,7 +165,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           `An error ocurred when updating campaign: ${campaignId}`
         );
 
-        return res.code(500).send({ error: 'Failed to update campaign' });
+        return res.code(500).send({ message: 'Failed to update campaign' });
       }
 
       return res.code(200).send({
