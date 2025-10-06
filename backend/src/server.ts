@@ -8,8 +8,6 @@ import {
 import ENV from './env';
 
 import db from './plugins/db';
-import errorHandler from './plugins/errorHandler';
-import setupErrorHandler from './plugins/errorHandler';
 import serverErrorHandler from './plugins/errorHandler';
 import security from './plugins/security';
 
