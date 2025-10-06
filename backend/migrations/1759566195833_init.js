@@ -32,7 +32,7 @@ export async function up(pgm) {
     used_by_user_account_id: {
       type: 'uuid',
       references: 'user_account',
-      onDelete: 'SET NULL',
+      onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
   });
@@ -50,6 +50,7 @@ export async function up(pgm) {
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
     story: { type: 'text' },
+    active: { type: 'boolean', notNull: true, default: true },
     icon: { type: 'text' },
   });
 
@@ -122,6 +123,13 @@ export async function up(pgm) {
         primaryKey: true,
         notNull: true,
         default: pgm.func('uuidv7()'),
+      },
+      campaign_id: {
+        type: 'uuid',
+        notNull: true,
+        references: 'campaign',
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       user_account_id: {
         type: 'uuid',

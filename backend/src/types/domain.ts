@@ -13,6 +13,7 @@ export type Campaign = {
   createdDate: Date;
   name: string;
   description: string;
+  active: boolean;
   story: string | undefined;
   icon: string;
 };
