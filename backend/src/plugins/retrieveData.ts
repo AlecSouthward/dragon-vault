@@ -9,7 +9,13 @@ import app from '../server';
 export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
     const payload = await req.jwtVerify();
-    const user = await getUserFromCookie(payload as Cookie);
+    const cookie = payload as Cookie;
+
+    if (!cookie?.id) {
+      throw new Error('Missing user id from cookie');
+    }
+
+    const user = await getUserFromCookie(cookie);
 
     req.userFromCookie = user;
   } catch (err) {
