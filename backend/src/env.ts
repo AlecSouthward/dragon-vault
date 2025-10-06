@@ -2,6 +2,7 @@ import z from 'zod';
 
 const ENV_SCHEMA = z.strictObject({
   PORT: z.coerce.number().int().min(1).max(65535).nonoptional(),
+  CORS_ORIGIN: z.url().nonempty().nonoptional(),
   JWT_SECRET: z
     .string()
     .min(16, 'JWT_SECRET should be at least 16 chars')
@@ -23,6 +24,7 @@ const ENV_SCHEMA = z.strictObject({
 
 const ENV = {
   PORT: Number(process.env.PORT),
+  CORS_ORIGIN: process.env.CORS_ORIGIN,
   JWT_SECRET: process.env.JWT_SECRET,
   COOKIE_SECRET: process.env.COOKIE_SECRET,
   DATABASE_URL: process.env.DATABASE_URL,

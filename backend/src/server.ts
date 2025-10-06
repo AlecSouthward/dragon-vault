@@ -27,8 +27,8 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 app.setErrorHandler(serverErrorHandler);
 
-await app.register(db);
 await app.register(security);
+await app.register(db);
 
 await app.register(apiRoutes, { prefix: '/api/v1' });
 
