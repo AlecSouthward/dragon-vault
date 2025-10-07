@@ -1,0 +1,150 @@
+erDiagram
+    activity_log {
+        uuid campaign_session_id FK 
+        smallint combat_turn 
+        timestamp_with_time_zone created_date 
+        uuid id PK 
+        text log 
+        text log_header 
+    }
+
+    campaign {
+        boolean active 
+        timestamp_with_time_zone created_date 
+        uuid creator_user_account_id FK 
+        text description 
+        text icon 
+        uuid id PK 
+        text name 
+        text story 
+    }
+
+    campaign_admin {
+        uuid campaign_id FK 
+        uuid id PK 
+        uuid user_account_id FK 
+    }
+
+    campaign_session {
+        uuid campaign_id FK 
+        timestamp_with_time_zone created_date 
+        uuid id PK 
+        timestamp_with_time_zone start_date 
+        text story 
+    }
+
+    character {
+        boolean alive 
+        hstore attributes 
+        uuid campaign_id FK 
+        text class 
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid id PK 
+        text image 
+        smallint level 
+        text name 
+        text race 
+        hstore resource_pools 
+        uuid template_id FK 
+        uuid user_account_id FK 
+    }
+
+    character_skill {
+        uuid character_id FK 
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid id PK 
+        text name 
+        character_varying roll 
+    }
+
+    character_template {
+        jsonb attributes 
+        uuid campaign_id FK 
+        timestamp_with_time_zone created_date 
+        uuid id PK 
+        jsonb resource_pools 
+    }
+
+    enemy {
+        hstore attributes 
+        uuid campaign_id FK 
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid id PK 
+        text image 
+        text name 
+        hstore resource_pools 
+        uuid template_id FK 
+    }
+
+    enemy_skill {
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid enemy_id FK 
+        uuid id PK 
+        text name 
+        character_varying roll 
+    }
+
+    item {
+        uuid campaign_id FK 
+        uuid character_id FK 
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid id PK 
+        text image 
+        text name 
+        character_varying roll 
+    }
+
+    item_skill {
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid id PK 
+        uuid item_id FK 
+        text name 
+        character_varying roll 
+    }
+
+    pgmigrations {
+        integer id PK 
+        character_varying name 
+        timestamp_without_time_zone run_on 
+    }
+
+    user_account {
+        boolean admin 
+        timestamp_with_time_zone created_date 
+        boolean deleted 
+        uuid id PK 
+        text password 
+        text profile_picture 
+        citext username UK 
+    }
+
+    user_invite {
+        timestamp_with_time_zone created_date 
+        uuid id PK 
+        uuid used_by_user_account_id FK 
+        timestamp_with_time_zone used_date 
+    }
+
+    activity_log }o--|| campaign_session : "campaign_session_id"
+    campaign }o--|| user_account : "creator_user_account_id"
+    campaign_admin }o--|| campaign : "campaign_id"
+    campaign_session }o--|| campaign : "campaign_id"
+    character }o--|| campaign : "campaign_id"
+    character_template }o--|| campaign : "campaign_id"
+    enemy }o--|| campaign : "campaign_id"
+    item }o--|| campaign : "campaign_id"
+    campaign_admin }o--|| user_account : "user_account_id"
+    character }o--|| character_template : "template_id"
+    character }o--|| user_account : "user_account_id"
+    character_skill }o--|| character : "character_id"
+    item }o--|| character : "character_id"
+    enemy }o--|| character_template : "template_id"
+    enemy_skill }o--|| enemy : "enemy_id"
+    item_skill }o--|| item : "item_id"
+    user_invite }o--|| user_account : "used_by_user_account_id"

@@ -1,0 +1,14 @@
+debug: false
+outputFileName: "diagram.mmd"
+
+useAllTables: true
+useAllSchemas: false
+schema:
+  - "public"
+
+showDescriptions:
+  - enumValues
+  - columnComments
+
+connectionStringSuggestions:
+  - postgresql://user:password@localhost:5432/dragonVaultDb
