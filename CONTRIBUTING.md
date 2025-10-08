@@ -1,6 +1,6 @@
 # Contributing to Dragon Vault
 
-Thanks for even considering contributing to Dragon Vault! It's a hugely helpful and greatly appreciated.
+Thanks for even considering contributing to Dragon Vault! It's hugely helpful and greatly appreciated.
 
 ## How to Contribute
 
@@ -8,6 +8,7 @@ Thanks for even considering contributing to Dragon Vault! It's a hugely helpful 
   Use the [issue tracker](https://github.com/AlecSouthward/dragon-vault/issues) to report bugs, request features, or suggest improvements. Please check for existing issues first.
 
 - **Submit code changes**
+
   1. Fork the repository and create a new branch.
   2. Make your changes with clear commit messages.
   3. Ensure the code builds and passes the lints.
@@ -25,4 +26,4 @@ By participating, you agree to uphold our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Questions?
 
-If you’re unsure about something, feel free to open a discussion or issue before starting major work.
+If you're unsure about something, feel free to open a discussion or issue before starting major work.
