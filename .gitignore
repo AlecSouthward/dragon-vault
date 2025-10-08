@@ -2,7 +2,8 @@
 **/dist
 
 **.env*
-
+**.sh
 **.tsbuildinfo
 
 !.env.example
+!createDiagram.example.sh
