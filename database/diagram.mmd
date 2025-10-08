@@ -1,7 +1,7 @@
 erDiagram
     activity_log {
         uuid campaign_session_id FK 
-        smallint combat_turn 
+        smallint combat_turn "Adds the turn number to the display of the log."
         timestamp_with_time_zone created_date 
         uuid id PK 
         text log 
@@ -13,10 +13,10 @@ erDiagram
         timestamp_with_time_zone created_date 
         uuid creator_user_account_id FK 
         text description 
-        text icon 
+        text icon "A URL path to the icon."
         uuid id PK 
         text name 
-        text story 
+        text story "Holds important details and plot points about the Campaign's overarching story. This field is only viewable by the owner/admins."
     }
 
     campaign_admin {
@@ -30,62 +30,67 @@ erDiagram
         timestamp_with_time_zone created_date 
         uuid id PK 
         timestamp_with_time_zone start_date 
-        text story 
+        text story "This field is only viewable by the owner/admins of the Campaign, not those participating in the session."
     }
 
     character {
         boolean alive 
-        hstore attributes 
+        hstore attributes "Key points to the template attributes while the value is the value of that attribute."
         uuid campaign_id FK 
         text class 
         timestamp_with_time_zone created_date 
         text description 
         uuid id PK 
-        text image 
+        text image "A URL path to the image."
         smallint level 
         text name 
         text race 
-        hstore resource_pools 
+        hstore resource_pools "Key points to the template resource pool while the value is the value of that pool."
         uuid template_id FK 
         uuid user_account_id FK 
     }
 
     character_skill {
         uuid character_id FK 
+        text cost "Keep track of what this skill consumes on use. Eg. #quot;uses 50 mana#quot;."
         timestamp_with_time_zone created_date 
         text description 
         uuid id PK 
         text name 
-        character_varying roll 
+        hstore properties "Miscellaneous properties like range, brightness, weight, etc."
+        character_varying roll "Dice notation."
     }
 
     character_template {
-        jsonb attributes 
+        jsonb attributes "Stores the available/allowed attributes and their information (user-customizable)."
         uuid campaign_id FK 
         timestamp_with_time_zone created_date 
         uuid id PK 
-        jsonb resource_pools 
+        jsonb resource_pools "Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc."
     }
 
     enemy {
-        hstore attributes 
+        hstore attributes "Key points to the template attribute while the value is the value of that attribute."
         uuid campaign_id FK 
+        smallint challenge_rating "The rough gauge of an enemy's difficulty and power."
         timestamp_with_time_zone created_date 
         text description 
         uuid id PK 
-        text image 
+        text image "A URL path to the image."
         text name 
-        hstore resource_pools 
+        hstore resource_pools "Key points to the template resource pool while the value is the value of that pool."
         uuid template_id FK 
     }
 
     enemy_skill {
+        text cost "Keep track of what this skill consumes on use. Eg. #quot;uses 50 mana#quot;."
         timestamp_with_time_zone created_date 
         text description 
         uuid enemy_id FK 
         uuid id PK 
         text name 
-        character_varying roll 
+        hstore properties "Miscellaneous properties like range, brightness, weight, etc."
+        character_varying roll "Dice notation."
     }
 
     item {
@@ -94,9 +99,9 @@ erDiagram
         timestamp_with_time_zone created_date 
         text description 
         uuid id PK 
-        text image 
+        text image "A URL path to the image."
         text name 
-        character_varying roll 
+        character_varying roll "Dice notation."
     }
 
     item_skill {
@@ -105,7 +110,7 @@ erDiagram
         uuid id PK 
         uuid item_id FK 
         text name 
-        character_varying roll 
+        character_varying roll "Dice notation."
     }
 
     pgmigrations {
@@ -120,7 +125,7 @@ erDiagram
         boolean deleted 
         uuid id PK 
         text password 
-        text profile_picture 
+        text profile_picture "A URL path to the picture."
         citext username UK 
     }
 

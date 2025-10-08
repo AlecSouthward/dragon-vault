@@ -20,7 +20,7 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     username: { type: 'citext', notNull: true, unique: true },
     password: { type: 'text', notNull: true },
-    profile_picture: { type: 'text' },
+    profile_picture: { type: 'text', comment: 'A URL path to the picture.' },
     admin: { type: 'boolean', notNull: true, default: false },
     deleted: { type: 'boolean', notNull: true, default: false },
   });
@@ -49,9 +49,14 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
-    story: { type: 'text' },
+    story: {
+      type: 'text',
+      comment:
+        "Holds important details and plot points about the Campaign's overarching story. " +
+        'This field is only viewable by the owner/admins.',
+    },
     active: { type: 'boolean', notNull: true, default: true },
-    icon: { type: 'text' },
+    icon: { type: 'text', comment: 'A URL path to the icon.' },
   });
 
   pgm.createTable('campaign_admin', {
@@ -83,7 +88,12 @@ export async function up(pgm) {
     },
     created_date: createdDateColumn,
     start_date: { type: 'timestamptz' },
-    story: { type: 'text' },
+    story: {
+      type: 'text',
+      comment:
+        'This field is only viewable by the owner/admins ' +
+        'of the Campaign, not those participating in the session.',
+    },
   });
 
   pgm.createTable('activity_log', {
@@ -96,7 +106,10 @@ export async function up(pgm) {
       onUpdate: 'CASCADE',
     },
     created_date: createdDateColumn,
-    combat_turn: { type: 'smallint' },
+    combat_turn: {
+      type: 'smallint',
+      comment: 'Adds the turn number to the display of the log.',
+    },
     log_header: { type: 'text' },
     log: { type: 'text', notNull: true },
   });
@@ -111,8 +124,16 @@ export async function up(pgm) {
       onUpdate: 'CASCADE',
     },
     created_date: createdDateColumn,
-    resource_pools: { type: 'jsonb' },
-    attributes: { type: 'jsonb' },
+    resource_pools: {
+      type: 'jsonb',
+      comment:
+        'Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.',
+    },
+    attributes: {
+      type: 'jsonb',
+      comment:
+        'Stores the available/allowed attributes and their information (user-customizable).',
+    },
   });
 
   pgm.createTable(
@@ -156,9 +177,19 @@ export async function up(pgm) {
       alive: { type: 'boolean', notNull: true, default: true },
       race: { type: 'text' },
       class: { type: 'text' },
-      resource_pools: { type: 'hstore' },
-      attributes: { type: 'hstore' },
-      image: { type: 'text' },
+      resource_pools: {
+        type: 'hstore',
+        comment:
+          'Key points to the template resource pool while the value ' +
+          'is the value of that pool.',
+      },
+      attributes: {
+        type: 'hstore',
+        comment:
+          'Key points to the template attributes while the value ' +
+          'is the value of that attribute.',
+      },
+      image: { type: 'text', comment: 'A URL path to the image.' },
     }
   );
 
@@ -174,7 +205,16 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
-    roll: { type: 'varchar(18)' },
+    roll: { type: 'varchar(18)', comment: 'Dice notation.' },
+    properties: {
+      type: 'hstore',
+      comment: 'Miscellaneous properties like range, brightness, weight, etc.',
+    },
+    cost: {
+      type: 'text',
+      comment:
+        'Keep track of what this skill consumes on use. Eg. "uses 50 mana".',
+    },
   });
 
   pgm.createTable('enemy', {
@@ -196,9 +236,23 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
-    resource_pools: { type: 'hstore' },
-    attributes: { type: 'hstore' },
-    image: { type: 'text' },
+    resource_pools: {
+      type: 'hstore',
+      comment:
+        'Key points to the template resource pool while the value ' +
+        'is the value of that pool.',
+    },
+    attributes: {
+      type: 'hstore',
+      comment:
+        'Key points to the template attribute while the value ' +
+        'is the value of that attribute.',
+    },
+    challenge_rating: {
+      type: 'smallint',
+      comment: "The rough gauge of an enemy's difficulty and power.",
+    },
+    image: { type: 'text', comment: 'A URL path to the image.' },
   });
 
   pgm.createTable('enemy_skill', {
@@ -213,7 +267,16 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
-    roll: { type: 'varchar(18)' },
+    roll: { type: 'varchar(18)', comment: 'Dice notation.' },
+    properties: {
+      type: 'hstore',
+      comment: 'Miscellaneous properties like range, brightness, weight, etc.',
+    },
+    cost: {
+      type: 'text',
+      comment:
+        'Keep track of what this skill consumes on use. Eg. "uses 50 mana".',
+    },
   });
 
   pgm.createTable('item', {
@@ -235,8 +298,8 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
-    roll: { type: 'varchar(18)' },
-    image: { type: 'text' },
+    roll: { type: 'varchar(18)', comment: 'Dice notation.' },
+    image: { type: 'text', comment: 'A URL path to the image.' },
   });
 
   pgm.createTable('item_skill', {
@@ -251,7 +314,7 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
-    roll: { type: 'varchar(18)' },
+    roll: { type: 'varchar(18)', comment: 'Dice notation.' },
   });
 }
 
