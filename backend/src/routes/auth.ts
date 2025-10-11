@@ -1,4 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { StatusCodes } from 'http-status-codes';
 import { UUID } from 'node:crypto';
 import z from 'zod';
 
@@ -36,13 +37,15 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
 
         if (!user) {
           app.log.error({ username }, 'No user found when logging in');
-          return res.code(401).send({ message: 'User not found' });
+          return res
+            .code(StatusCodes.UNAUTHORIZED)
+            .send({ message: 'Invalid credentials' });
         }
       } catch (err) {
         app.log.error(err, 'Failed to find user in database');
 
         return res
-          .code(500)
+          .code(StatusCodes.OK)
           .send({ message: 'An error occurred when fetching your user' });
       }
 
@@ -50,7 +53,14 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         const passwordsMatch = await verifyPassword(user.password, password);
 
         if (!passwordsMatch) {
-          return res.status(401).send({ message: 'Invalid credentials' });
+          app.log.error(
+            { username },
+            'Failed to log user in as their password was wrong'
+          );
+
+          return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .send({ message: 'Invalid credentials' });
         }
       } catch (err) {
         app.log.error(
@@ -59,7 +69,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         );
 
         return res
-          .status(500)
+          .status(StatusCodes.INTERNAL_SERVER_ERROR)
           .send({ message: 'Failed to verify your password' });
       }
 
@@ -76,7 +86,9 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         path: '/',
       });
 
-      res.send({ id: user.id, username: user.username, admin: user.admin });
+      res
+        .code(StatusCodes.OK)
+        .send({ id: user.id, username: user.username, admin: user.admin });
     }
   );
 };

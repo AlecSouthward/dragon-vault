@@ -1,4 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
 import { INVITE_EXPIRE_OFFSET_MS } from '../config/invites';
@@ -32,7 +33,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
 
         if (invites.length === 0) {
           return res
-            .code(404)
+            .code(StatusCodes.NOT_FOUND)
             .send({ message: 'No invite was found with that id' });
         } else if (invites.length > 1) {
           app.log.error(
@@ -47,10 +48,12 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         const currentTime = Date.now();
 
         if (currentTime > expirationTime) {
-          return res.code(410).send({ message: 'The invite has expired' });
+          return res
+            .code(StatusCodes.GONE)
+            .send({ message: 'The invite has expired' });
         } else if (inviteToUse.usedByUserAccountId) {
           return res
-            .code(410)
+            .code(StatusCodes.GONE)
             .send({ message: 'The invite has already been used' });
         }
 
@@ -78,7 +81,9 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       } catch (err) {
         app.log.error(err, 'An error occurred when using the invite');
 
-        return res.code(500).send({ message: 'Failed to use the invite' });
+        return res
+          .code(StatusCodes.INTERNAL_SERVER_ERROR)
+          .send({ message: 'Failed to use the invite' });
       }
     }
   );

@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
+import { StatusCodes } from 'http-status-codes';
 
 import { Cookie } from '../types/cookie';
 
@@ -12,10 +13,18 @@ export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
     const cookie = payload as Cookie;
 
     if (!cookie?.id) {
-      throw new Error('Missing user id from cookie');
+      return res
+        .code(StatusCodes.BAD_REQUEST)
+        .send({ message: 'Missing user id from cookie' });
     }
 
     const user = await getUserFromCookie(cookie);
+
+    if (!user) {
+      return res
+        .code(StatusCodes.NOT_FOUND)
+        .send({ message: 'No user was found' });
+    }
 
     req.userFromCookie = user;
   } catch (err) {

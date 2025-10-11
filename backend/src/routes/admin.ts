@@ -1,4 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
 import { getIsAdmin, getUser } from '../plugins/retrieveData';
@@ -39,11 +40,13 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
         .returning('id')
         .executeTakeFirst();
 
-      return res.code(200).send({ inviteId: newInviteId });
+      return res.code(StatusCodes.OK).send({ inviteId: newInviteId });
     } catch (err) {
       app.log.error(err, 'An error occurred when creating a user invite');
 
-      return res.code(500).send({ message: 'Failed to create a user invite' });
+      return res
+        .code(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send({ message: 'Failed to create a user invite' });
     }
   });
 };

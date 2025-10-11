@@ -1,4 +1,5 @@
 import { FastifyError } from 'fastify';
+import { StatusCodes } from 'http-status-codes';
 
 import { FastifyReply } from 'fastify/types/reply';
 import { FastifyRequest } from 'fastify/types/request';
@@ -13,32 +14,32 @@ const serverErrorHandler = (
   const isValidation = err.validation;
   const pgCode = err.code;
 
-  let status = err.statusCode ?? 500;
+  let status = err.statusCode ?? StatusCodes.INTERNAL_SERVER_ERROR;
   let message = 'Internal server error';
 
   if (isValidation) {
-    status = 400;
+    status = StatusCodes.BAD_REQUEST;
     message = 'Invalid request';
   } else if (pgCode) {
     switch (pgCode) {
       case '23505': // unique_violation
-        status = 409;
+        status = StatusCodes.CONFLICT;
         message = 'Resource already exists';
         break;
       case '23503': // foreign_key_violation
-        status = 409;
+        status = StatusCodes.CONFLICT;
         message = 'Related resource constraint failed';
         break;
       case '23502': // not_null_violation
-        status = 400;
+        status = StatusCodes.BAD_REQUEST;
         message = 'Missing required field';
         break;
       case '22P02': // invalid_text_representation
-        status = 400;
+        status = StatusCodes.BAD_REQUEST;
         message = 'Invalid input';
         break;
       default:
-        status = 500;
+        status = StatusCodes.INTERNAL_SERVER_ERROR;
         message = 'Database error';
     }
   }

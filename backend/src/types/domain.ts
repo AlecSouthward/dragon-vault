@@ -1,7 +1,5 @@
-import { UUID } from 'node:crypto';
-
 export type User = {
-  id: UUID;
+  id: string;
   username: string;
   password: string;
   profilePicture: string | null;
@@ -9,8 +7,8 @@ export type User = {
 };
 
 export type Campaign = {
-  id: UUID;
-  creatorUserAccountId: UUID;
+  id: string;
+  creatorUserAccountId: string;
   createdDate: Date;
   name: string;
   description: string;
@@ -20,10 +18,10 @@ export type Campaign = {
 };
 
 export type Character = {
-  id: UUID;
-  userAccountId: UUID;
-  campaignId: UUID;
-  templateId: UUID;
+  id: string;
+  userAccountId: string;
+  campaignId: string;
+  templateId: string;
   createdDate: Date;
   name: string;
   description: string | null;

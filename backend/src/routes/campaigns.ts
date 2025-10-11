@@ -1,4 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
@@ -20,29 +21,22 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       const { id: currentUserId, admin: currentUserAdmin } =
         req.userFromCookie!;
 
-      const campaigns = await app.db
+      const campaign = await app.db
         .selectFrom('campaign')
         .selectAll()
         .where('id', '=', campaignId)
-        .execute();
+        .executeTakeFirst();
 
-      if (campaigns.length === 0) {
+      if (!campaign) {
         app.log.error(
           { campaignId },
           'No campaign was found when fetching from id'
         );
 
         return res
-          .code(404)
+          .code(StatusCodes.NOT_FOUND)
           .send({ message: 'No campaign was found with that id' });
-      } else if (campaigns.length > 1) {
-        app.log.error(
-          { getCampaignId: campaignId },
-          'Multiple campaigns were returned from a single id, returning the oldest one'
-        );
       }
-
-      const campaign = campaigns[0];
 
       const campaignAccessCheck = await app.db
         .selectFrom('campaign as c')
@@ -79,12 +73,12 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           );
 
           return res
-            .code(401)
+            .code(StatusCodes.UNAUTHORIZED)
             .send({ message: 'You do not have access to view this campaign' });
         }
       }
 
-      return res.code(200).send(campaign);
+      return res.code(StatusCodes.OK).send(campaign);
     }
   );
 
@@ -114,10 +108,12 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           .executeTakeFirstOrThrow();
       } catch (err) {
         app.log.error(err, 'An error occurred when creating a new campaign');
-        return res.code(500).send({ message: 'Failed to create campaign' });
+        return res
+          .code(StatusCodes.INTERNAL_SERVER_ERROR)
+          .send({ message: 'Failed to create campaign' });
       }
 
-      return res.code(201).send({
+      return res.code(StatusCodes.CREATED).send({
         message: 'Successfully created campaign',
         id: newCampaignId.id,
       });
@@ -156,7 +152,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           'Failed to update campaign as it does not exist'
         );
 
-        return res.code(404).send({
+        return res.code(StatusCodes.NOT_FOUND).send({
           message: 'No campaign was found with that id',
         });
       }
@@ -166,7 +162,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           'Failed to update campaign as the user is not an admin in it or a system admin'
         );
 
-        return res.code(401).send({
+        return res.code(StatusCodes.UNAUTHORIZED).send({
           message: 'You do not have admin access to modify this campaign',
         });
       }
@@ -183,10 +179,14 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           'An error occurred when updating campaign'
         );
 
-        return res.code(500).send({ message: 'Failed to update campaign' });
+        return res
+          .code(StatusCodes.INTERNAL_SERVER_ERROR)
+          .send({ message: 'Failed to update campaign' });
       }
 
-      return res.code(200).send({ message: 'Successfully updated campaign' });
+      return res
+        .code(StatusCodes.OK)
+        .send({ message: 'Successfully updated campaign' });
     }
   );
 };

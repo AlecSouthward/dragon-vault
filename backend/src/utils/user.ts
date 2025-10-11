@@ -1,6 +1,8 @@
+import { StatusCodes } from 'http-status-codes';
 import { UUID } from 'node:crypto';
 
 import { Cookie } from '../types/cookie';
+import { User } from '../types/domain';
 
 import app from '../server';
 import { hashPassword } from './passwordHash';
@@ -15,16 +17,12 @@ type UserFromCookie = {
 
 export const getUserFromCookie = async (
   cookie: Cookie
-): Promise<UserFromCookie | null> => {
+): Promise<User | undefined> => {
   const user = await app.db
     .selectFrom('userAccount')
     .select(['id', 'username', 'password', 'profilePicture', 'admin'])
     .where('id', '=', cookie.id)
-    .executeTakeFirstOrThrow();
-
-  if (!user) {
-    return null;
-  }
+    .executeTakeFirst();
 
   return user;
 };
@@ -34,7 +32,7 @@ export const createUser = async (
   password: string
 ): Promise<{
   ok: boolean;
-  httpCode: number;
+  httpCode: StatusCodes;
   message?: string;
   error?: string;
   newUserId?: UUID;
@@ -51,7 +49,7 @@ export const createUser = async (
     if (existingUsername) {
       return {
         ok: false,
-        httpCode: 409,
+        httpCode: StatusCodes.CONFLICT,
         error: 'That username is already taken',
       };
     }
@@ -63,7 +61,7 @@ export const createUser = async (
 
     return {
       ok: false,
-      httpCode: 500,
+      httpCode: StatusCodes.INTERNAL_SERVER_ERROR,
       error: 'Failed to check if the username is already taken',
     };
   }
@@ -80,7 +78,7 @@ export const createUser = async (
 
     return {
       ok: true,
-      httpCode: 201,
+      httpCode: StatusCodes.CREATED,
       message: `Created new user ${username}`,
       newUserId: newUserId.id as UUID,
     };
@@ -92,7 +90,7 @@ export const createUser = async (
 
     return {
       ok: false,
-      httpCode: 200,
+      httpCode: StatusCodes.OK,
       error: 'Failed to create a new user',
     };
   }

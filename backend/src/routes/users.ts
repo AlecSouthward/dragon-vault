@@ -1,4 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
@@ -23,7 +24,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         .distinct()
         .execute();
 
-      return res.code(200).send({ campaigns: campaigns });
+      return res.code(StatusCodes.OK).send({ campaigns: campaigns });
     } catch (err) {
       app.log.error(
         { err, userId },
@@ -31,7 +32,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       );
 
       return res
-        .code(500)
+        .code(StatusCodes.INTERNAL_SERVER_ERROR)
         .send({ message: 'Failed to search for your campaigns' });
     }
   });
@@ -50,7 +51,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       const { id: userId } = req.userFromCookie!;
 
       try {
-        const characters = await app.db
+        const character = await app.db
           .selectFrom('character')
           .select([
             'id',
@@ -63,20 +64,20 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
           ])
           .where('campaignId', '=', campaignId)
           .where('userAccountId', '=', userId)
-          .execute();
+          .executeTakeFirst();
 
-        if (characters.length === 0) {
-          return res.code(404).send({
-            message: 'No character found for your user on the campaign',
-          });
-        } else if (characters.length > 1) {
+        if (!character) {
           app.log.error(
             { userId, campaignId },
-            'More than one character was found for a single user on a single campaign'
+            'Failed to find character on a campaign for user'
           );
+
+          return res.code(StatusCodes.NOT_FOUND).send({
+            message: 'No character found for your user on the campaign',
+          });
         }
 
-        return res.code(200).send(characters[0]);
+        return res.code(StatusCodes.OK).send(character);
       } catch (err) {
         app.log.error(
           { err, userId, campaignId },
@@ -84,7 +85,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         );
 
         return res
-          .code(500)
+          .code(StatusCodes.INTERNAL_SERVER_ERROR)
           .send({ message: 'Failed to search for your campaigns' });
       }
     }
