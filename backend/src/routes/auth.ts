@@ -1,8 +1,8 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
+import { UUID } from 'node:crypto';
 import z from 'zod';
 
 import { Cookie } from '../types/cookie.js';
-import { User } from '../types/domain.js';
 
 import { verifyPassword } from '../utils/passwordHash.js';
 
@@ -25,27 +25,19 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { username, password } = req.body;
+
       let user;
-
       try {
-        const selectUserResult = await app.pg.query<User>(
-          'SELECT id, username, password, admin FROM user_account WHERE username = $1',
-          [username]
-        );
+        user = await app.db
+          .selectFrom('userAccount')
+          .select(['id', 'username', 'password', 'admin'])
+          .where('username', '=', username)
+          .executeTakeFirst();
 
-        if (selectUserResult === null) {
-          app.log.error('Failed to find user in database');
-          res.code(500).send({ message: 'Failed to find user' });
-        } else if (
-          selectUserResult.rowCount === 0 ||
-          !selectUserResult.rowCount
-        ) {
+        if (!user) {
+          app.log.error({ username }, 'No user found when logging in');
           return res.code(401).send({ message: 'User not found' });
-        } else if (selectUserResult.rowCount > 1) {
-          return res.code(409).send({ message: 'More than one user found' });
         }
-
-        user = selectUserResult.rows[0];
       } catch (err) {
         app.log.error(err, 'Failed to find user in database');
 
@@ -72,7 +64,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       const userCookie: Cookie = {
-        id: user.id,
+        id: user.id as UUID,
         username: user.username,
         admin: user.admin,
       };

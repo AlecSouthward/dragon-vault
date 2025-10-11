@@ -1,16 +1,23 @@
-import fastifyPostgres from '@fastify/postgres';
 import fp from 'fastify-plugin';
+import { CamelCasePlugin, Kysely, PostgresDialect } from 'kysely';
+import { Pool } from 'pg';
+
+import type { DB } from '../db/types';
 
 import ENV from '../env';
 
 export default fp(async (app) => {
-  await app.register(fastifyPostgres, { connectionString: ENV.DATABASE_URL });
+  const pool = new Pool({ connectionString: ENV.DATABASE_URL });
 
-  try {
-    const { rows } = await app.pg.query('SELECT NOW()');
-    app.log.info({ time: rows[0].now }, 'PostgreSQL connection active');
-  } catch {
-    app.log.error('Failed to connect to PostgreSQL instance');
-    process.exit(1);
-  }
+  const db = new Kysely<DB>({
+    dialect: new PostgresDialect({ pool }),
+    plugins: [new CamelCasePlugin()],
+  });
+
+  app.decorate('db', db);
+
+  app.addHook('onClose', async () => {
+    await db.destroy();
+    await pool.end();
+  });
 });

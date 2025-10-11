@@ -1,8 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UUID } from 'node:crypto';
 import z from 'zod';
-
-import { Campaign } from '../types/domain';
 
 import { getUser } from '../plugins/retrieveData';
 
@@ -23,42 +20,59 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       const { id: currentUserId, admin: currentUserAdmin } =
         req.userFromCookie!;
 
-      const campaignQuery = await app.pg.query<Campaign>(
-        'SELECT * FROM campaign WHERE id = $1',
-        [campaignId]
-      );
+      const campaigns = await app.db
+        .selectFrom('campaign')
+        .selectAll()
+        .where('id', '=', campaignId)
+        .execute();
 
-      if (campaignQuery.rows.length > 1) {
+      if (campaigns.length === 0) {
         app.log.error(
-          campaignQuery,
-          'Multiple campaigns were returned from a single id, returning the oldest one'
-        );
-      }
-      if (campaignQuery.rows.length === 0) {
-        app.log.error(
-          campaignQuery,
-          `No campaign was found with the id: ${campaignId}`
+          { campaignId },
+          'No campaign was found when fetching from id'
         );
 
         return res
           .code(404)
           .send({ message: 'No campaign was found with that id' });
+      } else if (campaigns.length > 1) {
+        app.log.error(
+          { getCampaignId: campaignId },
+          'Multiple campaigns were returned from a single id, returning the oldest one'
+        );
       }
 
-      const campaign = campaignQuery.rows[0];
+      const campaign = campaigns[0];
 
-      const campaignAccessCheckQuery = await app.pg.query(
-        'SELECT COUNT(id) FROM campaign WHERE id = $1 AND creator_user_account_id = $2 OR id IN (SELECT campaign_id FROM character WHERE user_account_id = $2)',
-        [campaign.id, currentUserId]
-      );
+      const campaignAccessCheck = await app.db
+        .selectFrom('campaign as c')
+        .innerJoin('character as ch', 'ch.campaignId', 'c.id')
+        .select('c.id')
+        .where((eb) =>
+          eb.or([
+            eb.and([
+              eb('c.id', '=', campaignId),
+              eb('c.creatorUserAccountId', '=', currentUserId),
+            ]),
+            eb(
+              'c.id',
+              'in',
+              eb
+                .selectFrom('character')
+                .select('ch.campaignId')
+                .where('ch.userAccountId', '=', currentUserId)
+            ),
+          ])
+        )
+        .executeTakeFirst();
 
-      if (campaignAccessCheckQuery.rows.length === 0 && !currentUserAdmin) {
-        const campaignAdminQuery = await app.pg.query(
-          'SELECT id FROM campaign_admin WHERE campaign_id = $1, user_account_id = $2',
-          [campaignId, currentUserId]
-        );
+      if (!campaignAccessCheck && !currentUserAdmin) {
+        const campaignAdminCheck = await app.db
+          .selectFrom('campaignAdmin')
+          .select('id')
+          .executeTakeFirst();
 
-        if (campaignAdminQuery.rows.length !== 1) {
+        if (!campaignAdminCheck) {
           app.log.error(
             { userId: currentUserId, campaignId },
             'Unable to get campaign as user is not a part of it'
@@ -85,26 +99,27 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (req, res) => {
-      const campaign = req.body;
+      const campaignToCreate = req.body;
       const { id: userId } = req.userFromCookie!;
 
-      const createCampaignQuery = await app.pg.query<{ id: UUID }>(
-        'INSERT INTO campaign (name, description, creator_user_account_id) VALUES ($1, $2, $3) RETURNING id',
-        [campaign.name, campaign.description, userId]
-      );
-
-      if (createCampaignQuery.rows.length !== 1) {
-        app.log.error(
-          { query: createCampaignQuery.command },
-          'An error occurred when creating a new campaign'
-        );
-
+      let newCampaignId;
+      try {
+        newCampaignId = await app.db
+          .insertInto('campaign')
+          .values({
+            ...campaignToCreate,
+            creatorUserAccountId: userId,
+          })
+          .returning('id')
+          .executeTakeFirstOrThrow();
+      } catch (err) {
+        app.log.error(err, 'An error occurred when creating a new campaign');
         return res.code(500).send({ message: 'Failed to create campaign' });
       }
 
       return res.code(201).send({
         message: 'Successfully created campaign',
-        id: createCampaignQuery.rows[0].id,
+        id: newCampaignId.id,
       });
     }
   );
@@ -129,15 +144,23 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       const { campaignId } = req.params;
       const { id: userId } = req.userFromCookie!;
 
-      const viewCampaignQuery = await app.pg.query<{ count: number }>(
-        'SELECT COUNT(id) FROM campaign WHERE creator_user_account_id = $1 AND id = $2',
-        [userId, campaignId]
-      );
+      const campaign = await app.db
+        .selectFrom('campaign')
+        .select(['id', 'creatorUserAccountId'])
+        .where('id', '=', campaignId)
+        .executeTakeFirst();
 
-      if (
-        viewCampaignQuery.rows.length === 0 &&
-        viewCampaignQuery.rows[0]?.count === 0
-      ) {
+      if (!campaign) {
+        app.log.error(
+          { userId: userId, campaignId },
+          'Failed to update campaign as it does not exist'
+        );
+
+        return res.code(404).send({
+          message: 'No campaign was found with that id',
+        });
+      }
+      if (campaign.creatorUserAccountId === userId) {
         app.log.error(
           { userId: userId, campaignId },
           'Failed to update campaign as the user is not an admin in it or a system admin'
@@ -148,30 +171,22 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         });
       }
 
-      const updateCampaignQuery = await app.pg.query<{ id: UUID }>(
-        'UPDATE campaign SET name = $1, description = $2, story = $3, icon = $4 WHERE id = $5 RETURNING id',
-        [
-          updatedCampaign.name,
-          updatedCampaign.description,
-          updatedCampaign.story,
-          updatedCampaign.icon,
-          campaignId,
-        ]
-      );
-
-      if (updateCampaignQuery.rows.length !== 1) {
+      try {
+        await app.db
+          .updateTable('campaign')
+          .set(updatedCampaign)
+          .where('id', '=', campaignId)
+          .execute();
+      } catch (err) {
         app.log.error(
-          updateCampaignQuery,
-          `An error ocurred when updating campaign: ${campaignId}`
+          { err, campaignId },
+          'An error occurred when updating campaign'
         );
 
         return res.code(500).send({ message: 'Failed to update campaign' });
       }
 
-      return res.code(200).send({
-        message: 'Successfully updated campaign',
-        id: updateCampaignQuery.rows[0].id,
-      });
+      return res.code(200).send({ message: 'Successfully updated campaign' });
     }
   );
 };

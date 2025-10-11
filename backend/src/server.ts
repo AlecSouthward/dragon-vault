@@ -4,6 +4,9 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from 'fastify-type-provider-zod';
+import { Kysely } from 'kysely';
+
+import { DB } from './db/types';
 
 import ENV from './env';
 
@@ -12,6 +15,12 @@ import serverErrorHandler from './plugins/errorHandler';
 import security from './plugins/security';
 
 import apiRoutes from './routes/api';
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    db: Kysely<DB>;
+  }
+}
 
 const app = Fastify({
   logger: {

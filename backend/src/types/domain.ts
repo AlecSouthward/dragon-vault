@@ -4,6 +4,7 @@ export type User = {
   id: UUID;
   username: string;
   password: string;
+  profilePicture: string | null;
   admin: boolean;
 };
 

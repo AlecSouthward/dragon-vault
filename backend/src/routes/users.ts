@@ -1,8 +1,6 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
-import { Campaign, Character } from '../types/domain';
-
 import { getUser } from '../plugins/retrieveData';
 
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
@@ -16,12 +14,16 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
     const { id: userId } = req.userFromCookie!;
 
     try {
-      const getCampaignsQuery = await app.pg.query<Campaign>(
-        'SELECT * FROM campaign WHERE id IN (SELECT campaign_id FROM character_template WHERE id IN (SELECT template_id FROM character WHERE user_account_id = $1))',
-        [userId]
-      );
+      const campaigns = await app.db
+        .selectFrom('campaign as c')
+        .innerJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
+        .innerJoin('character as ch', 'ch.templateId', 'ct.id')
+        .selectAll('c')
+        .where('ch.userAccountId', '=', userId)
+        .distinct()
+        .execute();
 
-      return res.code(200).send({ campaigns: getCampaignsQuery.rows });
+      return res.code(200).send({ campaigns: campaigns });
     } catch (err) {
       app.log.error(
         { err, userId },
@@ -48,33 +50,33 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       const { id: userId } = req.userFromCookie!;
 
       try {
-        const getUserCharacterFromCampaignQuery = await app.pg.query<Character>(
-          `
-            SELECT
-              *,
-              resource_pools AS "resourcePools",
-              created_date AS "createdDate",
-              campaign_id AS "campaignId",
-              template_id AS "templateId",
-              user_account_id AS "userAccountId"
-            FROM character
-            WHERE campaign_id = $1 AND user_account_id = $2
-          `,
-          [campaignId, userId]
-        );
+        const characters = await app.db
+          .selectFrom('character')
+          .select([
+            'id',
+            'name',
+            'resourcePools',
+            'createdDate',
+            'campaignId',
+            'templateId',
+            'userAccountId',
+          ])
+          .where('campaignId', '=', campaignId)
+          .where('userAccountId', '=', userId)
+          .execute();
 
-        if (getUserCharacterFromCampaignQuery.rows.length === 0) {
+        if (characters.length === 0) {
           return res.code(404).send({
             message: 'No character found for your user on the campaign',
           });
-        } else if (getUserCharacterFromCampaignQuery.rows.length > 1) {
+        } else if (characters.length > 1) {
           app.log.error(
             { userId, campaignId },
             'More than one character was found for a single user on a single campaign'
           );
         }
 
-        return res.code(200).send(getUserCharacterFromCampaignQuery.rows[0]);
+        return res.code(200).send(characters[0]);
       } catch (err) {
         app.log.error(
           { err, userId, campaignId },

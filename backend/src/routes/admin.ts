@@ -1,5 +1,4 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UUID } from 'node:crypto';
 import z from 'zod';
 
 import { getIsAdmin, getUser } from '../plugins/retrieveData';
@@ -34,11 +33,13 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
 
   app.post('/invite', async (_, res) => {
     try {
-      const createUserInviteQuery = await app.pg.query<{ id: UUID }>(
-        'INSERT INTO user_invite DEFAULT VALUES RETURNING id'
-      );
+      const newInviteId = await app.db
+        .insertInto('userInvite')
+        .defaultValues()
+        .returning('id')
+        .executeTakeFirst();
 
-      return res.code(200).send({ inviteId: createUserInviteQuery.rows[0].id });
+      return res.code(200).send({ inviteId: newInviteId });
     } catch (err) {
       app.log.error(err, 'An error occurred when creating a user invite');
 

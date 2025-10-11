@@ -1,26 +1,32 @@
 import { UUID } from 'node:crypto';
 
 import { Cookie } from '../types/cookie';
-import { User } from '../types/domain';
 
 import app from '../server';
 import { hashPassword } from './passwordHash';
 
+type UserFromCookie = {
+  id: string;
+  admin: boolean;
+  username: string;
+  password: string;
+  profilePicture: string | null;
+};
+
 export const getUserFromCookie = async (
   cookie: Cookie
-): Promise<User | null> => {
-  const userResult = await app.pg.query<User>(
-    'SELECT id, username, password, profile_picture AS "profilePicture", admin FROM user_account WHERE id = $1',
-    [cookie.id]
-  );
+): Promise<UserFromCookie | null> => {
+  const user = await app.db
+    .selectFrom('userAccount')
+    .select(['id', 'username', 'password', 'profilePicture', 'admin'])
+    .where('id', '=', cookie.id)
+    .executeTakeFirstOrThrow();
 
-  if (!userResult) {
+  if (!user) {
     return null;
-  } else if (userResult.rows.length > 1) {
-    throw new Error('More than one user was returned from the cookie id');
   }
 
-  return userResult.rows[0];
+  return user;
 };
 
 export const createUser = async (
@@ -36,12 +42,13 @@ export const createUser = async (
   const hashedPassword = await hashPassword(password);
 
   try {
-    const usernameExistsQuery = await app.pg.query(
-      'SELECT 1 FROM user_account WHERE username = $1 LIMIT 1',
-      [username]
-    );
+    const existingUsername = await app.db
+      .selectFrom('userAccount')
+      .select('username')
+      .where('username', '=', username)
+      .executeTakeFirst();
 
-    if (usernameExistsQuery.rows.length > 0) {
+    if (existingUsername) {
       return {
         ok: false,
         httpCode: 409,
@@ -62,16 +69,20 @@ export const createUser = async (
   }
 
   try {
-    const createUserQuery = await app.pg.query<{ id: UUID }>(
-      'INSERT INTO user_account (username, password) VALUES ($1, $2) RETURNING id',
-      [username, hashedPassword]
-    );
+    const newUserId = await app.db
+      .insertInto('userAccount')
+      .values({
+        username,
+        password: hashedPassword,
+      })
+      .returning('id')
+      .executeTakeFirstOrThrow();
 
     return {
       ok: true,
       httpCode: 201,
       message: `Created new user ${username}`,
-      newUserId: createUserQuery.rows[0].id,
+      newUserId: newUserId.id as UUID,
     };
   } catch (err) {
     app.log.error(
@@ -79,6 +90,10 @@ export const createUser = async (
       'An error occurred when creating a new user'
     );
 
-    return { ok: false, httpCode: 500, error: 'Failed to create a new user' };
+    return {
+      ok: false,
+      httpCode: 200,
+      error: 'Failed to create a new user',
+    };
   }
 };

@@ -1,5 +1,4 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { UUID } from 'node:crypto';
 import z from 'zod';
 
 import { INVITE_EXPIRE_OFFSET_MS } from '../config/invites';
@@ -25,45 +24,53 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       const { username, password } = req.body;
 
       try {
-        const inviteExpireCheckQuery = await app.pg.query<{
-          createdDate: Date;
-          usedByUserAccountId: UUID;
-        }>(
-          'SELECT created_date AS "createdDate", used_by_user_account_id AS "usedByUserAccountId" FROM user_invite WHERE id = $1',
-          [inviteId]
-        );
+        const invites = await app.db
+          .selectFrom('userInvite')
+          .select(['createdDate', 'usedByUserAccountId'])
+          .where('id', '=', inviteId)
+          .execute();
 
-        if (inviteExpireCheckQuery.rows.length === 0) {
+        if (invites.length === 0) {
           return res
             .code(404)
             .send({ message: 'No invite was found with that id' });
-        } else if (inviteExpireCheckQuery.rows[0]) {
-          const queryResult = inviteExpireCheckQuery.rows[0];
-          const expirationTime =
-            queryResult.createdDate.getTime() + INVITE_EXPIRE_OFFSET_MS;
-          const currentTime = Date.now();
+        } else if (invites.length > 1) {
+          app.log.error(
+            { username, inviteId },
+            'Multiple invites were returned from a single id, using the oldest one'
+          );
+        }
 
-          if (currentTime > expirationTime) {
-            return res.code(410).send({ message: 'The invite has expired' });
-          } else if (queryResult.usedByUserAccountId) {
-            return res
-              .code(410)
-              .send({ message: 'The invite has already been used' });
-          }
+        const inviteToUse = invites[0];
+        const expirationTime =
+          inviteToUse.createdDate.getTime() + INVITE_EXPIRE_OFFSET_MS;
+        const currentTime = Date.now();
+
+        if (currentTime > expirationTime) {
+          return res.code(410).send({ message: 'The invite has expired' });
+        } else if (inviteToUse.usedByUserAccountId) {
+          return res
+            .code(410)
+            .send({ message: 'The invite has already been used' });
         }
 
         const createUserResponse = await createUser(username, password);
 
-        if (!createUserResponse.ok) {
+        if (!createUserResponse.ok || !createUserResponse.newUserId) {
+          app.log.error(
+            { err: createUserResponse.error },
+            'An error occurred when creating a user from an invite'
+          );
           return res
             .code(createUserResponse.httpCode)
             .send({ message: createUserResponse.error });
         }
 
-        await app.pg.query(
-          'UPDATE user_invite SET used_by_user_account_id = $1 WHERE id = $2',
-          [createUserResponse.newUserId, inviteId]
-        );
+        await app.db
+          .updateTable('userInvite')
+          .set('usedByUserAccountId', createUserResponse.newUserId)
+          .where('id', '=', inviteId)
+          .execute();
 
         return res
           .code(createUserResponse.httpCode)
