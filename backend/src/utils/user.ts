@@ -7,14 +7,6 @@ import { User } from '../types/domain';
 import app from '../server';
 import { hashPassword } from './passwordHash';
 
-type UserFromCookie = {
-  id: string;
-  admin: boolean;
-  username: string;
-  password: string;
-  profilePicture: string | null;
-};
-
 export const getUserFromCookie = async (
   cookie: Cookie
 ): Promise<User | undefined> => {
