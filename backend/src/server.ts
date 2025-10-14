@@ -15,6 +15,7 @@ import serverErrorHandler from './plugins/errorHandler';
 import security from './plugins/security';
 
 import apiRoutes from './routes/api';
+import healthRoutes from './routes/health';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -46,8 +47,7 @@ try {
 }
 
 await app.register(apiRoutes, { prefix: '/api/v1' });
-
-app.get('/health', async () => ({ ok: true }));
+await app.register(healthRoutes, { prefix: '/health' });
 
 app.listen({ port: ENV.PORT, host: '0.0.0.0' }).catch((err) => {
   app.log.error(err);
