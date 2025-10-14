@@ -37,18 +37,21 @@ app.setSerializerCompiler(serializerCompiler);
 app.setErrorHandler(serverErrorHandler);
 
 await app.register(security);
-await app.register(db);
+
+try {
+  await app.register(db);
+} catch (err) {
+  app.log.error(err, 'Failed to connect to database');
+  process.exit(1);
+}
 
 await app.register(apiRoutes, { prefix: '/api/v1' });
 
 app.get('/health', async () => ({ ok: true }));
 
-app
-  .listen({ port: ENV.PORT, host: '0.0.0.0' })
-  .then((addr) => app.log.info(`listening on ${addr}`))
-  .catch((err) => {
-    app.log.error(err);
-    process.exit(1);
-  });
+app.listen({ port: ENV.PORT, host: '0.0.0.0' }).catch((err) => {
+  app.log.error(err);
+  process.exit(1);
+});
 
 export default app;
