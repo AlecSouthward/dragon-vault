@@ -12,6 +12,7 @@ import ENV from './env';
 
 import db from './plugins/db';
 import serverErrorHandler from './plugins/errorHandler';
+import multipart from './plugins/multipart';
 import security from './plugins/security';
 
 import apiRoutes from './routes/api';
@@ -37,6 +38,7 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 app.setErrorHandler(serverErrorHandler);
 
+await app.register(multipart);
 await app.register(security);
 
 try {

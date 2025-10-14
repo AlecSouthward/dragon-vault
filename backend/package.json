@@ -17,9 +17,11 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@fastify/busboy": "^3.2.0",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.1.0",
     "@fastify/jwt": "^10.0.0",
+    "@fastify/multipart": "^9.2.1",
     "@fastify/postgres": "^6.0.2",
     "argon2": "^0.44.0",
     "dotenv": "^17.2.1",
@@ -28,6 +30,8 @@
     "http-status-codes": "^2.3.0",
     "kysely": "^0.28.8",
     "pg": "^8.16.3",
+    "sharp": "^0.34.4",
+    "uuidv7": "^1.0.2",
     "zod": "^4.1.11"
   },
   "devDependencies": {

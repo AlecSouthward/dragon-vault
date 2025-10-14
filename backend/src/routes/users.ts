@@ -1,8 +1,12 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { StatusCodes } from 'http-status-codes';
+import { uuidv7 } from 'uuidv7';
 import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
+
+import { IMAGE_FOLDERS } from '../utils/imageFolders';
+import { compressImage, saveImage } from '../utils/images';
 
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('preHandler', getUser);
@@ -92,6 +96,31 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       }
     }
   );
+
+  app.post('/me/profile-picture', async (req, res) => {
+    const filePart = await req.file();
+
+    if (!filePart) {
+      return res
+        .code(StatusCodes.BAD_REQUEST)
+        .send({ message: 'No profile picture was provided' });
+    }
+
+    const { mimetype } = filePart;
+
+    if (!mimetype.startsWith('image/')) {
+      return res
+        .code(StatusCodes.BAD_REQUEST)
+        .send({ error: 'File uploaded was not an image' });
+    }
+
+    const file = await compressImage(filePart);
+    await saveImage(file, uuidv7(), IMAGE_FOLDERS.PROFILE_PICTURE);
+
+    return res
+      .code(StatusCodes.OK)
+      .send({ message: 'Successfully set new profile picture' });
+  });
 };
 
 export default usersRoutes;
