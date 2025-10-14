@@ -2,17 +2,17 @@ import { StatusCodes } from 'http-status-codes';
 import { UUID } from 'node:crypto';
 
 import { Cookie } from '../types/cookie';
-import { User } from '../types/domain';
+import { SelectableUser } from '../types/domain';
 
 import app from '../server';
 import { hashPassword } from './passwordHash';
 
 export const getUserFromCookie = async (
   cookie: Cookie
-): Promise<User | undefined> => {
+): Promise<SelectableUser | undefined> => {
   const user = await app.db
     .selectFrom('userAccount')
-    .select(['id', 'username', 'password', 'profilePicture', 'admin'])
+    .selectAll()
     .where('id', '=', cookie.id)
     .executeTakeFirst();
 
