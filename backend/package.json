@@ -9,9 +9,8 @@
     "start": "dotenv -e .env.production -- cross-env NODE_ENV=production node dist/server.js",
     "lint": "eslint . --ext .ts && prettier --check .",
     "format": "prettier -w .",
-    "dev-migrate": "dotenv -e .env.development -- node-pg-migrate",
-    "prod-migrate": "dotenv -e .env.production -- node-pg-migrate",
-    "gen-db-types": "dotenv -e .env.development -- kysely-codegen && prettier -w ./src/db/"
+    "pg:migrate": "dotenv -e .env.development -- node-pg-migrate",
+    "pg:gen-types": "dotenv -e .env.development -- kysely-codegen"
   },
   "keywords": [],
   "author": "",
