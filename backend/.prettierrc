@@ -3,6 +3,9 @@
   "singleQuote": true,
   "trailingComma": "es5",
   "tabWidth": 2,
+  "printWidth": 80,
+  "singleAttributePerLine": false,
+  "objectWrap": "collapse",
   "endOfLine": "auto",
   "importOrder": [
     "<THIRD_PARTY_MODULES>",

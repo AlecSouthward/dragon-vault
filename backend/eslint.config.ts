@@ -4,17 +4,14 @@ import globals from 'globals';
 
 import tseslint from 'typescript-eslint';
 
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
-  { ignores: ['dist'] },
+  globalIgnores(['dist/**', 'src/db/**']),
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.ts'],
-    languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.node,
-    },
+    languageOptions: { ecmaVersion: 2020, globals: globals.node },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-unused-vars': [

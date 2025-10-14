@@ -61,10 +61,7 @@ export const createUser = async (
   try {
     const newUserId = await app.db
       .insertInto('userAccount')
-      .values({
-        username,
-        password: hashedPassword,
-      })
+      .values({ username, password: hashedPassword })
       .returning('id')
       .executeTakeFirstOrThrow();
 

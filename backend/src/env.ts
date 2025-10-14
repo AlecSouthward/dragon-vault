@@ -35,9 +35,7 @@ const ENV = {
 const parseResult = z.safeParse(ENV_SCHEMA, ENV);
 
 if (!parseResult.success) {
-  throw new Error('Invalid dotenv file', {
-    cause: parseResult.error,
-  });
+  throw new Error('Invalid dotenv file', { cause: parseResult.error });
 }
 
 export default Object.freeze(parseResult.data);

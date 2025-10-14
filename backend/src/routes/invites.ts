@@ -11,9 +11,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
     '/:inviteId',
     {
       schema: {
-        params: z.object({
-          inviteId: z.uuidv7(),
-        }),
+        params: z.object({ inviteId: z.uuidv7() }),
         body: z.strictObject({
           username: z.string().nonoptional(),
           password: z.string().nonoptional(),

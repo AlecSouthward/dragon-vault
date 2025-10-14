@@ -72,9 +72,11 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
             'Failed to find character on a campaign for user'
           );
 
-          return res.code(StatusCodes.NOT_FOUND).send({
-            message: 'No character found for your user on the campaign',
-          });
+          return res
+            .code(StatusCodes.NOT_FOUND)
+            .send({
+              message: 'No character found for your user on the campaign',
+            });
         }
 
         return res.code(StatusCodes.OK).send(character);
