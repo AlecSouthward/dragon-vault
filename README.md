@@ -33,7 +33,7 @@ npm install
 ```
 
 Make sure you have a PostgreSQL instance and a Dragon Vault database on it.
-If you do, then run `npm run dev-migrate up` while in the backend directory to build up your database.
+If you do, then run `npm run pg:migrate up` while in the backend directory to build up your database (development only).
 
 ### Running
 
