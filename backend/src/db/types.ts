@@ -86,6 +86,10 @@ export interface Character {
   image: string | null;
   level: Generated<number>;
   name: string;
+  /**
+   * Stores things like speed, armor class, initiative, etc.
+   */
+  properties: string | null;
   race: string | null;
   /**
    * Key points to the template resource pool while the value is the value of that pool.
@@ -119,14 +123,18 @@ export interface CharacterTemplate {
   /**
    * Stores the available/allowed attributes and their information (user-customizable).
    */
-  attributes: Json | null;
+  attributes: Generated<Json>;
   campaignId: string;
   createdDate: Generated<Timestamp>;
   id: Generated<string>;
   /**
+   * Stores things like speed, armor class, initiative, etc.
+   */
+  properties: Json;
+  /**
    * Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.
    */
-  resourcePools: Json | null;
+  resourcePools: Generated<Json>;
 }
 
 export interface Enemy {
@@ -147,6 +155,10 @@ export interface Enemy {
    */
   image: string | null;
   name: string;
+  /**
+   * Stores things like speed, armor class, initiative, etc.
+   */
+  properties: string | null;
   /**
    * Key points to the template resource pool while the value is the value of that pool.
    */

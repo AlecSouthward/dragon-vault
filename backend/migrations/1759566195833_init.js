@@ -124,15 +124,27 @@ export async function up(pgm) {
       onUpdate: 'CASCADE',
     },
     created_date: createdDateColumn,
+    properties: {
+      type: 'jsonb',
+      comment: 'Stores things like speed, armor class, initiative, etc.',
+      defaultValue: pgm.func(
+        `'{"speed": {}, "armorClass": {}, "initiative": {}}'::jsonb`
+      ),
+      notNull: true,
+    },
     resource_pools: {
       type: 'jsonb',
       comment:
         'Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.',
+      default: pgm.func(`'{}'::jsonb`),
+      notNull: true,
     },
     attributes: {
       type: 'jsonb',
       comment:
         'Stores the available/allowed attributes and their information (user-customizable).',
+      default: pgm.func(`'{}'::jsonb`),
+      notNull: true,
     },
   });
 
@@ -177,6 +189,10 @@ export async function up(pgm) {
       alive: { type: 'boolean', notNull: true, default: true },
       race: { type: 'text' },
       class: { type: 'text' },
+      properties: {
+        type: 'hstore',
+        comment: 'Stores things like speed, armor class, initiative, etc.',
+      },
       resource_pools: {
         type: 'hstore',
         comment:
@@ -236,6 +252,10 @@ export async function up(pgm) {
     created_date: createdDateColumn,
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
+    properties: {
+      type: 'hstore',
+      comment: 'Stores things like speed, armor class, initiative, etc.',
+    },
     resource_pools: {
       type: 'hstore',
       comment:
