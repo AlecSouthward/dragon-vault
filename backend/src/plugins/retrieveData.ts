@@ -29,7 +29,7 @@ export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
     req.userFromCookie = user;
   } catch (err) {
     app.log.error(err, 'User is unauthorized');
-    return res.status(401).send({ message: 'Unauthorized' });
+    return res.code(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
   }
 };
 
@@ -37,12 +37,17 @@ export const getIsAdmin = async (req: FastifyRequest, res: FastifyReply) => {
   if (!req.userFromCookie) {
     app.log.error('Missing user cookie as the getUser preHandler was not run');
 
-    return res.status(401);
+    return res
+      .code(StatusCodes.INTERNAL_SERVER_ERROR)
+      .send({ message: 'Failed to authenticate your user' });
   } else if (!req.userFromCookie.admin) {
     app.log.error(
       { userId: req.userFromCookie.id },
       'The user is not an admin'
     );
-    return res.status(403).send({ message: 'Authorized user is not an admin' });
+
+    return res
+      .code(StatusCodes.FORBIDDEN)
+      .send({ message: 'Authorized user is not an admin' });
   }
 };
