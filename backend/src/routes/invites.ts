@@ -2,11 +2,40 @@ import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
+import { Cookie } from '../types/cookie';
+
 import { INVITE_EXPIRE_OFFSET_MS } from '../config/invites';
+
+import { getIsAdmin, getUser } from '../plugins/retrieveData';
 
 import { createUser } from '../utils/user';
 
 const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
+  app.post('/', { preHandler: [getUser, getIsAdmin] }, async (req, res) => {
+    const { username } = req.userFromCookie! as Cookie;
+
+    try {
+      const newInvite = await app.db
+        .insertInto('userInvite')
+        .defaultValues()
+        .returning('id')
+        .executeTakeFirstOrThrow();
+
+      return res
+        .code(StatusCodes.OK)
+        .send({ id: newInvite.id, message: 'Successfully created new invite' });
+    } catch (err) {
+      app.log.error(
+        { err, username },
+        'An error occurred when creating a new invite'
+      );
+
+      return res
+        .code(StatusCodes.INTERNAL_SERVER_ERROR)
+        .send({ message: 'Failed to create an invite' });
+    }
+  });
+
   app.post(
     '/:inviteId',
     {
