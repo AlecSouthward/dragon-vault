@@ -1,4 +1,4 @@
-import { StatusCodes } from 'http-status-codes';
+import { HttpError, httpErrors } from '@fastify/sensible';
 import { UUID } from 'node:crypto';
 
 import { Cookie } from '../types/cookie';
@@ -24,8 +24,7 @@ export const createUser = async (
   password: string
 ): Promise<{
   ok: boolean;
-  httpCode: StatusCodes;
-  message?: string;
+  errorHttpCode?: HttpError;
   error?: string;
   newUserId?: UUID;
 }> => {
@@ -36,12 +35,12 @@ export const createUser = async (
       .selectFrom('userAccount')
       .select('username')
       .where('username', '=', username)
-      .executeTakeFirst();
+      .executeTakeFirstOrThrow();
 
     if (existingUsername) {
       return {
         ok: false,
-        httpCode: StatusCodes.CONFLICT,
+        errorHttpCode: httpErrors.conflict(),
         error: 'That username is already taken',
       };
     }
@@ -53,7 +52,7 @@ export const createUser = async (
 
     return {
       ok: false,
-      httpCode: StatusCodes.INTERNAL_SERVER_ERROR,
+      errorHttpCode: httpErrors.internalServerError(),
       error: 'Failed to check if the username is already taken',
     };
   }
@@ -65,22 +64,13 @@ export const createUser = async (
       .returning('id')
       .executeTakeFirstOrThrow();
 
-    return {
-      ok: true,
-      httpCode: StatusCodes.CREATED,
-      message: `Created new user ${username}`,
-      newUserId: newUserId.id as UUID,
-    };
+    return { ok: true, newUserId: newUserId.id as UUID };
   } catch (err) {
     app.log.error(
       { err, username },
       'An error occurred when creating a new user'
     );
 
-    return {
-      ok: false,
-      httpCode: StatusCodes.OK,
-      error: 'Failed to create a new user',
-    };
+    return { ok: false, error: 'Failed to create a new user' };
   }
 };

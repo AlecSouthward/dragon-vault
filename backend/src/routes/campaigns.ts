@@ -1,5 +1,4 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
@@ -25,7 +24,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .selectFrom('campaign')
         .selectAll()
         .where('id', '=', campaignId)
-        .executeTakeFirst();
+        .executeTakeFirstOrThrow();
 
       if (!campaign) {
         app.log.error(
@@ -33,9 +32,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           'No campaign was found when fetching from id'
         );
 
-        return res
-          .code(StatusCodes.NOT_FOUND)
-          .send({ message: 'No campaign was found with that id' });
+        return res.notFound();
       }
 
       const campaignAccessCheck = await app.db
@@ -58,13 +55,13 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
             ),
           ])
         )
-        .executeTakeFirst();
+        .executeTakeFirstOrThrow();
 
       if (!campaignAccessCheck && !currentUserAdmin) {
         const campaignAdminCheck = await app.db
           .selectFrom('campaignAdmin')
           .select('id')
-          .executeTakeFirst();
+          .executeTakeFirstOrThrow();
 
         if (!campaignAdminCheck) {
           app.log.error(
@@ -72,13 +69,11 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
             'Unable to get campaign as user is not a part of it'
           );
 
-          return res
-            .code(StatusCodes.UNAUTHORIZED)
-            .send({ message: 'You do not have access to view this campaign' });
+          return res.unauthorized();
         }
       }
 
-      return res.code(StatusCodes.OK).send(campaign);
+      return res.send(campaign);
     }
   );
 
@@ -96,26 +91,13 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       const campaignToCreate = req.body;
       const { id: userId } = req.userFromCookie!;
 
-      let newCampaignId;
-      try {
-        newCampaignId = await app.db
-          .insertInto('campaign')
-          .values({ ...campaignToCreate, creatorUserAccountId: userId })
-          .returning('id')
-          .executeTakeFirstOrThrow();
-      } catch (err) {
-        app.log.error(err, 'An error occurred when creating a new campaign');
-        return res
-          .code(StatusCodes.INTERNAL_SERVER_ERROR)
-          .send({ message: 'Failed to create campaign' });
-      }
+      const newCampaignId = await app.db
+        .insertInto('campaign')
+        .values({ ...campaignToCreate, creatorUserAccountId: userId })
+        .returning('id')
+        .executeTakeFirstOrThrow();
 
-      return res
-        .code(StatusCodes.CREATED)
-        .send({
-          message: 'Successfully created campaign',
-          id: newCampaignId.id,
-        });
+      return res.send({ id: newCampaignId.id });
     }
   );
 
@@ -143,51 +125,22 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .selectFrom('campaign')
         .select(['id', 'creatorUserAccountId'])
         .where('id', '=', campaignId)
-        .executeTakeFirst();
+        .executeTakeFirstOrThrow();
 
-      if (!campaign) {
-        app.log.error(
-          { userId: userId, campaignId },
-          'Failed to update campaign as it does not exist'
-        );
-
-        return res
-          .code(StatusCodes.NOT_FOUND)
-          .send({ message: 'No campaign was found with that id' });
-      }
-      if (campaign.creatorUserAccountId === userId) {
+      if (campaign.creatorUserAccountId !== userId) {
         app.log.error(
           { userId: userId, campaignId },
           'Failed to update campaign as the user is not an admin in it or a system admin'
         );
 
-        return res
-          .code(StatusCodes.UNAUTHORIZED)
-          .send({
-            message: 'You do not have admin access to modify this campaign',
-          });
+        return res.unauthorized();
       }
 
-      try {
-        await app.db
-          .updateTable('campaign')
-          .set(updatedCampaign)
-          .where('id', '=', campaignId)
-          .execute();
-      } catch (err) {
-        app.log.error(
-          { err, campaignId },
-          'An error occurred when updating campaign'
-        );
-
-        return res
-          .code(StatusCodes.INTERNAL_SERVER_ERROR)
-          .send({ message: 'Failed to update campaign' });
-      }
-
-      return res
-        .code(StatusCodes.OK)
-        .send({ message: 'Successfully updated campaign' });
+      await app.db
+        .updateTable('campaign')
+        .set(updatedCampaign)
+        .where('id', '=', campaignId)
+        .executeTakeFirstOrThrow();
     }
   );
 };

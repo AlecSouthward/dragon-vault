@@ -1,41 +1,12 @@
+import { httpErrors } from '@fastify/sensible';
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
-import { Cookie } from '../types/cookie';
-
 import { INVITE_EXPIRE_OFFSET_MS } from '../config/invites';
-
-import { getIsAdmin, getUser } from '../plugins/retrieveData';
 
 import { createUser } from '../utils/user';
 
 const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
-  app.post('/', { preHandler: [getUser, getIsAdmin] }, async (req, res) => {
-    const { username } = req.userFromCookie! as Cookie;
-
-    try {
-      const newInvite = await app.db
-        .insertInto('userInvite')
-        .defaultValues()
-        .returning('id')
-        .executeTakeFirstOrThrow();
-
-      return res
-        .code(StatusCodes.OK)
-        .send({ id: newInvite.id, message: 'Successfully created new invite' });
-    } catch (err) {
-      app.log.error(
-        { err, username },
-        'An error occurred when creating a new invite'
-      );
-
-      return res
-        .code(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ message: 'Failed to create an invite' });
-    }
-  });
-
   app.post(
     '/:inviteId',
     {
@@ -60,9 +31,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       if (!invite) {
         app.log.error({ inviteId, username }, 'Failed to find invite by id');
 
-        return res
-          .code(StatusCodes.NOT_FOUND)
-          .send({ message: 'No invite was found with that id' });
+        return res.notFound();
       }
 
       const expirationTime =
@@ -75,9 +44,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
           'Failed to use invite as it has expired'
         );
 
-        return res
-          .code(StatusCodes.GONE)
-          .send({ message: 'The invite has expired' });
+        return res.gone();
       } else if (invite.usedByUserAccountId) {
         app.log.error(
           {
@@ -88,44 +55,25 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
           'Failed to use invite as it has already been used'
         );
 
-        return res
-          .code(StatusCodes.GONE)
-          .send({ message: 'The invite has already been used' });
+        return res.gone();
       }
 
       const createUserResponse = await createUser(username, password);
 
-      if (!createUserResponse.ok || !createUserResponse.newUserId) {
-        app.log.error(
-          { err: createUserResponse.error, inviteId, username },
-          'An error occurred when creating a user from an invite'
-        );
+      if (createUserResponse.errorHttpCode || !createUserResponse.newUserId) {
+        app.log.error({ inviteId, username }, createUserResponse.error);
 
-        return res
-          .code(createUserResponse.httpCode)
-          .send({ message: createUserResponse.error });
+        return res.status(
+          createUserResponse.errorHttpCode?.statusCode ??
+            httpErrors.internalServerError().statusCode
+        );
       }
 
-      try {
-        await app.db
-          .updateTable('userInvite')
-          .set('usedByUserAccountId', createUserResponse.newUserId)
-          .where('id', '=', inviteId)
-          .execute();
-      } catch (err) {
-        app.log.error(
-          { err, inviteId, username },
-          'An error occurred when using an invite'
-        );
-
-        return res
-          .code(StatusCodes.INTERNAL_SERVER_ERROR)
-          .send({ message: 'Failed to use the invite' });
-      }
-
-      return res
-        .code(createUserResponse.httpCode)
-        .send({ message: createUserResponse.message });
+      await app.db
+        .updateTable('userInvite')
+        .set('usedByUserAccountId', createUserResponse.newUserId)
+        .where('id', '=', inviteId)
+        .executeTakeFirstOrThrow();
     }
   );
 };

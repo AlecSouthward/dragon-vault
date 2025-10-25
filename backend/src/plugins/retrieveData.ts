@@ -1,5 +1,4 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
-import { StatusCodes } from 'http-status-codes';
 
 import { Cookie } from '../types/cookie';
 
@@ -13,41 +12,32 @@ export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
     const cookie = payload as Cookie;
 
     if (!cookie?.id) {
-      return res
-        .code(StatusCodes.BAD_REQUEST)
-        .send({ message: 'Missing user id from cookie' });
+      return res.badRequest();
     }
 
     const user = await getUserFromCookie(cookie);
 
     if (!user) {
-      return res
-        .code(StatusCodes.NOT_FOUND)
-        .send({ message: 'No user was found' });
+      return res.notFound();
     }
 
     req.userFromCookie = user;
   } catch (err) {
     app.log.error(err, 'User is unauthorized');
-    return res.code(StatusCodes.UNAUTHORIZED).send({ message: 'Unauthorized' });
+    return res.unauthorized();
   }
 };
 
 export const getIsAdmin = async (req: FastifyRequest, res: FastifyReply) => {
   if (!req.userFromCookie) {
     app.log.error('Missing user cookie as the getUser preHandler was not run');
-
-    return res
-      .code(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send({ message: 'Failed to authenticate your user' });
+    return res.internalServerError();
   } else if (!req.userFromCookie.admin) {
     app.log.error(
       { userId: req.userFromCookie.id },
-      'The user is not an admin'
+      'Authorized user is not an admin'
     );
 
-    return res
-      .code(StatusCodes.FORBIDDEN)
-      .send({ message: 'Authorized user is not an admin' });
+    return res.forbidden();
   }
 };

@@ -1,5 +1,4 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { StatusCodes } from 'http-status-codes';
 import { UUID } from 'node:crypto';
 import z from 'zod';
 
@@ -27,50 +26,21 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
     async (req, res) => {
       const { username, password } = req.body;
 
-      let user;
-      try {
-        user = await app.db
-          .selectFrom('userAccount')
-          .select(['id', 'username', 'password', 'admin'])
-          .where('username', '=', username)
-          .executeTakeFirst();
+      const user = await app.db
+        .selectFrom('userAccount')
+        .select(['id', 'username', 'password', 'admin'])
+        .where('username', '=', username)
+        .executeTakeFirstOrThrow();
 
-        if (!user) {
-          app.log.error({ username }, 'No user found when logging in');
-          return res
-            .code(StatusCodes.UNAUTHORIZED)
-            .send({ message: 'Invalid credentials' });
-        }
-      } catch (err) {
-        app.log.error(err, 'Failed to find user in database');
+      const passwordsMatch = await verifyPassword(user.password, password);
 
-        return res
-          .code(StatusCodes.OK)
-          .send({ message: 'An error occurred when fetching your user' });
-      }
-
-      try {
-        const passwordsMatch = await verifyPassword(user.password, password);
-
-        if (!passwordsMatch) {
-          app.log.error(
-            { username },
-            'Failed to log user in as their password was wrong'
-          );
-
-          return res
-            .status(StatusCodes.UNAUTHORIZED)
-            .send({ message: 'Invalid credentials' });
-        }
-      } catch (err) {
+      if (!passwordsMatch) {
         app.log.error(
-          { err, username },
-          "An error occurred when verifying user's password"
+          { username },
+          'Failed to log user in as their password was wrong'
         );
 
-        return res
-          .status(StatusCodes.INTERNAL_SERVER_ERROR)
-          .send({ message: 'Failed to verify your password' });
+        return res.unauthorized();
       }
 
       const userCookie: Cookie = {
@@ -86,9 +56,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         path: '/',
       });
 
-      res
-        .code(StatusCodes.OK)
-        .send({ id: user.id, username: user.username, admin: user.admin });
+      res.send({ id: user.id, username: user.username, admin: user.admin });
     }
   );
 };

@@ -1,5 +1,4 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import { StatusCodes } from 'http-status-codes';
 import z from 'zod';
 
 import { getIsAdmin, getUser } from '../plugins/retrieveData';
@@ -24,32 +23,24 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
       const { username, password } = req.body;
       const createUserResponse = await createUser(username, password);
 
-      return res
-        .code(createUserResponse.httpCode)
-        .send({
-          message: createUserResponse.message || createUserResponse.error,
-        });
+      if (createUserResponse.errorHttpCode) {
+        app.log.error(createUserResponse.error);
+
+        return res.code(createUserResponse.errorHttpCode.statusCode);
+      }
     }
   );
 
   // TODO: Add routes for deleting/managing users
 
   app.post('/invite', async (_, res) => {
-    try {
-      const newInviteId = await app.db
-        .insertInto('userInvite')
-        .defaultValues()
-        .returning('id')
-        .executeTakeFirst();
+    const newInviteId = await app.db
+      .insertInto('userInvite')
+      .defaultValues()
+      .returning('id')
+      .executeTakeFirst();
 
-      return res.code(StatusCodes.OK).send({ inviteId: newInviteId });
-    } catch (err) {
-      app.log.error(err, 'An error occurred when creating a user invite');
-
-      return res
-        .code(StatusCodes.INTERNAL_SERVER_ERROR)
-        .send({ message: 'Failed to create a user invite' });
-    }
+    return res.send({ inviteId: newInviteId });
   });
 };
 
