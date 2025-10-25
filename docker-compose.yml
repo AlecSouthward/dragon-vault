@@ -1,47 +1,54 @@
-version: '0.1'
-
-secrets:
-  jwt_token:
-    environment: "DV_JWT_TOKEN"
-  db_url:
-    environment: "DV_DB_URL"
-
 services:
   database:
-    container_name: dragon_vault_database
-    image: postgres:17.5-alpine3.22
-    networks: 
-      - dragon_vault
+    container_name: dragon-vault-database
+    image: postgres:18.0-alpine3.22
+    environment:
+      - POSTGRES_PASSWORD=admin
+    networks:
+      - dragon-vault
     volumes:
-      - ./database/data:/var/lib/postgresql/data/
-      - ./database/scripts/init.sql:/docker-entrypoint-initdb.d/
+      - ./database/data/:/var/lib/postgresql/18/docker/
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dragon_vault_user -d dragon_vault"]
+      test: [ "CMD-SHELL", "pg_isready -U dragon_vault_user -d dragon_vault" ]
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
 
   backend:
-    container_name: dragon_vault_backend
-    image: node:24.4.1-alpine3.22
+    container_name: dragon-vault-backend
+    image: node:25.0.0-alpine3.22
     build: ./backend
-    networks: 
-      - dragon_vault
+    env_file:
+      - ./backend/.env.production
+    networks:
+      - dragon-vault
     depends_on:
       - database
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
+      interval: 5s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
 
   frontend:
-    container_name: dragon_vault_frontend
-    image: nginx:1.29.0-alpine3.22-slim
+    container_name: dragon-vault-frontend
+    image: nginx:1.29.2-alpine3.22-slim
     build: ./frontend
     ports:
       - "443:443"
       - "80:80"
     networks:
-      - dragon_vault
+      - dragon-vault
     depends_on:
       - backend
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5173/" ]
+      interval: 5s
+      timeout: 5s
+      retries: 2
+      start_period: 5s
 
 networks:
-  dragon_vault: {}
+  dragon-vault: {}
