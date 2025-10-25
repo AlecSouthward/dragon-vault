@@ -1,5 +1,11 @@
+import {
+  PG_FOREIGN_KEY_VIOLATION,
+  PG_INVALID_TEXT_REPRESENTATION,
+  PG_NOT_NULL_VIOLATION,
+  PG_UNIQUE_VIOLATION,
+} from '@drdgvhbh/postgres-error-codes';
+import { httpErrors } from '@fastify/sensible';
 import { FastifyError } from 'fastify';
-import { StatusCodes } from 'http-status-codes';
 
 import { FastifyReply } from 'fastify/types/reply';
 import { FastifyRequest } from 'fastify/types/request';
@@ -7,51 +13,34 @@ import { FastifyRequest } from 'fastify/types/request';
 const serverErrorHandler = (
   err: FastifyError & { code?: string },
   req: FastifyRequest,
-  reply: FastifyReply
+  res: FastifyReply
 ) => {
   req.log.error({ err }, 'An unexpected error occurred');
 
   const isValidation = err.validation;
   const pgCode = err.code;
 
-  let status = err.statusCode ?? StatusCodes.INTERNAL_SERVER_ERROR;
-  let message = 'Internal server error';
+  let statusCode =
+    err.statusCode ?? httpErrors.internalServerError().statusCode;
 
   if (isValidation) {
-    status = StatusCodes.BAD_REQUEST;
-    message = 'Invalid request';
+    statusCode = httpErrors.badRequest().statusCode;
   } else if (pgCode) {
     switch (pgCode) {
-      case '23505': // unique_violation
-        status = StatusCodes.CONFLICT;
-        message = 'Resource already exists';
+      case PG_UNIQUE_VIOLATION:
+      case PG_FOREIGN_KEY_VIOLATION:
+        statusCode = httpErrors.conflict().statusCode;
         break;
-      case '23503': // foreign_key_violation
-        status = StatusCodes.CONFLICT;
-        message = 'Related resource constraint failed';
-        break;
-      case '23502': // not_null_violation
-        status = StatusCodes.BAD_REQUEST;
-        message = 'Missing required field';
-        break;
-      case '22P02': // invalid_text_representation
-        status = StatusCodes.BAD_REQUEST;
-        message = 'Invalid input';
+      case PG_NOT_NULL_VIOLATION:
+      case PG_INVALID_TEXT_REPRESENTATION:
+        statusCode = httpErrors.badRequest().statusCode;
         break;
       default:
-        status = StatusCodes.INTERNAL_SERVER_ERROR;
-        message = 'Database error';
+        statusCode = httpErrors.internalServerError().statusCode;
     }
   }
 
-  reply
-    .code(status)
-    .type('application/json')
-    .send({
-      message,
-      code: (isValidation && 'VALIDATION_ERROR') || pgCode || 'INTERNAL_ERROR',
-      requestId: req.id,
-    });
+  return res.code(statusCode).send({ requestId: req.id });
 };
 
 export default serverErrorHandler;

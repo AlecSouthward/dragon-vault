@@ -1,3 +1,4 @@
+import sensible from '@fastify/sensible';
 import Fastify from 'fastify';
 import {
   type ZodTypeProvider,
@@ -38,6 +39,7 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 app.setErrorHandler(serverErrorHandler);
 
+await app.register(sensible);
 await app.register(multipart);
 await app.register(security);
 
