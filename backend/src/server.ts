@@ -30,23 +30,27 @@ app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
 app.setErrorHandler(serverErrorHandler);
 
-await app.register(sensible);
-await app.register(multipart);
-await app.register(security);
+const startServer = async () => {
+  await app.register(sensible);
+  await app.register(multipart);
+  await app.register(security);
 
-try {
-  await app.register(db);
-} catch (err) {
-  app.log.error(err, 'Failed to connect to database');
-  process.exit(1);
-}
+  try {
+    await app.register(db);
+  } catch (err) {
+    app.log.error(err, 'Failed to connect to database');
+    process.exit(1);
+  }
 
-await app.register(apiRoutes, { prefix: '/api/v1' });
-await app.register(healthRoutes, { prefix: '/health' });
+  await app.register(apiRoutes, { prefix: '/api/v1' });
+  await app.register(healthRoutes, { prefix: '/health' });
 
-app.listen({ port: ENV.PORT, host: '0.0.0.0' }).catch((err) => {
-  app.log.error(err);
-  process.exit(1);
-});
+  app.listen({ port: ENV.PORT, host: '0.0.0.0' }).catch((err) => {
+    app.log.error(err);
+    process.exit(1);
+  });
+};
+
+await startServer();
 
 export default app;
