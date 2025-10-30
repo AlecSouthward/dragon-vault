@@ -94,6 +94,25 @@ export async function up(pgm) {
         'This field is only viewable by the owner/admins ' +
         'of the Campaign, not those participating in the session.',
     },
+    active: { type: 'boolean', notNull: true, default: false },
+  });
+
+  pgm.createTable('combat_session', {
+    id: idColumn,
+    campaign_session_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'campaign_session',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    start_date: createdDateColumn,
+    initiative: {
+      type: 'hstore',
+      comment:
+        'The key stores the character name (player and enemy) and the value is the initiative of that character.',
+    },
+    active: { type: 'boolean', notNull: true, default: true },
   });
 
   pgm.createTable('activity_log', {
@@ -148,93 +167,13 @@ export async function up(pgm) {
     },
   });
 
-  pgm.createTable(
-    { name: 'character' },
-    {
-      id: {
-        type: 'uuid',
-        primaryKey: true,
-        notNull: true,
-        default: pgm.func('uuidv7()'),
-      },
-      campaign_id: {
-        type: 'uuid',
-        notNull: true,
-        references: 'campaign',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
-      user_account_id: {
-        type: 'uuid',
-        notNull: true,
-        references: 'user_account',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
-      template_id: {
-        type: 'uuid',
-        notNull: true,
-        references: 'character_template',
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      },
-      created_date: {
-        type: 'timestamptz',
-        notNull: true,
-        default: pgm.func('now()'),
-      },
-      name: { type: 'text', notNull: true },
-      description: { type: 'text' },
-      level: { type: 'smallint', notNull: true, default: 1 },
-      alive: { type: 'boolean', notNull: true, default: true },
-      race: { type: 'text' },
-      class: { type: 'text' },
-      properties: {
-        type: 'hstore',
-        comment: 'Stores things like speed, armor class, initiative, etc.',
-      },
-      resource_pools: {
-        type: 'hstore',
-        comment:
-          'Key points to the template resource pool while the value ' +
-          'is the value of that pool.',
-      },
-      attributes: {
-        type: 'hstore',
-        comment:
-          'Key points to the template attributes while the value ' +
-          'is the value of that attribute.',
-      },
-      image: { type: 'text', comment: 'A URL path to the image.' },
-    }
-  );
-
-  pgm.createTable('character_skill', {
-    id: idColumn,
-    character_id: {
+  pgm.createTable('character', {
+    id: {
       type: 'uuid',
+      primaryKey: true,
       notNull: true,
-      references: { name: 'character' },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      default: pgm.func('uuidv7()'),
     },
-    created_date: createdDateColumn,
-    name: { type: 'text', notNull: true },
-    description: { type: 'text' },
-    roll: { type: 'varchar(18)', comment: 'Dice notation.' },
-    properties: {
-      type: 'hstore',
-      comment: 'Miscellaneous properties like range, brightness, weight, etc.',
-    },
-    cost: {
-      type: 'text',
-      comment:
-        'Keep track of what this skill consumes on use. Eg. "uses 50 mana".',
-    },
-  });
-
-  pgm.createTable('enemy', {
-    id: idColumn,
     campaign_id: {
       type: 'uuid',
       notNull: true,
@@ -249,12 +188,22 @@ export async function up(pgm) {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
-    created_date: createdDateColumn,
+    created_date: {
+      type: 'timestamptz',
+      notNull: true,
+      default: pgm.func('now()'),
+    },
     name: { type: 'text', notNull: true },
     description: { type: 'text' },
+    level: { type: 'smallint', notNull: true, default: 1 },
+    alive: { type: 'boolean', notNull: true, default: true },
+    race: { type: 'text' },
+    class: { type: 'text' },
+    speed: { type: 'smallint' },
+    armor_class: { type: 'smallint' },
     properties: {
       type: 'hstore',
-      comment: 'Stores things like speed, armor class, initiative, etc.',
+      comment: 'Stores derived stats like speed, armor class, etc.',
     },
     resource_pools: {
       type: 'hstore',
@@ -265,22 +214,55 @@ export async function up(pgm) {
     attributes: {
       type: 'hstore',
       comment:
-        'Key points to the template attribute while the value ' +
+        'Key points to the template attributes while the value ' +
         'is the value of that attribute.',
+    },
+    image: { type: 'text', comment: 'A URL path to the image.' },
+  });
+
+  pgm.createTable('player', {
+    id: idColumn,
+    character_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'character',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  });
+
+  pgm.createTable('enemy', {
+    id: idColumn,
+    character_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'character',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     challenge_rating: {
       type: 'smallint',
       comment: "The rough gauge of an enemy's difficulty and power.",
     },
-    image: { type: 'text', comment: 'A URL path to the image.' },
   });
 
-  pgm.createTable('enemy_skill', {
+  pgm.createTable('npc', {
     id: idColumn,
-    enemy_id: {
+    character_id: {
       type: 'uuid',
       notNull: true,
-      references: 'enemy',
+      references: 'character',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  });
+
+  pgm.createTable('character_spell', {
+    id: idColumn,
+    character_id: {
+      type: 'uuid',
+      notNull: true,
+      references: { name: 'character' },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
@@ -290,13 +272,41 @@ export async function up(pgm) {
     roll: { type: 'varchar(18)', comment: 'Dice notation.' },
     properties: {
       type: 'hstore',
-      comment: 'Miscellaneous properties like range, brightness, weight, etc.',
+      comment:
+        'Miscellaneous properties like range, brightness, weight, speed, etc.',
     },
     cost: {
       type: 'text',
       comment:
-        'Keep track of what this skill consumes on use. Eg. "uses 50 mana".',
+        'Keep track of what this spell consumes on use. Eg. "uses 50 mana".',
     },
+  });
+
+  pgm.createTable('character_skill', {
+    id: idColumn,
+    character_id: {
+      type: 'uuid',
+      notNull: true,
+      references: { name: 'character' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    created_date: createdDateColumn,
+    name: { type: 'text', notNull: true },
+    description: { type: 'text' },
+    roll: { type: 'varchar(18)', comment: 'Dice notation.' },
+  });
+
+  pgm.createTable('character_feat', {
+    id: idColumn,
+    character_id: {
+      type: 'uuid',
+      notNull: true,
+      references: { name: 'character' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    description: { type: 'text' },
   });
 
   pgm.createTable('item', {
@@ -341,12 +351,16 @@ export async function up(pgm) {
 export async function down(pgm) {
   pgm.dropTable('item_skill');
   pgm.dropTable('item');
-  pgm.dropTable('enemy_skill');
-  pgm.dropTable('enemy');
+  pgm.dropTable('character_spell');
   pgm.dropTable('character_skill');
+  pgm.dropTable('character_feat');
+  pgm.dropTable('npc');
+  pgm.dropTable('enemy');
+  pgm.dropTable('player');
   pgm.dropTable('character');
   pgm.dropTable('character_template');
   pgm.dropTable('activity_log');
+  pgm.dropTable('combat_session');
   pgm.dropTable('campaign_session');
   pgm.dropTable('campaign_admin');
   pgm.dropTable('campaign');

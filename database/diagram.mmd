@@ -26,6 +26,7 @@ erDiagram
     }
 
     campaign_session {
+        boolean active 
         uuid campaign_id FK 
         timestamp_with_time_zone created_date 
         uuid id PK 
@@ -35,6 +36,7 @@ erDiagram
 
     character {
         boolean alive 
+        smallint armor_class 
         hstore attributes "Key points to the template attributes while the value is the value of that attribute."
         uuid campaign_id FK 
         text class 
@@ -44,20 +46,36 @@ erDiagram
         text image "A URL path to the image."
         smallint level 
         text name 
+        hstore properties "Stores derived stats like speed, armor class, etc."
         text race 
         hstore resource_pools "Key points to the template resource pool while the value is the value of that pool."
+        smallint speed 
         uuid template_id FK 
-        uuid user_account_id FK 
+    }
+
+    character_feat {
+        uuid character_id FK 
+        text description 
+        uuid id PK 
     }
 
     character_skill {
         uuid character_id FK 
-        text cost "Keep track of what this skill consumes on use. Eg. #quot;uses 50 mana#quot;."
         timestamp_with_time_zone created_date 
         text description 
         uuid id PK 
         text name 
-        hstore properties "Miscellaneous properties like range, brightness, weight, etc."
+        character_varying roll "Dice notation."
+    }
+
+    character_spell {
+        uuid character_id FK 
+        text cost "Keep track of what this spell consumes on use. Eg. #quot;uses 50 mana#quot;."
+        timestamp_with_time_zone created_date 
+        text description 
+        uuid id PK 
+        text name 
+        hstore properties "Miscellaneous properties like range, brightness, weight, speed, etc."
         character_varying roll "Dice notation."
     }
 
@@ -66,31 +84,22 @@ erDiagram
         uuid campaign_id FK 
         timestamp_with_time_zone created_date 
         uuid id PK 
+        jsonb properties "Stores things like speed, armor class, initiative, etc."
         jsonb resource_pools "Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc."
     }
 
-    enemy {
-        hstore attributes "Key points to the template attribute while the value is the value of that attribute."
-        uuid campaign_id FK 
-        smallint challenge_rating "The rough gauge of an enemy's difficulty and power."
-        timestamp_with_time_zone created_date 
-        text description 
+    combat_session {
+        boolean active 
+        uuid campaign_session_id FK 
         uuid id PK 
-        text image "A URL path to the image."
-        text name 
-        hstore resource_pools "Key points to the template resource pool while the value is the value of that pool."
-        uuid template_id FK 
+        hstore initiative "The key stores the character name (player and enemy) and the value is the initiative of that character."
+        timestamp_with_time_zone start_date 
     }
 
-    enemy_skill {
-        text cost "Keep track of what this skill consumes on use. Eg. #quot;uses 50 mana#quot;."
-        timestamp_with_time_zone created_date 
-        text description 
-        uuid enemy_id FK 
+    enemy {
+        smallint challenge_rating "The rough gauge of an enemy's difficulty and power."
+        uuid character_id FK 
         uuid id PK 
-        text name 
-        hstore properties "Miscellaneous properties like range, brightness, weight, etc."
-        character_varying roll "Dice notation."
     }
 
     item {
@@ -113,10 +122,20 @@ erDiagram
         character_varying roll "Dice notation."
     }
 
+    npc {
+        uuid character_id FK 
+        uuid id PK 
+    }
+
     pgmigrations {
         integer id PK 
         character_varying name 
         timestamp_without_time_zone run_on 
+    }
+
+    player {
+        uuid character_id FK 
+        uuid id PK 
     }
 
     user_account {
@@ -142,14 +161,16 @@ erDiagram
     campaign_session }o--|| campaign : "campaign_id"
     character }o--|| campaign : "campaign_id"
     character_template }o--|| campaign : "campaign_id"
-    enemy }o--|| campaign : "campaign_id"
     item }o--|| campaign : "campaign_id"
     campaign_admin }o--|| user_account : "user_account_id"
+    combat_session }o--|| campaign_session : "campaign_session_id"
     character }o--|| character_template : "template_id"
-    character }o--|| user_account : "user_account_id"
+    character_feat }o--|| character : "character_id"
     character_skill }o--|| character : "character_id"
+    character_spell }o--|| character : "character_id"
+    enemy }o--|| character : "character_id"
     item }o--|| character : "character_id"
-    enemy }o--|| character_template : "template_id"
-    enemy_skill }o--|| enemy : "enemy_id"
+    npc }o--|| character : "character_id"
+    player }o--|| character : "character_id"
     item_skill }o--|| item : "item_id"
     user_invite }o--|| user_account : "used_by_user_account_id"
