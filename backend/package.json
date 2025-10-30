@@ -9,7 +9,7 @@
     "start": "dotenv -e .env.production -- cross-env NODE_ENV=production node dist/server.js",
     "lint": "eslint . --ext .ts && prettier --check .",
     "format": "prettier -w .",
-    "pg:migrate": "dotenv -e .env.development -- node-pg-migrate",
+    "pg:migrate": "node-pg-migrate --envPath .env.development -j ts --tsconfig tsconfig.json",
     "pg:gen-types": "dotenv -e .env.development -- kysely-codegen"
   },
   "keywords": [],

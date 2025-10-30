@@ -1,4 +1,6 @@
-export async function up(pgm) {
+import type { MigrationBuilder } from 'node-pg-migrate';
+
+export async function up(pgm: MigrationBuilder) {
   const idColumn = {
     type: 'uuid',
     primaryKey: true,
@@ -146,7 +148,7 @@ export async function up(pgm) {
     properties: {
       type: 'jsonb',
       comment: 'Stores things like speed, armor class, initiative, etc.',
-      defaultValue: pgm.func(
+      default: pgm.func(
         `'{"speed": {}, "armorClass": {}, "initiative": {}}'::jsonb`
       ),
       notNull: true,
@@ -348,7 +350,7 @@ export async function up(pgm) {
   });
 }
 
-export async function down(pgm) {
+export async function down(pgm: MigrationBuilder) {
   pgm.dropTable('item_skill');
   pgm.dropTable('item');
   pgm.dropTable('character_spell');
