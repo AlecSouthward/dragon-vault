@@ -1,12 +1,12 @@
 import { MultipartFile } from '@fastify/multipart';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
-import { fileURLToPath } from 'url';
+
+import { ImageFolder } from '../types/imageFolder';
 
 import { IMAGE_QUALITY, IMAGE_SIZE } from '../config/images';
-
-import { ImageFolder } from './imageFolders';
 
 export const compressImage = async (image: MultipartFile) => {
   const buffer = await image.toBuffer();
