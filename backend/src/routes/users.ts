@@ -21,13 +21,18 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       const campaigns = await app.db
         .selectFrom('campaign as c')
         .innerJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
-        .innerJoin('character as ch', 'ch.templateId', 'ct.id')
+        .leftJoin('character as ch', 'ch.templateId', 'ct.id')
         .selectAll('c')
-        .where('ch.userAccountId', '=', userId)
+        .where((eb) =>
+          eb.or([
+            eb('c.creatorUserAccountId', '=', userId),
+            eb('ch.userAccountId', '=', userId),
+          ])
+        )
         .distinct()
         .execute();
 
-      return res.send({ campaigns: campaigns });
+      return res.send({ campaigns });
     } catch (err) {
       app.log.error(
         { err, userId },
