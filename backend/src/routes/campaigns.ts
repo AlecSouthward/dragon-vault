@@ -143,6 +143,70 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .executeTakeFirstOrThrow();
     }
   );
+
+  app.get(
+    '/:campaignId/character-template',
+    {
+      schema: {
+        params: z.strictObject({
+          campaignId: z.string().nonempty().nonoptional(),
+        }),
+      },
+    },
+    async (req, res) => {
+      const { campaignId } = req.params;
+
+      const template = await app.db
+        .selectFrom('characterTemplate')
+        .selectAll()
+        .where('campaignId', '=', campaignId)
+        .executeTakeFirst();
+
+      if (!template) {
+        return res.notFound();
+      }
+
+      return res.send(template);
+    }
+  );
+
+  app.post(
+    '/:campaignId/character-template',
+    {
+      schema: {
+        params: z.strictObject({
+          campaignId: z.string().nonempty().nonoptional(),
+        }),
+        body: z.strictObject({
+          // TODO: Add proper types
+          attributes: z.object({}).catchall(z.any()),
+          properties: z.object({}).catchall(z.any()),
+          resourcePools: z.object({}).catchall(z.any()),
+        }),
+      },
+    },
+    async (req, res) => {
+      const { campaignId } = req.params;
+      const newCharacterTemplate = req.body;
+
+      const existingTemplate = await app.db
+        .selectFrom('characterTemplate')
+        .where('campaignId', '=', campaignId)
+        .executeTakeFirst();
+
+      if (existingTemplate) {
+        return res.conflict();
+      }
+
+      const newTemplate = await app.db
+        .insertInto('characterTemplate')
+        .values({ ...newCharacterTemplate, campaignId })
+        .returning('id')
+        .executeTakeFirstOrThrow();
+
+      return res.send({ id: newTemplate.id });
+    }
+  );
 };
 
 export default campaignRoutes;
