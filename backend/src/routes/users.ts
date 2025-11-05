@@ -14,6 +14,29 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
     return res.send({ user: req.userFromCookie });
   });
 
+  app.post(
+    '/me/display-name',
+    {
+      schema: {
+        body: z.strictObject({
+          displayName: z.string().nonempty().nonoptional(),
+        }),
+      },
+    },
+    async (req, res) => {
+      const { id: userId } = req.userFromCookie!;
+      const { displayName: newDisplayName } = req.body;
+
+      await app.db
+        .updateTable('userAccount')
+        .set('displayName', newDisplayName)
+        .where('id', '=', userId)
+        .executeTakeFirstOrThrow();
+
+      return res.send();
+    }
+  );
+
   app.get('/me/campaigns', async (req, res) => {
     const { id: userId } = req.userFromCookie!;
 

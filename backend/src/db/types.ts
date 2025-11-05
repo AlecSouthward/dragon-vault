@@ -226,6 +226,7 @@ export interface UserAccount {
   admin: Generated<boolean>;
   createdDate: Generated<Timestamp>;
   deleted: Generated<boolean>;
+  displayName: Generated<string>;
   id: Generated<string>;
   password: string;
   /**

@@ -21,6 +21,7 @@ export async function up(pgm: MigrationBuilder) {
     id: idColumn,
     created_date: createdDateColumn,
     username: { type: 'citext', notNull: true, unique: true },
+    display_name: { type: 'text' },
     password: { type: 'text', notNull: true },
     profile_picture: { type: 'text', comment: 'A URL path to the picture.' },
     admin: { type: 'boolean', notNull: true, default: false },
