@@ -35,6 +35,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         return res.notFound();
       }
 
+      // TODO: Fix character queries using user creator id
       const campaignAccessCheck = await app.db
         .selectFrom('campaign as c')
         .innerJoin('character as ch', 'ch.campaignId', 'c.id')
@@ -48,10 +49,8 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
             eb(
               'c.id',
               'in',
-              eb
-                .selectFrom('character')
-                .select('ch.campaignId')
-                .where('ch.userAccountId', '=', currentUserId)
+              eb.selectFrom('character').select('ch.campaignId')
+              // .where('ch.userAccountId', '=', currentUserId)
             ),
           ])
         )

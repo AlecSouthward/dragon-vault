@@ -18,6 +18,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
     const { id: userId } = req.userFromCookie!;
 
     try {
+      // TODO: Fix character queries using user creator id
       const campaigns = await app.db
         .selectFrom('campaign as c')
         .innerJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
@@ -26,7 +27,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         .where((eb) =>
           eb.or([
             eb('c.creatorUserAccountId', '=', userId),
-            eb('ch.userAccountId', '=', userId),
+            // eb('ch.userAccountId', '=', userId),
           ])
         )
         .distinct()
@@ -54,7 +55,8 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const { id: userId } = req.userFromCookie!;
+      // TODO: Fix character queries using user creator id
+      // const { id: userId } = req.userFromCookie!;
 
       const character = await app.db
         .selectFrom('character')
@@ -65,10 +67,10 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
           'createdDate',
           'campaignId',
           'templateId',
-          'userAccountId',
+          // 'userAccountId',
         ])
         .where('campaignId', '=', campaignId)
-        .where('userAccountId', '=', userId)
+        // .where('userAccountId', '=', userId)
         .executeTakeFirstOrThrow();
 
       return res.send(character);

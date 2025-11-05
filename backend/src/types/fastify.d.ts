@@ -1,8 +1,8 @@
 import { Kysely } from 'kysely';
 
-import { DB } from './db/types';
+import { DB } from '../db/types';
 
-import { User } from './domain';
+import { SelectableUser } from './domain';
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -10,7 +10,7 @@ declare module 'fastify' {
   }
 
   interface FastifyRequest {
-    userFromCookie?: User | null;
+    userFromCookie?: SelectableUser | null;
     campaigns?: Array<{ id: string; name: string }> | null;
   }
 }
