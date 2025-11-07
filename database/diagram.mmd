@@ -122,30 +122,27 @@ erDiagram
         character_varying roll "Dice notation."
     }
 
-    npc {
-        uuid character_id FK 
-        uuid id PK 
-    }
-
     pgmigrations {
         integer id PK 
         character_varying name 
         timestamp_without_time_zone run_on 
     }
 
-    player {
-        uuid character_id FK 
-        uuid id PK 
-    }
-
     user_account {
         boolean admin 
         timestamp_with_time_zone created_date 
         boolean deleted 
+        text display_name 
         uuid id PK 
         text password 
         text profile_picture "A URL path to the picture."
         citext username UK 
+    }
+
+    user_character {
+        uuid character_id FK 
+        uuid id PK 
+        uuid user_account_id FK 
     }
 
     user_invite {
@@ -170,7 +167,7 @@ erDiagram
     character_spell }o--|| character : "character_id"
     enemy }o--|| character : "character_id"
     item }o--|| character : "character_id"
-    npc }o--|| character : "character_id"
-    player }o--|| character : "character_id"
+    user_character }o--|| character : "character_id"
     item_skill }o--|| item : "item_id"
+    user_character }o--|| user_account : "user_account_id"
     user_invite }o--|| user_account : "used_by_user_account_id"
