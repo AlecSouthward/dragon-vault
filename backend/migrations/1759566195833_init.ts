@@ -181,7 +181,7 @@ export async function up(pgm: MigrationBuilder) {
       type: 'uuid',
       notNull: true,
       references: 'campaign',
-      onDelete: 'CASCADE',
+      onDelete: 'NO ACTION',
       onUpdate: 'CASCADE',
     },
     template_id: {
