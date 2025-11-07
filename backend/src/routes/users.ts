@@ -2,10 +2,11 @@ import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import { uuidv7 } from 'uuidv7';
 import z from 'zod';
 
+import { IMAGE_FOLDERS } from '../config/imageFolders';
+
 import { getUser } from '../plugins/retrieveData';
 
 import { throwDragonVaultError } from '../utils/error';
-import { IMAGE_FOLDERS } from '../utils/imageFolders';
 import { compressImage, saveImage } from '../utils/images';
 
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
