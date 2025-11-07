@@ -13,7 +13,7 @@ export const getUserFromCookie = async (
   const user = await app.db
     .selectFrom('userAccount')
     .selectAll()
-    .where('id', '=', cookie.id)
+    .where((eb) => eb('id', '=', cookie.id).and('deleted', '=', false))
     .executeTakeFirst();
 
   return user;
@@ -28,7 +28,7 @@ export const createUser = async (
   const existingUsername = await app.db
     .selectFrom('userAccount')
     .select('username')
-    .where('username', '=', username)
+    .where((eb) => eb('username', '=', username).and('deleted', '=', false))
     .executeTakeFirst();
 
   if (existingUsername) {

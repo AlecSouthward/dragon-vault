@@ -31,7 +31,7 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
       const user = await app.db
         .selectFrom('userAccount')
         .select(['id', 'username', 'displayName', 'password', 'admin'])
-        .where('username', '=', username)
+        .where((eb) => eb('username', '=', username).and('deleted', '=', false))
         .executeTakeFirst();
 
       if (!user) {
