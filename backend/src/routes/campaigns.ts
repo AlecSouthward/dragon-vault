@@ -1,9 +1,10 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import z from 'zod';
+import z, { json } from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
 
 import { throwDragonVaultError } from '../utils/error';
+import { convertToHstore } from '../utils/hstore';
 
 const UNAUTHORIZED_VIEW_MESSAGE =
   'You are not authorized to view this Campaign.';
@@ -225,6 +226,93 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       return res.send({
         id: newCharacterTemplate.id,
         message: 'Successfully created Character Template.',
+      });
+    }
+  );
+
+  app.post(
+    '/:campaignId/character',
+    {
+      schema: {
+        body: z.strictObject({
+          name: z.string().nonempty().nonoptional(),
+          description: z.string().nonempty().optional(),
+          attributes: z.record(z.string(), z.number()),
+          properties: z.record(z.string(), z.number()),
+        }),
+        params: z.strictObject({
+          campaignId: z.string().nonempty().nonoptional(),
+        }),
+      },
+    },
+    async (req, res) => {
+      const { id: userId } = req.userFromCookie!;
+      const { campaignId } = req.params;
+      const characterToCreate = req.body;
+
+      const existingCharacter = await app.db
+        .selectFrom('character as ch')
+        .selectAll()
+        .leftJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
+        .executeTakeFirst();
+
+      if (existingCharacter) {
+        return res.conflict('Your Character already exists for this Campaign.');
+      }
+
+      const sourceCampaign = await app.db
+        .selectFrom('campaign')
+        .selectAll()
+        .where('id', '=', campaignId)
+        .executeTakeFirst();
+
+      if (!sourceCampaign) {
+        return res.notFound('No Campaign was found.');
+      }
+
+      const sourceCharacterTemplate = await app.db
+        .selectFrom('characterTemplate')
+        .selectAll()
+        .where('campaignId', '=', campaignId)
+        .executeTakeFirst();
+
+      if (!sourceCharacterTemplate) {
+        return res.notFound(
+          'No Character Template was found for the Campaign. Unable to create a Character without a template.'
+        );
+      }
+
+      const hstoreAttributes = convertToHstore(characterToCreate.attributes);
+      const hstoreProperties = convertToHstore(characterToCreate.properties);
+
+      // TODO: Validate CharacterTemplate attributes/properties
+      // Fill in default values for resource pools
+
+      const { id: newCharacterId } = await app.db
+        .insertInto('character')
+        .values({
+          name: characterToCreate.name,
+          description: characterToCreate.description,
+          attributes: hstoreAttributes,
+          properties: hstoreProperties,
+          campaignId: sourceCampaign.id,
+          templateId: sourceCharacterTemplate.id,
+        })
+        .returning('id')
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to create Character.')
+        );
+
+      await app.db
+        .insertInto('userCharacter')
+        .values({ characterId: newCharacterId, userAccountId: userId })
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to create Character.')
+        );
+
+      return res.send({
+        id: newCharacterId,
+        message: 'Successfully created Character.',
       });
     }
   );
