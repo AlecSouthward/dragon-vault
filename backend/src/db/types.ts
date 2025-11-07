@@ -150,7 +150,7 @@ export interface CharacterTemplate {
   /**
    * Stores things like speed, armor class, initiative, etc.
    */
-  properties: Json;
+  properties: Generated<Json>;
   /**
    * Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.
    */
@@ -206,27 +206,17 @@ export interface ItemSkill {
   roll: string | null;
 }
 
-export interface Npc {
-  characterId: string;
-  id: Generated<string>;
-}
-
 export interface Pgmigration {
   id: Generated<number>;
   name: string;
   runOn: Timestamp;
 }
 
-export interface Player {
-  characterId: string;
-  id: Generated<string>;
-}
-
 export interface UserAccount {
   admin: Generated<boolean>;
   createdDate: Generated<Timestamp>;
   deleted: Generated<boolean>;
-  displayName: Generated<string>;
+  displayName: string | null;
   id: Generated<string>;
   password: string;
   /**
@@ -234,6 +224,12 @@ export interface UserAccount {
    */
   profilePicture: string | null;
   username: string;
+}
+
+export interface UserCharacter {
+  characterId: string;
+  id: Generated<string>;
+  userAccountId: string;
 }
 
 export interface UserInvite {
@@ -257,9 +253,8 @@ export interface DB {
   enemy: Enemy;
   item: Item;
   itemSkill: ItemSkill;
-  npc: Npc;
   pgmigrations: Pgmigration;
-  player: Player;
   userAccount: UserAccount;
+  userCharacter: UserCharacter;
   userInvite: UserInvite;
 }

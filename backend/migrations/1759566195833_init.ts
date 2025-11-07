@@ -223,12 +223,19 @@ export async function up(pgm: MigrationBuilder) {
     image: { type: 'text', comment: 'A URL path to the image.' },
   });
 
-  pgm.createTable('player', {
+  pgm.createTable('user_character', {
     id: idColumn,
     character_id: {
       type: 'uuid',
       notNull: true,
       references: 'character',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    user_account_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'user_account',
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
@@ -246,17 +253,6 @@ export async function up(pgm: MigrationBuilder) {
     challenge_rating: {
       type: 'smallint',
       comment: "The rough gauge of an enemy's difficulty and power.",
-    },
-  });
-
-  pgm.createTable('npc', {
-    id: idColumn,
-    character_id: {
-      type: 'uuid',
-      notNull: true,
-      references: 'character',
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
     },
   });
 
@@ -357,9 +353,8 @@ export async function down(pgm: MigrationBuilder) {
   pgm.dropTable('character_spell');
   pgm.dropTable('character_skill');
   pgm.dropTable('character_feat');
-  pgm.dropTable('npc');
   pgm.dropTable('enemy');
-  pgm.dropTable('player');
+  pgm.dropTable('user_character');
   pgm.dropTable('character');
   pgm.dropTable('character_template');
   pgm.dropTable('activity_log');
