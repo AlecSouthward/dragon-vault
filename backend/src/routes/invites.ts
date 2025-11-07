@@ -1,9 +1,9 @@
-import { httpErrors } from '@fastify/sensible';
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
 import { INVITE_EXPIRE_OFFSET_MS } from '../config/invites';
 
+import { throwDragonVaultError } from '../utils/error';
 import { createUser } from '../utils/user';
 
 const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
@@ -29,9 +29,7 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
         .executeTakeFirst();
 
       if (!invite) {
-        app.log.error({ inviteId, username }, 'Failed to find invite by id');
-
-        return res.notFound();
+        return res.notFound('No User Invite was found.');
       }
 
       const expirationTime =
@@ -39,41 +37,25 @@ const inviteRoutes: FastifyPluginAsyncZod = async (app) => {
       const currentTime = Date.now();
 
       if (currentTime > expirationTime) {
-        app.log.error(
-          { inviteId, username },
-          'Failed to use invite as it has expired'
-        );
-
-        return res.gone();
+        return res.gone('The User Invite has expired.');
       } else if (invite.usedByUserAccountId) {
-        app.log.error(
-          {
-            inviteId,
-            usedByUserAccountId: invite.usedByUserAccountId,
-            username,
-          },
-          'Failed to use invite as it has already been used'
-        );
-
-        return res.gone();
+        return res.gone('The User Invite has already been used.');
       }
 
-      const createUserResponse = await createUser(username, password);
-
-      if (createUserResponse.errorHttpCode || !createUserResponse.newUserId) {
-        app.log.error({ inviteId, username }, createUserResponse.error);
-
-        return res.status(
-          createUserResponse.errorHttpCode?.statusCode ??
-            httpErrors.internalServerError().statusCode
-        );
-      }
+      const newUserId = await createUser(username, password);
 
       await app.db
         .updateTable('userInvite')
-        .set('usedByUserAccountId', createUserResponse.newUserId)
+        .set('usedByUserAccountId', newUserId)
         .where('id', '=', inviteId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to mark User Invite as used.')
+        );
+
+      return res.send({
+        message:
+          'Successfully created a new User and consumed the User Invite.',
+      });
     }
   );
 };

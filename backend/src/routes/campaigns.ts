@@ -3,6 +3,11 @@ import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
 
+import { throwDragonVaultError } from '../utils/error';
+
+const UNAUTHORIZED_VIEW_MESSAGE =
+  'You are not authorized to view this Campaign.';
+
 const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('onRequest', getUser);
 
@@ -11,7 +16,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         params: z.strictObject({
-          campaignId: z.string().nonempty().nonoptional(),
+          campaignId: z.uuidv7().nonempty().nonoptional(),
         }),
       },
     },
@@ -24,15 +29,10 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .selectFrom('campaign')
         .selectAll()
         .where('id', '=', campaignId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
 
       if (!campaign) {
-        app.log.error(
-          { campaignId },
-          'No campaign was found when fetching from id'
-        );
-
-        return res.notFound();
+        return res.notFound('No Campaign was found.');
       }
 
       // TODO: Fix character queries using user creator id
@@ -54,25 +54,27 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
             ),
           ])
         )
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
+
+      if (!campaign) {
+        return res.notFound(UNAUTHORIZED_VIEW_MESSAGE);
+      }
 
       if (!campaignAccessCheck && !currentUserAdmin) {
         const campaignAdminCheck = await app.db
           .selectFrom('campaignAdmin')
           .select('id')
-          .executeTakeFirstOrThrow();
+          .executeTakeFirst();
 
         if (!campaignAdminCheck) {
-          app.log.error(
-            { userId: currentUserId, campaignId },
-            'Unable to get campaign as user is not a part of it'
-          );
-
-          return res.unauthorized();
+          return res.unauthorized(UNAUTHORIZED_VIEW_MESSAGE);
         }
       }
 
-      return res.send(campaign);
+      return res.send({
+        campaign,
+        message: 'Successfully retrieved Campaign.',
+      });
     }
   );
 
@@ -94,9 +96,14 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .insertInto('campaign')
         .values({ ...campaignToCreate, creatorUserAccountId: userId })
         .returning('id')
-        .executeTakeFirstOrThrow();
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to create Campaign.')
+        );
 
-      return res.send({ id: newCampaignId.id });
+      return res.send({
+        id: newCampaignId.id,
+        message: 'Successfully created a new Campaign.',
+      });
     }
   );
 
@@ -124,22 +131,25 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .selectFrom('campaign')
         .select(['id', 'creatorUserAccountId'])
         .where('id', '=', campaignId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
 
-      if (campaign.creatorUserAccountId !== userId) {
-        app.log.error(
-          { userId: userId, campaignId },
-          'Failed to update campaign as the user is not an admin in it or a system admin'
+      if (!campaign) {
+        return res.notFound('No Campaign was found to update.');
+      } else if (campaign.creatorUserAccountId !== userId) {
+        return res.unauthorized(
+          'You are not authorized to modify the Campaign.'
         );
-
-        return res.unauthorized();
       }
 
       await app.db
         .updateTable('campaign')
         .set(updatedCampaign)
         .where('id', '=', campaignId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to update Campaign.')
+        );
+
+      return res.send({ message: 'Successfully updated Campaign.' });
     }
   );
 
@@ -148,7 +158,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         params: z.strictObject({
-          campaignId: z.string().nonempty().nonoptional(),
+          campaignId: z.uuidv7().nonempty().nonoptional(),
         }),
       },
     },
@@ -162,10 +172,15 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         .executeTakeFirst();
 
       if (!template) {
-        return res.notFound();
+        return res.notFound(
+          'No Character Template was found for the Campaign.'
+        );
       }
 
-      return res.send(template);
+      return res.send({
+        template,
+        message: 'Successfully retrieved Character Template.',
+      });
     }
   );
 
@@ -174,7 +189,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         params: z.strictObject({
-          campaignId: z.string().nonempty().nonoptional(),
+          campaignId: z.uuidv7().nonempty().nonoptional(),
         }),
         body: z.strictObject({
           // TODO: Add proper types
@@ -186,24 +201,29 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const newCharacterTemplate = req.body;
+      const characterTemplateToCreate = req.body;
 
-      const existingTemplate = await app.db
+      const existingCharacterTemplate = await app.db
         .selectFrom('characterTemplate')
         .where('campaignId', '=', campaignId)
         .executeTakeFirst();
 
-      if (existingTemplate) {
-        return res.conflict();
+      if (existingCharacterTemplate) {
+        return res.conflict('Template already exists for this campaign.');
       }
 
-      const newTemplate = await app.db
+      const newCharacterTemplate = await app.db
         .insertInto('characterTemplate')
-        .values({ ...newCharacterTemplate, campaignId })
+        .values({ ...characterTemplateToCreate, campaignId })
         .returning('id')
-        .executeTakeFirstOrThrow();
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to update Character Template.')
+        );
 
-      return res.send({ id: newTemplate.id });
+      return res.send({
+        id: newCharacterTemplate.id,
+        message: 'Successfully created Character Template.',
+      });
     }
   );
 };

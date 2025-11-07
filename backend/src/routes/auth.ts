@@ -12,6 +12,8 @@ import { verifyPassword } from '../utils/passwordHash.js';
 // Store client IP and User alongside stored refresh token
 // Check for suspicious activity on a refresh token
 
+const LOGIN_FAILED_MESSAGE = 'Invalid credentials.';
+
 const authRoutes: FastifyPluginAsyncZod = async (app) => {
   app.post(
     '/login',
@@ -30,17 +32,16 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         .selectFrom('userAccount')
         .select(['id', 'username', 'displayName', 'password', 'admin'])
         .where('username', '=', username)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
+
+      if (!user) {
+        return res.notFound(LOGIN_FAILED_MESSAGE);
+      }
 
       const passwordsMatch = await verifyPassword(user.password, password);
 
       if (!passwordsMatch) {
-        app.log.error(
-          { username },
-          'Failed to log user in as their password was wrong'
-        );
-
-        return res.unauthorized();
+        return res.unauthorized(LOGIN_FAILED_MESSAGE);
       }
 
       const userCookie: Cookie = {
@@ -56,7 +57,10 @@ const authRoutes: FastifyPluginAsyncZod = async (app) => {
         path: '/',
       });
 
-      res.send({ id: user.id, username: user.username, admin: user.admin });
+      res.send({
+        user: { id: user.id, username: user.username, admin: user.admin },
+        message: 'Successfully authenticated.',
+      });
     }
   );
 };

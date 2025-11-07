@@ -10,7 +10,9 @@ import ENV from './env';
 
 import db from './plugins/db';
 import serverErrorHandler from './plugins/errorHandler';
+import setupHooks from './plugins/hooks';
 import multipart from './plugins/multipart';
+import notFoundHandler from './plugins/notFoundHandler';
 import security from './plugins/security';
 
 import apiRoutes from './routes/api';
@@ -28,6 +30,7 @@ const app = Fastify({
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+app.setNotFoundHandler(notFoundHandler);
 app.setErrorHandler(serverErrorHandler);
 
 const startServer = async () => {
@@ -52,5 +55,7 @@ const startServer = async () => {
 };
 
 await startServer();
+
+await setupHooks(app);
 
 export default app;

@@ -4,6 +4,7 @@ import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
 
+import { throwDragonVaultError } from '../utils/error';
 import { IMAGE_FOLDERS } from '../utils/imageFolders';
 import { compressImage, saveImage } from '../utils/images';
 
@@ -11,7 +12,12 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('preHandler', getUser);
 
   app.get('/me', async (req, res) => {
-    return res.send({ user: req.userFromCookie });
+    const { password: _, ...displayUser } = req.userFromCookie!;
+
+    return res.send({
+      user: displayUser,
+      message: 'Successfully retrieved your User Account.',
+    });
   });
 
   app.post(
@@ -31,40 +37,36 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         .updateTable('userAccount')
         .set('displayName', newDisplayName)
         .where('id', '=', userId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirstOrThrow(
+          throwDragonVaultError('Failed to update your display name.')
+        );
 
-      return res.send();
+      return res.send({ message: 'Successfully updated display name.' });
     }
   );
 
   app.get('/me/campaigns', async (req, res) => {
     const { id: userId } = req.userFromCookie!;
 
-    try {
-      // TODO: Fix character queries using user creator id
-      const campaigns = await app.db
-        .selectFrom('campaign as c')
-        .innerJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
-        .leftJoin('character as ch', 'ch.templateId', 'ct.id')
-        .selectAll('c')
-        .where((eb) =>
-          eb.or([
-            eb('c.creatorUserAccountId', '=', userId),
-            // eb('ch.userAccountId', '=', userId),
-          ])
-        )
-        .distinct()
-        .execute();
+    // TODO: Fix character queries using user creator id
+    const campaigns = await app.db
+      .selectFrom('campaign as c')
+      .innerJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
+      .leftJoin('character as ch', 'ch.templateId', 'ct.id')
+      .selectAll('c')
+      .where((eb) =>
+        eb.or([
+          eb('c.creatorUserAccountId', '=', userId),
+          // eb('ch.userAccountId', '=', userId),
+        ])
+      )
+      .distinct()
+      .execute();
 
-      return res.send({ campaigns });
-    } catch (err) {
-      app.log.error(
-        { err, userId },
-        "An error occurred while searching for a user's campaigns"
-      );
-
-      return res.internalServerError();
-    }
+    return res.send({
+      campaigns,
+      message: 'Successfully retrieved your Campaigns.',
+    });
   });
 
   app.get(
@@ -94,9 +96,16 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         ])
         .where('campaignId', '=', campaignId)
         // .where('userAccountId', '=', userId)
-        .executeTakeFirstOrThrow();
+        .executeTakeFirst();
 
-      return res.send(character);
+      if (!character) {
+        return res.notFound('No Character was found on the Campaign.');
+      }
+
+      return res.send({
+        character,
+        message: 'Successfully retrieved your Character on the Campaign.',
+      });
     }
   );
 
@@ -104,17 +113,19 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
     const filePart = await req.file();
 
     if (!filePart) {
-      return res.badRequest();
+      return res.badRequest('No profile picture was provided.');
     }
 
     const { mimetype } = filePart;
 
     if (!mimetype.startsWith('image/')) {
-      return res.badRequest();
+      return res.badRequest('Invalid profile picture was provided.');
     }
 
     const file = await compressImage(filePart);
     await saveImage(file, uuidv7(), IMAGE_FOLDERS.PROFILE_PICTURE);
+
+    return res.send({ message: 'Successfully updated your profile picture.' });
   });
 };
 

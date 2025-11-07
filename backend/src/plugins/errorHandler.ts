@@ -40,7 +40,7 @@ const serverErrorHandler = (
     }
   }
 
-  return res.code(statusCode).send({ requestId: req.id });
+  return res.code(statusCode).send({ message: err.message });
 };
 
 export default serverErrorHandler;

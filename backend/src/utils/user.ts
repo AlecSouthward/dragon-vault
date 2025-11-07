@@ -1,10 +1,10 @@
-import { HttpError, httpErrors } from '@fastify/sensible';
-import { UUID } from 'node:crypto';
+import { httpErrors } from '@fastify/sensible';
 
 import { Cookie } from '../types/cookie';
 import { SelectableUser } from '../types/domain';
 
 import app from '../server';
+import { throwDragonVaultError } from './error';
 import { hashPassword } from './passwordHash';
 
 export const getUserFromCookie = async (
@@ -22,55 +22,26 @@ export const getUserFromCookie = async (
 export const createUser = async (
   username: string,
   password: string
-): Promise<{
-  ok: boolean;
-  errorHttpCode?: HttpError;
-  error?: string;
-  newUserId?: UUID;
-}> => {
+): Promise<string> => {
   const hashedPassword = await hashPassword(password);
 
-  try {
-    const existingUsername = await app.db
-      .selectFrom('userAccount')
-      .select('username')
-      .where('username', '=', username)
-      .executeTakeFirstOrThrow();
+  const existingUsername = await app.db
+    .selectFrom('userAccount')
+    .select('username')
+    .where('username', '=', username)
+    .executeTakeFirst();
 
-    if (existingUsername) {
-      return {
-        ok: false,
-        errorHttpCode: httpErrors.conflict(),
-        error: 'That username is already taken',
-      };
-    }
-  } catch (err) {
-    app.log.error(
-      { err, username },
-      'An error occurred when checking for duplicate usernames'
-    );
-
-    return {
-      ok: false,
-      errorHttpCode: httpErrors.internalServerError(),
-      error: 'Failed to check if the username is already taken',
-    };
+  if (existingUsername) {
+    throw httpErrors.conflict('That username is already taken.');
   }
 
-  try {
-    const newUserId = await app.db
-      .insertInto('userAccount')
-      .values({ username, password: hashedPassword })
-      .returning('id')
-      .executeTakeFirstOrThrow();
-
-    return { ok: true, newUserId: newUserId.id as UUID };
-  } catch (err) {
-    app.log.error(
-      { err, username },
-      'An error occurred when creating a new user'
+  const newUser = await app.db
+    .insertInto('userAccount')
+    .values({ username, password: hashedPassword })
+    .returning('id')
+    .executeTakeFirstOrThrow(
+      throwDragonVaultError('Failed to create a new User Account.')
     );
 
-    return { ok: false, error: 'Failed to create a new user' };
-  }
+  return newUser.id;
 };

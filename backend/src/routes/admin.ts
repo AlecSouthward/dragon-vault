@@ -3,6 +3,7 @@ import z from 'zod';
 
 import { getIsAdmin, getUser } from '../plugins/retrieveData';
 
+import { throwDragonVaultError } from '../utils/error';
 import { createUser } from '../utils/user';
 
 const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
@@ -21,13 +22,10 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { username, password } = req.body;
-      const createUserResponse = await createUser(username, password);
 
-      if (createUserResponse.errorHttpCode) {
-        app.log.error(createUserResponse.error);
+      await createUser(username, password);
 
-        return res.code(createUserResponse.errorHttpCode.statusCode);
-      }
+      return res.send({ message: 'Successfully created a new User Account.' });
     }
   );
 
@@ -38,9 +36,14 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
       .insertInto('userInvite')
       .defaultValues()
       .returning('id')
-      .executeTakeFirst();
+      .executeTakeFirstOrThrow(
+        throwDragonVaultError('Failed to create User Invite.')
+      );
 
-    return res.send({ inviteId: newInviteId });
+    return res.send({
+      inviteId: newInviteId,
+      message: 'Successfully created a User Invite.',
+    });
   });
 };
 

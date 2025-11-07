@@ -4,7 +4,7 @@ import { Cookie } from '../types/cookie';
 
 import { getUserFromCookie } from '../utils/user';
 
-import app from '../server';
+const UNAUTHENTICATED_ERROR = 'Failed to authenticate your User Account.';
 
 export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
   try {
@@ -12,32 +12,25 @@ export const getUser = async (req: FastifyRequest, res: FastifyReply) => {
     const cookie = payload as Cookie;
 
     if (!cookie?.id) {
-      return res.badRequest();
+      return res.badRequest(UNAUTHENTICATED_ERROR);
     }
 
     const user = await getUserFromCookie(cookie);
 
     if (!user) {
-      return res.notFound();
+      return res.notFound(UNAUTHENTICATED_ERROR);
     }
 
     req.userFromCookie = user;
-  } catch (err) {
-    app.log.error(err, 'User is unauthorized');
-    return res.unauthorized();
+  } catch {
+    return res.unauthorized(UNAUTHENTICATED_ERROR);
   }
 };
 
 export const getIsAdmin = async (req: FastifyRequest, res: FastifyReply) => {
   if (!req.userFromCookie) {
-    app.log.error('Missing user cookie as the getUser preHandler was not run');
-    return res.internalServerError();
+    return res.internalServerError(UNAUTHENTICATED_ERROR);
   } else if (!req.userFromCookie.admin) {
-    app.log.error(
-      { userId: req.userFromCookie.id },
-      'Authorized user is not an admin'
-    );
-
-    return res.forbidden();
+    return res.forbidden('Your User Account does not have Admin priviledges.');
   }
 };
