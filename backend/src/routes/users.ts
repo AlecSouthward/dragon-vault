@@ -51,7 +51,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
 
     const campaigns = await app.db
       .selectFrom('campaign as c')
-      .innerJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
+      .leftJoin('characterTemplate as ct', 'ct.campaignId', 'c.id')
       .leftJoin('character as ch', 'ch.templateId', 'ct.id')
       .leftJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
       .selectAll('c')
