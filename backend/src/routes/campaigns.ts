@@ -351,6 +351,52 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       });
     }
   );
+
+  app.get(
+    '/:campaignId/character/:characterId',
+    {
+      schema: {
+        params: z.strictObject({
+          campaignId: z.uuidv7().nonempty().nonoptional(),
+        }),
+      },
+    },
+    async (req, res) => {
+      const { id: userId } = req.userFromCookie!;
+      const { campaignId } = req.params;
+
+      const existingCharacter = await app.db
+        .selectFrom('character as ch')
+        .selectAll('ch')
+        .innerJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
+        .where('ch.campaignId', '=', campaignId)
+        .where('uch.userAccountId', '=', userId)
+        .executeTakeFirst();
+
+      if (!existingCharacter) {
+        return res.notFound('No Character was found on that Campaign.');
+      }
+
+      const { abilities, stats, resourcePools, ...userCharacter } =
+        existingCharacter;
+
+      if (!abilities || !stats || !resourcePools) {
+        return res.internalServerError(
+          'The Character has missing fields and is unable to be retrieved.'
+        );
+      }
+
+      return res.send({
+        character: {
+          ...userCharacter,
+          abilities: convertFromHstore(abilities),
+          stats: convertFromHstore(stats),
+          resourcePools: convertFromHstore(resourcePools),
+        },
+        message: 'Successfully retrieved the Character on that Campaign.',
+      });
+    }
+  );
 };
 
 export default campaignRoutes;

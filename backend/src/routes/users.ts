@@ -7,6 +7,7 @@ import { IMAGE_FOLDERS } from '../config/imageFolders';
 import { getUser } from '../plugins/retrieveData';
 
 import { throwDragonVaultError } from '../utils/error';
+import { convertFromHstore } from '../utils/hstore';
 import { compressImage, saveImage } from '../utils/images';
 
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
@@ -83,33 +84,34 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       const { campaignId } = req.params;
       const { id: userId } = req.userFromCookie!;
 
-      const character = await app.db
+      const existingCharacter = await app.db
         .selectFrom('character as c')
+        .selectAll('c')
         .innerJoin('userCharacter as uch', 'uch.characterId', 'c.id')
-        .select([
-          'c.id',
-          'c.name',
-          'c.resourcePools',
-          'c.createdDate',
-          'c.campaignId',
-          'c.templateId',
-          'uch.userAccountId',
-        ])
-        .where((eb) =>
-          eb('c.campaignId', '=', campaignId).and(
-            'uch.userAccountId',
-            '=',
-            userId
-          )
-        )
+        .where('uch.userAccountId', '=', userId)
+        .where('c.campaignId', '=', campaignId)
         .executeTakeFirst();
 
-      if (!character) {
-        return res.notFound('No Character was found on the Campaign.');
+      if (!existingCharacter) {
+        return res.notFound('No Character was found on that Campaign.');
+      }
+
+      const { abilities, stats, resourcePools, ...userCharacter } =
+        existingCharacter;
+
+      if (!abilities || !stats || !resourcePools) {
+        return res.internalServerError(
+          'The Character has missing fields and is unable to be retrieved.'
+        );
       }
 
       return res.send({
-        character,
+        character: {
+          ...userCharacter,
+          abilities: convertFromHstore(abilities),
+          stats: convertFromHstore(stats),
+          resourcePools: convertFromHstore(resourcePools),
+        },
         message: 'Successfully retrieved your Character on the Campaign.',
       });
     }
