@@ -7,7 +7,7 @@
     "dev": "dotenv -e .env.development -- cross-env NODE_ENV=development tsx watch src/server.ts",
     "build": "tsup",
     "start": "dotenv -e .env.production -- cross-env NODE_ENV=production node dist/server.js",
-    "lint": "eslint . --ext .ts && prettier --check .",
+    "lint": "eslint . --ext .ts --max-warnings 0 && prettier --check .",
     "format": "prettier -w .",
     "pg:migrate": "node-pg-migrate --envPath .env.development -j ts --tsconfig tsconfig.json",
     "pg:gen-types": "dotenv -e .env.development -- kysely-codegen"

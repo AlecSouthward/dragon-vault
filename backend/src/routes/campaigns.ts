@@ -1,5 +1,5 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
-import z, { json } from 'zod';
+import z from 'zod';
 
 import { getUser } from '../plugins/retrieveData';
 
