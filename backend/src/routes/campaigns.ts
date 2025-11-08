@@ -293,7 +293,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         StatField
       >;
       const characterStats: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceStats).map((k) => [k, Math.round(Math.random() * 20)])
+        Object.keys(sourceStats).map((k) => [k, Math.round(Math.random() * 20)]) // TODO: Add proper value defaults
       );
       const hstoreStats = convertToHstore(characterStats);
 
@@ -304,7 +304,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       const characterAbilityScores: Record<string, number> = Object.fromEntries(
         Object.keys(sourceAbilities).map((k) => [
           k,
-          Math.round(Math.random() * 20),
+          Math.round(Math.random() * 20), // TODO: Add proper value defaults
         ])
       );
       const hstoreAbilities = convertToHstore(characterAbilityScores);
@@ -317,7 +317,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       const characterResourcePools: Record<string, number> = Object.fromEntries(
         Object.keys(sourceResourcePools).map((k) => [
           k,
-          Math.round(Math.random() * 20),
+          Math.round(Math.random() * 20), // TODO: Add proper value defaults
         ])
       );
       const hstoreResourcePools = convertToHstore(characterResourcePools);
