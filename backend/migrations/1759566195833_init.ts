@@ -146,12 +146,10 @@ export async function up(pgm: MigrationBuilder) {
       onUpdate: 'CASCADE',
     },
     created_date: createdDateColumn,
-    properties: {
+    stats: {
       type: 'jsonb',
       comment: 'Stores things like speed, armor class, initiative, etc.',
-      default: pgm.func(
-        `'{"speed": {}, "armorClass": {}, "initiative": {}}'::jsonb`
-      ),
+      default: pgm.func(`'{}'::jsonb`),
       notNull: true,
     },
     resource_pools: {
@@ -161,13 +159,14 @@ export async function up(pgm: MigrationBuilder) {
       default: pgm.func(`'{}'::jsonb`),
       notNull: true,
     },
-    attributes: {
+    abilities: {
       type: 'jsonb',
       comment:
-        'Stores the available/allowed attributes and their information (user-customizable).',
+        'Stores the available/allowed ability scores and their information (user-customizable).',
       default: pgm.func(`'{}'::jsonb`),
       notNull: true,
     },
+    startingAbilityScoreRoll: { type: 'text', default: '1d20', notNull: true },
   });
 
   pgm.createTable('character', {
@@ -204,7 +203,7 @@ export async function up(pgm: MigrationBuilder) {
     class: { type: 'text' },
     speed: { type: 'smallint' },
     armor_class: { type: 'smallint' },
-    properties: {
+    stats: {
       type: 'hstore',
       comment: 'Stores derived stats like speed, armor class, etc.',
     },
@@ -214,11 +213,11 @@ export async function up(pgm: MigrationBuilder) {
         'Key points to the template resource pool while the value ' +
         'is the value of that pool.',
     },
-    attributes: {
+    abilities: {
       type: 'hstore',
       comment:
-        'Key points to the template attributes while the value ' +
-        'is the value of that attribute.',
+        'Key points to the template ability name while the value ' +
+        'is the score of that ability.',
     },
     image: { type: 'text', comment: 'A URL path to the image.' },
   });

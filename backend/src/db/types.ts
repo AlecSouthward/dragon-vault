@@ -71,12 +71,12 @@ export interface CampaignSession {
 }
 
 export interface Character {
+  /**
+   * Key points to the template ability name while the value is the score of that ability.
+   */
+  abilities: string | null;
   alive: Generated<boolean>;
   armorClass: number | null;
-  /**
-   * Key points to the template attributes while the value is the value of that attribute.
-   */
-  attributes: string | null;
   campaignId: string;
   class: string | null;
   createdDate: Generated<Timestamp>;
@@ -88,16 +88,16 @@ export interface Character {
   image: string | null;
   level: Generated<number>;
   name: string;
-  /**
-   * Stores derived stats like speed, armor class, etc.
-   */
-  properties: string | null;
   race: string | null;
   /**
    * Key points to the template resource pool while the value is the value of that pool.
    */
   resourcePools: string | null;
   speed: number | null;
+  /**
+   * Stores derived stats like speed, armor class, etc.
+   */
+  stats: string | null;
   templateId: string;
 }
 
@@ -141,20 +141,20 @@ export interface CharacterSpell {
 
 export interface CharacterTemplate {
   /**
-   * Stores the available/allowed attributes and their information (user-customizable).
+   * Stores the available/allowed ability scores and their information (user-customizable).
    */
-  attributes: Generated<Json>;
+  abilities: Generated<Json>;
   campaignId: string;
   createdDate: Generated<Timestamp>;
   id: Generated<string>;
   /**
-   * Stores things like speed, armor class, initiative, etc.
-   */
-  properties: Generated<Json>;
-  /**
    * Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.
    */
   resourcePools: Generated<Json>;
+  /**
+   * Stores things like speed, armor class, initiative, etc.
+   */
+  stats: Generated<Json>;
 }
 
 export interface CombatSession {

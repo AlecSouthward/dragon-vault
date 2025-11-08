@@ -1,10 +1,19 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
+import {
+  AbilityScoreField,
+  AbilityScoreFieldSchema,
+  ResourcePoolField,
+  ResourcePoolFieldSchema,
+  StatField,
+  StatFieldSchema,
+} from '../types/characterFieldValue';
+
 import { getUser } from '../plugins/retrieveData';
 
 import { throwDragonVaultError } from '../utils/error';
-import { convertToHstore } from '../utils/hstore';
+import { convertFromHstore, convertToHstore } from '../utils/hstore';
 
 const UNAUTHORIZED_VIEW_MESSAGE =
   'You are not authorized to view this Campaign.';
@@ -195,10 +204,9 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           campaignId: z.uuidv7().nonempty().nonoptional(),
         }),
         body: z.strictObject({
-          // TODO: Add proper types
-          attributes: z.object({}).catchall(z.any()),
-          properties: z.object({}).catchall(z.any()),
-          resourcePools: z.object({}).catchall(z.any()),
+          abilities: z.record(z.string(), AbilityScoreFieldSchema),
+          stats: z.record(z.string(), StatFieldSchema),
+          resourcePools: z.record(z.string(), ResourcePoolFieldSchema),
         }),
       },
     },
@@ -217,7 +225,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const newCharacterTemplate = await app.db
         .insertInto('characterTemplate')
-        .values({ ...characterTemplateToCreate, campaignId })
+        .values({ ...(characterTemplateToCreate as object), campaignId })
         .returning('id')
         .executeTakeFirstOrThrow(
           throwDragonVaultError('Failed to update Character Template.')
@@ -237,11 +245,9 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         body: z.strictObject({
           name: z.string().nonempty().nonoptional(),
           description: z.string().nonempty().optional(),
-          attributes: z.record(z.string(), z.number()),
-          properties: z.record(z.string(), z.number()),
         }),
         params: z.strictObject({
-          campaignId: z.string().nonempty().nonoptional(),
+          campaignId: z.uuidv7().nonempty().nonoptional(),
         }),
       },
     },
@@ -282,19 +288,48 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
 
-      const hstoreAttributes = convertToHstore(characterToCreate.attributes);
-      const hstoreProperties = convertToHstore(characterToCreate.properties);
+      const sourceStats = sourceCharacterTemplate.stats as Record<
+        string,
+        StatField
+      >;
+      const characterStats: Record<string, number> = Object.fromEntries(
+        Object.keys(sourceStats).map((k) => [k, Math.round(Math.random() * 20)])
+      );
+      const hstoreStats = convertToHstore(characterStats);
 
-      // TODO: Validate CharacterTemplate attributes/properties
-      // Fill in default values for resource pools
+      const sourceAbilities = sourceCharacterTemplate.abilities as Record<
+        string,
+        AbilityScoreField
+      >;
+      const characterAbilityScores: Record<string, number> = Object.fromEntries(
+        Object.keys(sourceAbilities).map((k) => [
+          k,
+          Math.round(Math.random() * 20),
+        ])
+      );
+      const hstoreAbilities = convertToHstore(characterAbilityScores);
+
+      const sourceResourcePools =
+        sourceCharacterTemplate.resourcePools as Record<
+          string,
+          ResourcePoolField
+        >;
+      const characterResourcePools: Record<string, number> = Object.fromEntries(
+        Object.keys(sourceResourcePools).map((k) => [
+          k,
+          Math.round(Math.random() * 20),
+        ])
+      );
+      const hstoreResourcePools = convertToHstore(characterResourcePools);
 
       const { id: newCharacterId } = await app.db
         .insertInto('character')
         .values({
           name: characterToCreate.name,
           description: characterToCreate.description,
-          attributes: hstoreAttributes,
-          properties: hstoreProperties,
+          abilities: hstoreAbilities,
+          stats: hstoreStats,
+          resourcePools: hstoreResourcePools,
           campaignId: sourceCampaign.id,
           templateId: sourceCharacterTemplate.id,
         })
