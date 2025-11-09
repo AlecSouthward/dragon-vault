@@ -96,10 +96,9 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         return res.notFound('No Character was found on that Campaign.');
       }
 
-      const { abilities, stats, resourcePools, ...userCharacter } =
-        existingCharacter;
+      const { abilities, stats, ...userCharacter } = existingCharacter;
 
-      if (!abilities || !stats || !resourcePools) {
+      if (!abilities || !stats) {
         return res.internalServerError(
           'The Character has important data that is missing and is unable to be retrieved.'
         );
@@ -110,7 +109,6 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
           ...userCharacter,
           abilities: convertFromHstore(abilities),
           stats: convertFromHstore(stats),
-          resourcePools: convertFromHstore(resourcePools),
         },
         message: 'Successfully retrieved your Character on the Campaign.',
       });

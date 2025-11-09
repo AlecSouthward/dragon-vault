@@ -208,7 +208,7 @@ export async function up(pgm: MigrationBuilder) {
       comment: 'Stores derived stats like speed, armor class, etc.',
     },
     resource_pools: {
-      type: 'hstore',
+      type: 'jsonb',
       comment:
         'Key points to the template resource pool while the value ' +
         'is the value of that pool.',

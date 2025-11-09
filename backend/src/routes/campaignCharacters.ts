@@ -2,10 +2,14 @@ import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
 import {
-  AbilityScoreField,
   ResourcePoolField,
-  StatField,
+  ResourcePoolFieldSchema,
 } from '../types/characterFieldValue';
+import {
+  AbilityScoreTemplateField,
+  ResourcePoolTemplateField,
+  StatField,
+} from '../types/characterTemplateFieldValue';
 
 import { getUser } from '../plugins/retrieveData';
 
@@ -53,7 +57,7 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
           ...userCharacter,
           abilities: convertFromHstore(abilities),
           stats: convertFromHstore(stats),
-          resourcePools: convertFromHstore(resourcePools),
+          resourcePools,
         },
         message: 'Successfully retrieved the Character on that Campaign.',
       });
@@ -121,7 +125,7 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const sourceAbilities = sourceCharacterTemplate.abilities as Record<
         string,
-        AbilityScoreField
+        AbilityScoreTemplateField
       >;
       const characterAbilityScores: Record<string, number> = Object.fromEntries(
         Object.keys(sourceAbilities).map((k) => [
@@ -134,15 +138,18 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
       const sourceResourcePools =
         sourceCharacterTemplate.resourcePools as Record<
           string,
-          ResourcePoolField
+          ResourcePoolTemplateField
         >;
-      const characterResourcePools: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceResourcePools).map((k) => [
-          k,
-          Math.round(Math.random() * 20), // TODO: Add proper value defaults
-        ])
-      );
-      const hstoreResourcePools = convertToHstore(characterResourcePools);
+      const resourcePools = Object.fromEntries(
+        Object.entries(sourceResourcePools).map(([key]) => {
+          const maxResourceValue = Math.round(Math.random() * 20); // TODO: Add proper value defaults
+
+          return [
+            key,
+            { currentValue: maxResourceValue, maxValue: maxResourceValue },
+          ];
+        })
+      ) as Record<string, ResourcePoolField>;
 
       const { id: newCharacterId } = await app.db
         .insertInto('character')
@@ -151,7 +158,7 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
           description: characterToCreate.description,
           abilities: hstoreAbilities,
           stats: hstoreStats,
-          resourcePools: hstoreResourcePools,
+          resourcePools,
           campaignId: sourceCampaign.id,
           templateId: sourceCharacterTemplate.id,
         })
@@ -183,7 +190,10 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
           description: z.string().nonempty(),
           stats: z.record(z.string(), z.number().int().positive()),
           abilities: z.record(z.string(), z.number().int().positive()),
-          resourcePools: z.record(z.string(), z.number().int().positive()),
+          resourcePools: z.record(
+            z.string().nonempty(),
+            ResourcePoolFieldSchema
+          ),
         }),
         params: z.strictObject({
           campaignId: z.uuidv7().nonempty(),

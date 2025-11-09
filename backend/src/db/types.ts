@@ -92,7 +92,7 @@ export interface Character {
   /**
    * Key points to the template resource pool while the value is the value of that pool.
    */
-  resourcePools: string | null;
+  resourcePools: Json | null;
   speed: number | null;
   /**
    * Stores derived stats like speed, armor class, etc.
@@ -151,6 +151,7 @@ export interface CharacterTemplate {
    * Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.
    */
   resourcePools: Generated<Json>;
+  startingAbilityScoreRoll: Generated<string>;
   /**
    * Stores things like speed, armor class, initiative, etc.
    */

@@ -2,10 +2,10 @@ import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
 import {
-  AbilityScoreFieldSchema,
-  ResourcePoolFieldSchema,
-  StatFieldSchema,
-} from '../types/characterFieldValue';
+  AbilityScoreTemplateFieldSchema,
+  ResourcePoolTemplateFieldSchema,
+  StatFieldTemplateSchema,
+} from '../types/characterTemplateFieldValue';
 
 import { getUser } from '../plugins/retrieveData';
 
@@ -200,9 +200,9 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
           campaignId: z.uuidv7().nonempty().nonoptional(),
         }),
         body: z.strictObject({
-          abilities: z.record(z.string(), AbilityScoreFieldSchema),
-          stats: z.record(z.string(), StatFieldSchema),
-          resourcePools: z.record(z.string(), ResourcePoolFieldSchema),
+          abilities: z.record(z.string(), AbilityScoreTemplateFieldSchema),
+          stats: z.record(z.string(), StatFieldTemplateSchema),
+          resourcePools: z.record(z.string(), ResourcePoolTemplateFieldSchema),
         }),
       },
     },
