@@ -2,18 +2,14 @@ import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
 import {
-  AbilityScoreField,
   AbilityScoreFieldSchema,
-  ResourcePoolField,
   ResourcePoolFieldSchema,
-  StatField,
   StatFieldSchema,
 } from '../types/characterFieldValue';
 
 import { getUser } from '../plugins/retrieveData';
 
 import { throwDragonVaultError } from '../utils/error';
-import { convertFromHstore, convertToHstore } from '../utils/hstore';
 
 const UNAUTHORIZED_VIEW_MESSAGE =
   'You are not authorized to view this Campaign.';
@@ -124,10 +120,10 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     {
       schema: {
         body: z.strictObject({
-          name: z.string().nonempty().nonoptional(),
-          description: z.string().optional(),
-          story: z.string().optional(),
-          icon: z.url().optional(),
+          name: z.string().nonempty(),
+          description: z.string(),
+          story: z.string(),
+          icon: z.url(),
         }),
         params: z.strictObject({
           campaignId: z.uuidv7().nonempty().nonoptional(),
@@ -234,166 +230,6 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
       return res.send({
         id: newCharacterTemplate.id,
         message: 'Successfully created Character Template.',
-      });
-    }
-  );
-
-  app.post(
-    '/:campaignId/character',
-    {
-      schema: {
-        body: z.strictObject({
-          name: z.string().nonempty().nonoptional(),
-          description: z.string().nonempty().optional(),
-        }),
-        params: z.strictObject({
-          campaignId: z.uuidv7().nonempty().nonoptional(),
-        }),
-      },
-    },
-    async (req, res) => {
-      const { id: userId } = req.userFromCookie!;
-      const { campaignId } = req.params;
-      const characterToCreate = req.body;
-
-      const existingCharacter = await app.db
-        .selectFrom('character as ch')
-        .selectAll()
-        .leftJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
-        .executeTakeFirst();
-
-      if (existingCharacter) {
-        return res.conflict('Your Character already exists for this Campaign.');
-      }
-
-      const sourceCampaign = await app.db
-        .selectFrom('campaign')
-        .selectAll()
-        .where('id', '=', campaignId)
-        .executeTakeFirst();
-
-      if (!sourceCampaign) {
-        return res.notFound('No Campaign was found.');
-      }
-
-      const sourceCharacterTemplate = await app.db
-        .selectFrom('characterTemplate')
-        .selectAll()
-        .where('campaignId', '=', campaignId)
-        .executeTakeFirst();
-
-      if (!sourceCharacterTemplate) {
-        return res.notFound(
-          'No Character Template was found for the Campaign. Unable to create a Character without a template.'
-        );
-      }
-
-      const sourceStats = sourceCharacterTemplate.stats as Record<
-        string,
-        StatField
-      >;
-      const characterStats: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceStats).map((k) => [k, Math.round(Math.random() * 20)]) // TODO: Add proper value defaults
-      );
-      const hstoreStats = convertToHstore(characterStats);
-
-      const sourceAbilities = sourceCharacterTemplate.abilities as Record<
-        string,
-        AbilityScoreField
-      >;
-      const characterAbilityScores: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceAbilities).map((k) => [
-          k,
-          Math.round(Math.random() * 20), // TODO: Add proper value defaults
-        ])
-      );
-      const hstoreAbilities = convertToHstore(characterAbilityScores);
-
-      const sourceResourcePools =
-        sourceCharacterTemplate.resourcePools as Record<
-          string,
-          ResourcePoolField
-        >;
-      const characterResourcePools: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceResourcePools).map((k) => [
-          k,
-          Math.round(Math.random() * 20), // TODO: Add proper value defaults
-        ])
-      );
-      const hstoreResourcePools = convertToHstore(characterResourcePools);
-
-      const { id: newCharacterId } = await app.db
-        .insertInto('character')
-        .values({
-          name: characterToCreate.name,
-          description: characterToCreate.description,
-          abilities: hstoreAbilities,
-          stats: hstoreStats,
-          resourcePools: hstoreResourcePools,
-          campaignId: sourceCampaign.id,
-          templateId: sourceCharacterTemplate.id,
-        })
-        .returning('id')
-        .executeTakeFirstOrThrow(
-          throwDragonVaultError('Failed to create Character.')
-        );
-
-      await app.db
-        .insertInto('userCharacter')
-        .values({ characterId: newCharacterId, userAccountId: userId })
-        .executeTakeFirstOrThrow(
-          throwDragonVaultError('Failed to create Character.')
-        );
-
-      return res.send({
-        id: newCharacterId,
-        message: 'Successfully created Character.',
-      });
-    }
-  );
-
-  app.get(
-    '/:campaignId/character/:characterId',
-    {
-      schema: {
-        params: z.strictObject({
-          campaignId: z.uuidv7().nonempty().nonoptional(),
-        }),
-      },
-    },
-    async (req, res) => {
-      const { id: userId } = req.userFromCookie!;
-      const { campaignId } = req.params;
-
-      const existingCharacter = await app.db
-        .selectFrom('character as ch')
-        .selectAll('ch')
-        .innerJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
-        .where('ch.campaignId', '=', campaignId)
-        .where('uch.userAccountId', '=', userId)
-        .executeTakeFirst();
-
-      if (!existingCharacter) {
-        return res.notFound('No Character was found on that Campaign.');
-      }
-
-      const { abilities, stats, resourcePools, ...userCharacter } =
-        existingCharacter;
-
-      if (!abilities || !stats || !resourcePools) {
-        return res.internalServerError(
-          'The Character has missing fields and is unable to be retrieved.'
-        );
-      }
-
-      return res.send({
-        character: {
-          ...userCharacter,
-          abilities: convertFromHstore(abilities),
-          stats: convertFromHstore(stats),
-          resourcePools: convertFromHstore(resourcePools),
-        },
-        message: 'Successfully retrieved the Character on that Campaign.',
       });
     }
   );

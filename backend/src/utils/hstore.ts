@@ -7,8 +7,6 @@ export const convertToHstore = (obj: object) =>
     .join(', ');
 
 export const convertFromHstore = (obj: string) => {
-  if (!obj) return {};
-
   const [k, v] = obj.replaceAll('"', '').split('=>');
 
   return { [k.trim()]: Number(v.trim()) };

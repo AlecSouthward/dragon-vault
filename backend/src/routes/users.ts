@@ -101,7 +101,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
 
       if (!abilities || !stats || !resourcePools) {
         return res.internalServerError(
-          'The Character has missing fields and is unable to be retrieved.'
+          'The Character has important data that is missing and is unable to be retrieved.'
         );
       }
 
