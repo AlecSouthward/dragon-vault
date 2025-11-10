@@ -35,9 +35,9 @@ erDiagram
     }
 
     character {
+        hstore abilities "Key points to the template ability name while the value is the score of that ability."
         boolean alive 
         smallint armor_class 
-        hstore attributes "Key points to the template attributes while the value is the value of that attribute."
         uuid campaign_id FK 
         text class 
         timestamp_with_time_zone created_date 
@@ -46,10 +46,10 @@ erDiagram
         text image "A URL path to the image."
         smallint level 
         text name 
-        hstore properties "Stores derived stats like speed, armor class, etc."
         text race 
-        hstore resource_pools "Key points to the template resource pool while the value is the value of that pool."
+        jsonb resource_pools "Key points to the template resource pool while the value is the value of that pool."
         smallint speed 
+        hstore stats "Stores derived stats like speed, armor class, etc."
         uuid template_id FK 
     }
 
@@ -80,12 +80,13 @@ erDiagram
     }
 
     character_template {
-        jsonb attributes "Stores the available/allowed attributes and their information (user-customizable)."
+        jsonb abilities "Stores the available/allowed ability scores and their information (user-customizable)."
         uuid campaign_id FK 
         timestamp_with_time_zone created_date 
         uuid id PK 
-        jsonb properties "Stores things like speed, armor class, initiative, etc."
         jsonb resource_pools "Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc."
+        text startingAbilityScoreRoll 
+        jsonb stats "Stores things like speed, armor class, initiative, etc."
     }
 
     combat_session {
