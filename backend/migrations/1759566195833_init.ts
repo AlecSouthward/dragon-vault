@@ -147,23 +147,20 @@ export async function up(pgm: MigrationBuilder) {
     },
     created_date: createdDateColumn,
     stats: {
-      type: 'jsonb',
+      type: 'json',
       comment: 'Stores things like speed, armor class, initiative, etc.',
-      default: pgm.func(`'{}'::jsonb`),
       notNull: true,
     },
     resource_pools: {
-      type: 'jsonb',
+      type: 'json',
       comment:
         'Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.',
-      default: pgm.func(`'{}'::jsonb`),
       notNull: true,
     },
     abilities: {
-      type: 'jsonb',
+      type: 'json',
       comment:
         'Stores the available/allowed ability scores and their information (user-customizable).',
-      default: pgm.func(`'{}'::jsonb`),
       notNull: true,
     },
     startingAbilityScoreRoll: { type: 'text', default: '1d20', notNull: true },
@@ -208,7 +205,7 @@ export async function up(pgm: MigrationBuilder) {
       comment: 'Stores derived stats like speed, armor class, etc.',
     },
     resource_pools: {
-      type: 'jsonb',
+      type: 'json',
       comment:
         'Key points to the template resource pool while the value ' +
         'is the value of that pool.',

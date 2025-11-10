@@ -143,19 +143,19 @@ export interface CharacterTemplate {
   /**
    * Stores the available/allowed ability scores and their information (user-customizable).
    */
-  abilities: Generated<Json>;
+  abilities: Json;
   campaignId: string;
   createdDate: Generated<Timestamp>;
   id: Generated<string>;
   /**
    * Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc.
    */
-  resourcePools: Generated<Json>;
+  resourcePools: Json;
   startingAbilityScoreRoll: Generated<string>;
   /**
    * Stores things like speed, armor class, initiative, etc.
    */
-  stats: Generated<Json>;
+  stats: Json;
 }
 
 export interface CombatSession {

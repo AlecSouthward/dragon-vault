@@ -47,7 +47,7 @@ erDiagram
         smallint level 
         text name 
         text race 
-        jsonb resource_pools "Key points to the template resource pool while the value is the value of that pool."
+        json resource_pools "Key points to the template resource pool while the value is the value of that pool."
         smallint speed 
         hstore stats "Stores derived stats like speed, armor class, etc."
         uuid template_id FK 
@@ -80,13 +80,13 @@ erDiagram
     }
 
     character_template {
-        jsonb abilities "Stores the available/allowed ability scores and their information (user-customizable)."
+        json abilities "Stores the available/allowed ability scores and their information (user-customizable)."
         uuid campaign_id FK 
         timestamp_with_time_zone created_date 
         uuid id PK 
-        jsonb resource_pools "Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc."
+        json resource_pools "Stores the available/allowed resource pools and their information (user-customizable). Eg. health, mana, stamina, etc."
         text startingAbilityScoreRoll 
-        jsonb stats "Stores things like speed, armor class, initiative, etc."
+        json stats "Stores things like speed, armor class, initiative, etc."
     }
 
     combat_session {
