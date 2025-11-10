@@ -221,7 +221,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
 
       const newCharacterTemplate = await app.db
         .insertInto('characterTemplate')
-        .values({ ...(characterTemplateToCreate as object), campaignId })
+        .values({ ...characterTemplateToCreate, campaignId })
         .returning('id')
         .executeTakeFirstOrThrow(
           throwDragonVaultError('Failed to update Character Template.')
