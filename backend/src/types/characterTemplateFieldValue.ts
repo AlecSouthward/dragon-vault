@@ -19,7 +19,7 @@ export const StatFieldTemplateSchema = z.strictObject({
   maximum: z.number().int().positive(),
   initialValueRoll: DiceSchema.nonempty(),
 });
-export type StatField = z.infer<typeof StatFieldTemplateSchema>;
+export type StatTemplateField = z.infer<typeof StatFieldTemplateSchema>;
 
 export const ResourcePoolTemplateFieldSchema = z.strictObject({
   description: z.string().nonempty().optional(),

@@ -1,18 +1,19 @@
 import { FastifyPluginAsyncZod } from 'fastify-type-provider-zod';
 import z from 'zod';
 
-import {
-  ResourcePoolField,
-  ResourcePoolFieldSchema,
-} from '../types/characterFieldValue';
+import { ResourcePoolFieldSchema } from '../types/characterFieldValue';
 import {
   AbilityScoreTemplateField,
   ResourcePoolTemplateField,
-  StatField,
+  StatTemplateField,
 } from '../types/characterTemplateFieldValue';
 
 import { getUser } from '../plugins/retrieveData';
 
+import {
+  formatPairField,
+  validateResourcePoolFields,
+} from '../utils/characterTemplate';
 import { throwDragonVaultError } from '../utils/error';
 import { convertFromHstore, convertToHstore } from '../utils/hstore';
 
@@ -71,26 +72,27 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
         body: z.strictObject({
           name: z.string().nonempty().nonoptional(),
           description: z.string().nonempty().optional(),
+          stats: z.record(z.string().nonempty(), z.number().int().positive()),
+          abilities: z.record(
+            z.string().nonempty(),
+            z.number().int().positive()
+          ),
+          resourcePools: z.record(
+            z.string().nonempty(),
+            ResourcePoolFieldSchema
+          ),
         }),
-        params: z.strictObject({
-          campaignId: z.uuidv7().nonempty().nonoptional(),
+        params: z.strictObject({ campaignId: z.uuidv7().nonempty() }),
+        querystring: z.strictObject({
+          userAccountId: z.uuidv7().nonempty().optional(),
         }),
       },
     },
     async (req, res) => {
-      const { id: userId } = req.userFromCookie!;
+      const { id: currentUserId } = req.userFromCookie!;
       const { campaignId } = req.params;
+      const { userAccountId: specifiedUserId } = req.query;
       const characterToCreate = req.body;
-
-      const existingCharacter = await app.db
-        .selectFrom('character as ch')
-        .selectAll()
-        .leftJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
-        .executeTakeFirst();
-
-      if (existingCharacter) {
-        return res.conflict('Your Character already exists for this Campaign.');
-      }
 
       const sourceCampaign = await app.db
         .selectFrom('campaign')
@@ -100,6 +102,16 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
 
       if (!sourceCampaign) {
         return res.notFound('No Campaign was found.');
+      }
+
+      const existingCharacter = await app.db
+        .selectFrom('character as ch')
+        .selectAll()
+        .leftJoin('userCharacter as uch', 'uch.characterId', 'ch.id')
+        .executeTakeFirst();
+
+      if (existingCharacter) {
+        return res.conflict('Your Character already exists for this Campaign.');
       }
 
       const sourceCharacterTemplate = await app.db
@@ -114,50 +126,37 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
 
-      const sourceStats = sourceCharacterTemplate.stats as Record<
-        string,
-        StatField
-      >;
-      const characterStats: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceStats).map((k) => [k, Math.round(Math.random() * 20)]) // TODO: Add proper value defaults
+      const { stats, abilities, resourcePools, ...characterToCreateData } =
+        characterToCreate;
+      const {
+        stats: templateStats,
+        abilities: templateAbilities,
+        resourcePools: templateResourcePools,
+      } = sourceCharacterTemplate;
+
+      const cleanStats = formatPairField(
+        templateStats as Record<string, StatTemplateField>,
+        stats
       );
-      const hstoreStats = convertToHstore(characterStats);
-
-      const sourceAbilities = sourceCharacterTemplate.abilities as Record<
-        string,
-        AbilityScoreTemplateField
-      >;
-      const characterAbilityScores: Record<string, number> = Object.fromEntries(
-        Object.keys(sourceAbilities).map((k) => [
-          k,
-          Math.round(Math.random() * 20), // TODO: Add proper value defaults
-        ])
+      const cleanAbilities = formatPairField(
+        templateAbilities as Record<string, AbilityScoreTemplateField>,
+        abilities
       );
-      const hstoreAbilities = convertToHstore(characterAbilityScores);
 
-      const sourceResourcePools =
-        sourceCharacterTemplate.resourcePools as Record<
-          string,
-          ResourcePoolTemplateField
-        >;
-      const resourcePools = Object.fromEntries(
-        Object.entries(sourceResourcePools).map(([key]) => {
-          const maxResourceValue = Math.round(Math.random() * 20); // TODO: Add proper value defaults
+      validateResourcePoolFields(
+        templateResourcePools as Record<string, ResourcePoolTemplateField>,
+        resourcePools
+      );
 
-          return [
-            key,
-            { currentValue: maxResourceValue, maxValue: maxResourceValue },
-          ];
-        })
-      ) as Record<string, ResourcePoolField>;
+      const hstoreStats = convertToHstore(cleanStats);
+      const hstoreAbilities = convertToHstore(cleanAbilities);
 
       const { id: newCharacterId } = await app.db
         .insertInto('character')
         .values({
-          name: characterToCreate.name,
-          description: characterToCreate.description,
-          abilities: hstoreAbilities,
+          ...characterToCreateData,
           stats: hstoreStats,
+          abilities: hstoreAbilities,
           resourcePools,
           campaignId: sourceCampaign.id,
           templateId: sourceCharacterTemplate.id,
@@ -169,7 +168,10 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
 
       await app.db
         .insertInto('userCharacter')
-        .values({ characterId: newCharacterId, userAccountId: userId })
+        .values({
+          characterId: newCharacterId,
+          userAccountId: specifiedUserId ?? currentUserId,
+        })
         .executeTakeFirstOrThrow(
           throwDragonVaultError('Failed to create Character.')
         );
