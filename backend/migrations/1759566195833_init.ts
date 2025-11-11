@@ -80,6 +80,24 @@ export async function up(pgm: MigrationBuilder) {
     },
   });
 
+  pgm.createTable('campaign_user', {
+    id: idColumn,
+    user_account_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'user_account',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+    campaign_id: {
+      type: 'uuid',
+      notNull: true,
+      references: 'campaign',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
+  });
+
   pgm.createTable('campaign_session', {
     id: idColumn,
     campaign_id: {

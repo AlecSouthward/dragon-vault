@@ -9,10 +9,10 @@ import {
 
 import { getUser } from '../plugins/retrieveData';
 
+import { checkUserCampaignAccess } from '../utils/campaigns';
 import { throwDragonVaultError } from '../utils/error';
 
-const UNAUTHORIZED_VIEW_MESSAGE =
-  'You are not authorized to view this Campaign.';
+const RETRIEVE_FAIL = 'Failed to retrieve/authorize User for Campaign.';
 
 const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('onRequest', getUser);
@@ -28,55 +28,19 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const { id: currentUserId, admin: currentUserAdmin } =
-        req.userFromCookie!;
+      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
 
-      const campaign = await app.db
-        .selectFrom('campaign')
-        .selectAll()
-        .where('id', '=', campaignId)
-        .executeTakeFirst();
+      let campaign;
+      try {
+        campaign = await checkUserCampaignAccess(
+          campaignId,
+          userId,
+          currentUserAdmin
+        );
+      } catch (err) {
+        app.log.error(err, RETRIEVE_FAIL);
 
-      if (!campaign) {
-        return res.notFound('No Campaign was found.');
-      }
-
-      const campaignAccessCheck = await app.db
-        .selectFrom('campaign as c')
-        .leftJoin('character as ch', 'ch.campaignId', 'c.id')
-        .distinct()
-        .select('c.id')
-        .where((eb) =>
-          eb.or([
-            eb.and([
-              eb('c.id', '=', campaignId),
-              eb('c.creatorUserAccountId', '=', currentUserId),
-            ]),
-            eb(
-              'ch.id',
-              'in',
-              eb
-                .selectFrom('userCharacter as uch')
-                .select('uch.characterId')
-                .where('uch.userAccountId', '=', currentUserId)
-            ),
-          ])
-        )
-        .executeTakeFirst();
-
-      if (!campaign) {
-        return res.notFound(UNAUTHORIZED_VIEW_MESSAGE);
-      }
-
-      if (!campaignAccessCheck && !currentUserAdmin) {
-        const campaignAdminCheck = await app.db
-          .selectFrom('campaignAdmin')
-          .select('id')
-          .executeTakeFirst();
-
-        if (!campaignAdminCheck) {
-          return res.unauthorized(UNAUTHORIZED_VIEW_MESSAGE);
-        }
+        return res.forbidden('You are not authorized to view this Campaign.');
       }
 
       return res.send({
@@ -133,19 +97,15 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     async (req, res) => {
       const updatedCampaign = req.body;
       const { campaignId } = req.params;
-      const { id: userId } = req.userFromCookie!;
+      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
 
-      const campaign = await app.db
-        .selectFrom('campaign')
-        .select(['id', 'creatorUserAccountId'])
-        .where('id', '=', campaignId)
-        .executeTakeFirst();
+      try {
+        await checkUserCampaignAccess(campaignId, userId, currentUserAdmin);
+      } catch (err) {
+        app.log.error(err, RETRIEVE_FAIL);
 
-      if (!campaign) {
-        return res.notFound('No Campaign was found to update.');
-      } else if (campaign.creatorUserAccountId !== userId) {
-        return res.unauthorized(
-          'You are not authorized to modify the Campaign.'
+        return res.forbidden(
+          'Failed to authorize your User to allow editing this Campaign.'
         );
       }
 
@@ -172,6 +132,17 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
+      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
+
+      try {
+        await checkUserCampaignAccess(campaignId, userId, currentUserAdmin);
+      } catch (err) {
+        app.log.error(err, RETRIEVE_FAIL);
+
+        return res.forbidden(
+          "Failed to authorize your User to allow viewing this Campaign's Character Template."
+        );
+      }
 
       const template = await app.db
         .selectFrom('characterTemplate')
@@ -208,7 +179,18 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
+      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
       const characterTemplateToCreate = req.body;
+
+      try {
+        await checkUserCampaignAccess(campaignId, userId, currentUserAdmin);
+      } catch (err) {
+        app.log.error(err, RETRIEVE_FAIL);
+
+        return res.forbidden(
+          "Failed to authorize your User to allow editing this Campaign's Character Template."
+        );
+      }
 
       const existingCharacterTemplate = await app.db
         .selectFrom('characterTemplate')

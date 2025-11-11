@@ -34,6 +34,12 @@ erDiagram
         text story "This field is only viewable by the owner/admins of the Campaign, not those participating in the session."
     }
 
+    campaign_user {
+        uuid campaign_id FK 
+        uuid id PK 
+        uuid user_account_id FK 
+    }
+
     character {
         hstore abilities "Key points to the template ability name while the value is the score of that ability."
         boolean alive 
@@ -157,11 +163,13 @@ erDiagram
     campaign }o--|| user_account : "creator_user_account_id"
     campaign_admin }o--|| campaign : "campaign_id"
     campaign_session }o--|| campaign : "campaign_id"
+    campaign_user }o--|| campaign : "campaign_id"
     character }o--|| campaign : "campaign_id"
     character_template }o--|| campaign : "campaign_id"
     item }o--|| campaign : "campaign_id"
     campaign_admin }o--|| user_account : "user_account_id"
     combat_session }o--|| campaign_session : "campaign_session_id"
+    campaign_user }o--|| user_account : "user_account_id"
     character }o--|| character_template : "template_id"
     character_feat }o--|| character : "character_id"
     character_skill }o--|| character : "character_id"

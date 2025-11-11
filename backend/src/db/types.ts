@@ -70,6 +70,12 @@ export interface CampaignSession {
   story: string | null;
 }
 
+export interface CampaignUser {
+  campaignId: string;
+  id: Generated<string>;
+  userAccountId: string;
+}
+
 export interface Character {
   /**
    * Key points to the template ability name while the value is the score of that ability.
@@ -245,6 +251,7 @@ export interface DB {
   campaign: Campaign;
   campaignAdmin: CampaignAdmin;
   campaignSession: CampaignSession;
+  campaignUser: CampaignUser;
   character: Character;
   characterFeat: CharacterFeat;
   characterSkill: CharacterSkill;
