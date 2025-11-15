@@ -20,12 +20,15 @@ const serverErrorHandler = (
   const isValidation = err.validation;
   const pgCode = err.code;
 
+  let message = err.message;
   let statusCode =
     err.statusCode ?? httpErrors.internalServerError().statusCode;
 
   if (isValidation) {
     statusCode = httpErrors.badRequest().statusCode;
   } else if (pgCode) {
+    message = 'An unexpected error occurred.';
+
     switch (pgCode) {
       case PG_UNIQUE_VIOLATION:
       case PG_FOREIGN_KEY_VIOLATION:
@@ -40,7 +43,7 @@ const serverErrorHandler = (
     }
   }
 
-  return res.code(statusCode).send({ message: err.message });
+  return res.code(statusCode).send({ message });
 };
 
 export default serverErrorHandler;
