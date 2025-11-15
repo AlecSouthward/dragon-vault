@@ -80,7 +80,7 @@ export interface Character {
   /**
    * Key points to the template ability name while the value is the score of that ability.
    */
-  abilities: string | null;
+  abilities: Json | null;
   alive: Generated<boolean>;
   armorClass: number | null;
   campaignId: string;
@@ -103,7 +103,7 @@ export interface Character {
   /**
    * Stores derived stats like speed, armor class, etc.
    */
-  stats: string | null;
+  stats: Json | null;
   templateId: string;
 }
 
@@ -138,7 +138,7 @@ export interface CharacterSpell {
   /**
    * Miscellaneous properties like range, brightness, weight, speed, etc.
    */
-  properties: string | null;
+  properties: Json | null;
   /**
    * Dice notation.
    */
@@ -171,7 +171,7 @@ export interface CombatSession {
   /**
    * The key stores the character name (player and enemy) and the value is the initiative of that character.
    */
-  initiative: string | null;
+  initiative: Json | null;
   startDate: Generated<Timestamp>;
 }
 

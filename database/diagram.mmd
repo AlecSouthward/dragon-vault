@@ -41,7 +41,7 @@ erDiagram
     }
 
     character {
-        hstore abilities "Key points to the template ability name while the value is the score of that ability."
+        json abilities "Key points to the template ability name while the value is the score of that ability."
         boolean alive 
         smallint armor_class 
         uuid campaign_id FK 
@@ -55,7 +55,7 @@ erDiagram
         text race 
         json resource_pools "Key points to the template resource pool while the value is the value of that pool."
         smallint speed 
-        hstore stats "Stores derived stats like speed, armor class, etc."
+        json stats "Stores derived stats like speed, armor class, etc."
         uuid template_id FK 
     }
 
@@ -81,7 +81,7 @@ erDiagram
         text description 
         uuid id PK 
         text name 
-        hstore properties "Miscellaneous properties like range, brightness, weight, speed, etc."
+        json properties "Miscellaneous properties like range, brightness, weight, speed, etc."
         character_varying roll "Dice notation."
     }
 
@@ -99,7 +99,7 @@ erDiagram
         boolean active 
         uuid campaign_session_id FK 
         uuid id PK 
-        hstore initiative "The key stores the character name (player and enemy) and the value is the initiative of that character."
+        json initiative "The key stores the character name (player and enemy) and the value is the initiative of that character."
         timestamp_with_time_zone start_date 
     }
 

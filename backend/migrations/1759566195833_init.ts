@@ -14,7 +14,6 @@ export async function up(pgm: MigrationBuilder) {
     default: pgm.func('now()'),
   };
 
-  pgm.createExtension('hstore', { ifNotExists: true });
   pgm.createExtension('citext', { ifNotExists: true });
 
   pgm.createTable('user_account', {
@@ -129,7 +128,7 @@ export async function up(pgm: MigrationBuilder) {
     },
     start_date: createdDateColumn,
     initiative: {
-      type: 'hstore',
+      type: 'json',
       comment:
         'The key stores the character name (player and enemy) and the value is the initiative of that character.',
     },
@@ -219,7 +218,7 @@ export async function up(pgm: MigrationBuilder) {
     speed: { type: 'smallint' },
     armor_class: { type: 'smallint' },
     stats: {
-      type: 'hstore',
+      type: 'json',
       comment: 'Stores derived stats like speed, armor class, etc.',
     },
     resource_pools: {
@@ -229,7 +228,7 @@ export async function up(pgm: MigrationBuilder) {
         'is the value of that pool.',
     },
     abilities: {
-      type: 'hstore',
+      type: 'json',
       comment:
         'Key points to the template ability name while the value ' +
         'is the score of that ability.',
@@ -284,7 +283,7 @@ export async function up(pgm: MigrationBuilder) {
     description: { type: 'text' },
     roll: { type: 'varchar(18)', comment: 'Dice notation.' },
     properties: {
-      type: 'hstore',
+      type: 'json',
       comment:
         'Miscellaneous properties like range, brightness, weight, speed, etc.',
     },
@@ -380,5 +379,4 @@ export async function down(pgm: MigrationBuilder) {
   pgm.dropTable('user_account');
 
   pgm.dropExtension('citext', { ifExists: true });
-  pgm.dropExtension('hstore', { ifExists: true });
 }

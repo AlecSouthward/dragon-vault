@@ -7,7 +7,6 @@ import { IMAGE_FOLDERS } from '../config/imageFolders';
 import { getUser } from '../plugins/retrieveData';
 
 import { throwDragonVaultError } from '../utils/error';
-import { convertFromHstore } from '../utils/hstore';
 import { compressImage, saveImage } from '../utils/images';
 
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
@@ -96,20 +95,18 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
         return res.notFound('No Character was found on that Campaign.');
       }
 
-      const { abilities, stats, ...userCharacter } = existingCharacter;
-
-      if (!abilities || !stats) {
+      if (
+        !existingCharacter.abilities ||
+        !existingCharacter.stats ||
+        !existingCharacter.resourcePools
+      ) {
         return res.internalServerError(
           'The Character has important data that is missing and is unable to be retrieved.'
         );
       }
 
       return res.send({
-        character: {
-          ...userCharacter,
-          abilities: convertFromHstore(abilities),
-          stats: convertFromHstore(stats),
-        },
+        character: existingCharacter,
         message: 'Successfully retrieved your Character on the Campaign.',
       });
     }

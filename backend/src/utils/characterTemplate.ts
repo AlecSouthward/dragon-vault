@@ -1,3 +1,4 @@
+import { JsonObject } from '../db/types';
 import { ResourcePoolField } from '../types/characterFieldValue';
 import {
   AbilityScoreTemplateField,
@@ -8,10 +9,10 @@ import {
 import { DragonVaultError } from './error';
 
 export const formatPairField = (
-  template: Record<string, StatTemplateField | AbilityScoreTemplateField>,
+  template: AbilityScoreTemplateField[] | StatTemplateField[],
   fields: Record<string, number>
 ) => {
-  const cleanFields: Record<string, number> = {};
+  const cleanFields: JsonObject = {};
   const missingFields = [];
 
   for (const [fieldName, templateField] of Object.entries(template)) {
@@ -19,7 +20,7 @@ export const formatPairField = (
       (field) => field[0] === fieldName
     );
 
-    if (!field) {
+    if (!field || !templateField) {
       missingFields.push(fieldName);
 
       continue;

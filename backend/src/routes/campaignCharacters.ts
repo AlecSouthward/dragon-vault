@@ -15,7 +15,6 @@ import {
   validateResourcePoolFields,
 } from '../utils/characterTemplate';
 import { throwDragonVaultError } from '../utils/error';
-import { convertFromHstore, convertToHstore } from '../utils/hstore';
 
 const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
   app.addHook('onRequest', getUser);
@@ -54,12 +53,7 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
       }
 
       return res.send({
-        character: {
-          ...userCharacter,
-          abilities: convertFromHstore(abilities),
-          stats: convertFromHstore(stats),
-          resourcePools,
-        },
+        character: { ...userCharacter, abilities, stats, resourcePools },
         message: 'Successfully retrieved the Character on that Campaign.',
       });
     }
@@ -135,11 +129,11 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
       } = sourceCharacterTemplate;
 
       const cleanStats = formatPairField(
-        templateStats as Record<string, StatTemplateField>,
+        templateStats as StatTemplateField[],
         stats
       );
       const cleanAbilities = formatPairField(
-        templateAbilities as Record<string, AbilityScoreTemplateField>,
+        templateAbilities as AbilityScoreTemplateField[],
         abilities
       );
 
@@ -148,15 +142,12 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
         resourcePools
       );
 
-      const hstoreStats = convertToHstore(cleanStats);
-      const hstoreAbilities = convertToHstore(cleanAbilities);
-
       const { id: newCharacterId } = await app.db
         .insertInto('character')
         .values({
           ...characterToCreateData,
-          stats: hstoreStats,
-          abilities: hstoreAbilities,
+          stats: cleanStats,
+          abilities: cleanAbilities,
           resourcePools,
           campaignId: sourceCampaign.id,
           templateId: sourceCharacterTemplate.id,
@@ -229,21 +220,9 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
         );
       }
 
-      const hstoreStats = convertToHstore(characterToUpdate.stats);
-      const hstoreAbilities = convertToHstore(characterToUpdate.abilities);
-      const hstoreResourcePools = convertToHstore(
-        characterToUpdate.resourcePools
-      );
-
       await app.db
         .updateTable('character')
-        .set({
-          name: characterToUpdate.name,
-          description: characterToUpdate.description,
-          abilities: hstoreAbilities,
-          stats: hstoreStats,
-          resourcePools: hstoreResourcePools,
-        })
+        .set(characterToUpdate)
         .executeTakeFirstOrThrow(
           throwDragonVaultError('Failed to update Character.')
         );
