@@ -1,10 +1,10 @@
 import sensible from '@fastify/sensible';
 import Fastify from 'fastify';
 import {
-  type ZodTypeProvider,
+  FastifyZodOpenApiTypeProvider,
   serializerCompiler,
   validatorCompiler,
-} from 'fastify-type-provider-zod';
+} from 'fastify-zod-openapi';
 
 import ENV from './env';
 
@@ -14,6 +14,7 @@ import setupHooks from './plugins/hooks';
 import multipart from './plugins/multipart';
 import notFoundHandler from './plugins/notFoundHandler';
 import security from './plugins/security';
+import swagger from './plugins/swagger';
 
 import apiRoutes from './routes/api';
 import healthRoutes from './routes/health';
@@ -26,7 +27,7 @@ const app = Fastify({
         ? undefined
         : { target: 'pino-pretty', options: { colorize: true } },
   },
-}).withTypeProvider<ZodTypeProvider>();
+}).withTypeProvider<FastifyZodOpenApiTypeProvider>();
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
@@ -37,6 +38,7 @@ const startServer = async () => {
   await app.register(sensible);
   await app.register(multipart);
   await app.register(security);
+  await app.register(swagger);
 
   try {
     await app.register(db);
