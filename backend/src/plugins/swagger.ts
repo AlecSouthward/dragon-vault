@@ -8,6 +8,8 @@ import {
 
 import ENV from '../env';
 
+export const SWAGGER_PATH = '/documentation';
+
 export default fp(async (app) => {
   await app.register(fastifyZodOpenApiPlugin);
 
@@ -57,7 +59,7 @@ export default fp(async (app) => {
   });
 
   await app.register(fastifySwaggerUi, {
-    routePrefix: '/documentation',
+    routePrefix: SWAGGER_PATH,
     uiConfig: { docExpansion: 'list' },
   });
 });

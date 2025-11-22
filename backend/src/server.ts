@@ -15,7 +15,7 @@ import setupHooks from './plugins/hooks';
 import multipart from './plugins/multipart';
 import notFoundHandler from './plugins/notFoundHandler';
 import security from './plugins/security';
-import swagger from './plugins/swagger';
+import swagger, { SWAGGER_PATH } from './plugins/swagger';
 
 import apiRoutes from './routes/api';
 import healthRoutes from './routes/health';
@@ -52,10 +52,17 @@ const startServer = async () => {
   await app.register(apiRoutes, { prefix: '/api/v1' });
   await app.register(healthRoutes, { prefix: '/health' });
 
-  app.listen({ port: ENV.PORT, host: '0.0.0.0' }).catch((err) => {
-    app.log.error(err);
-    process.exit(1);
-  });
+  app
+    .listen({ port: ENV.PORT, host: '0.0.0.0' })
+    .catch((err) => {
+      app.log.error(err);
+      process.exit(1);
+    })
+    .then(() =>
+      app.log.info(
+        'Serving Swagger page at ' + app.listeningOrigin + SWAGGER_PATH
+      )
+    );
 };
 
 await startServer();
