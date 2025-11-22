@@ -71,7 +71,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
   });
 
   app.get(
-    '/me/campaign/:campaignId/character',
+    '/me/campaigns/:campaignId/character',
     {
       schema: {
         params: z.strictObject({

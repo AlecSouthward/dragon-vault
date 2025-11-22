@@ -28,6 +28,31 @@ const adminUserRoutes: FastifyPluginAsyncZod = async (app) => {
     }
   );
 
+  app.get(
+    '/users',
+    {
+      schema: {
+        querystring: z.strictObject({ userAccountId: z.uuidv7().optional() }),
+      },
+    },
+    async (req, res) => {
+      const { userAccountId } = req.query;
+
+      let query = app.db.selectFrom('userAccount').selectAll();
+
+      if (userAccountId) {
+        query = query.where('id', '=', userAccountId);
+      }
+
+      const userAccounts = await query.execute();
+
+      return res.send({
+        message: 'Successfully retrieved all User Accounts.',
+        userAccounts,
+      });
+    }
+  );
+
   // TODO: Add routes for deleting/managing users
 
   app.post('/invite', async (_, res) => {
