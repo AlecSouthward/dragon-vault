@@ -8,6 +8,7 @@ import {
 
 import ENV from './env';
 
+import authentication from './plugins/authentication';
 import db from './plugins/db';
 import serverErrorHandler from './plugins/errorHandler';
 import setupHooks from './plugins/hooks';
@@ -36,8 +37,9 @@ app.setErrorHandler(serverErrorHandler);
 
 const startServer = async () => {
   await app.register(sensible);
-  await app.register(multipart);
+  await app.register(authentication);
   await app.register(security);
+  await app.register(multipart);
   await app.register(swagger);
 
   try {

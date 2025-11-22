@@ -7,7 +7,7 @@ import {
   StatFieldTemplateSchema,
 } from '../types/characterTemplateFieldValue';
 
-import { getUser } from '../plugins/retrieveData';
+import { checkAuthentication } from '../plugins/authentication';
 
 import { checkUserCampaignAccess } from '../utils/campaigns';
 import { throwDragonVaultError } from '../utils/error';
@@ -15,7 +15,7 @@ import { throwDragonVaultError } from '../utils/error';
 const RETRIEVE_FAIL = 'Failed to retrieve/authorize User for Campaign.';
 
 const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
-  app.addHook('onRequest', getUser);
+  app.addHook('onRequest', checkAuthentication);
 
   app.get(
     '/:campaignId',
@@ -28,7 +28,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
+      const { id: userId, admin: currentUserAdmin } = req.session.userAccount!;
 
       let campaign;
       try {
@@ -62,7 +62,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const campaignToCreate = req.body;
-      const { id: userId } = req.userFromCookie!;
+      const { id: userId } = req.session.userAccount!;
 
       const newCampaignId = await app.db
         .insertInto('campaign')
@@ -97,7 +97,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     async (req, res) => {
       const updatedCampaign = req.body;
       const { campaignId } = req.params;
-      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
+      const { id: userId, admin: currentUserAdmin } = req.session.userAccount!;
 
       try {
         await checkUserCampaignAccess(campaignId, userId, currentUserAdmin);
@@ -132,7 +132,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
+      const { id: userId, admin: currentUserAdmin } = req.session.userAccount!;
 
       try {
         await checkUserCampaignAccess(campaignId, userId, currentUserAdmin);
@@ -179,7 +179,7 @@ const campaignRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const { id: userId, admin: currentUserAdmin } = req.userFromCookie!;
+      const { id: userId, admin: currentUserAdmin } = req.session.userAccount!;
       const characterTemplateToCreate = req.body;
 
       try {

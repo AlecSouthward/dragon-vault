@@ -8,7 +8,7 @@ import {
   StatTemplateField,
 } from '../types/characterTemplateFieldValue';
 
-import { getUser } from '../plugins/retrieveData';
+import { checkAuthentication } from '../plugins/authentication';
 
 import {
   formatPairField,
@@ -17,7 +17,7 @@ import {
 import { throwDragonVaultError } from '../utils/error';
 
 const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
-  app.addHook('onRequest', getUser);
+  app.addHook('onRequest', checkAuthentication);
 
   app.get(
     '/:characterId',
@@ -83,7 +83,7 @@ const campaignCharactersRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (req, res) => {
-      const { id: currentUserId } = req.userFromCookie!;
+      const { id: currentUserId } = req.session.userAccount!;
       const { campaignId } = req.params;
       const { userAccountId: specifiedUserId } = req.query;
       const characterToCreate = req.body;

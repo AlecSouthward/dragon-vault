@@ -4,16 +4,16 @@ import z from 'zod';
 
 import { IMAGE_FOLDERS } from '../config/imageFolders';
 
-import { getUser } from '../plugins/retrieveData';
+import { checkAuthentication } from '../plugins/authentication';
 
 import { throwDragonVaultError } from '../utils/error';
 import { compressImage, saveImage } from '../utils/images';
 
 const usersRoutes: FastifyPluginAsyncZod = async (app) => {
-  app.addHook('preHandler', getUser);
+  app.addHook('preHandler', checkAuthentication);
 
   app.get('/me', async (req, res) => {
-    const { password: _, ...displayUser } = req.userFromCookie!;
+    const { password: _, ...displayUser } = req.session.userAccount!;
 
     return res.send({
       user: displayUser,
@@ -31,7 +31,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
       },
     },
     async (req, res) => {
-      const { id: userId } = req.userFromCookie!;
+      const { id: userId } = req.session.userAccount!;
       const { displayName: newDisplayName } = req.body;
 
       await app.db
@@ -47,7 +47,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
   );
 
   app.get('/me/campaigns', async (req, res) => {
-    const { id: userId } = req.userFromCookie!;
+    const { id: userId } = req.session.userAccount!;
 
     const campaigns = await app.db
       .selectFrom('campaign as c')
@@ -81,7 +81,7 @@ const usersRoutes: FastifyPluginAsyncZod = async (app) => {
     },
     async (req, res) => {
       const { campaignId } = req.params;
-      const { id: userId } = req.userFromCookie!;
+      const { id: userId } = req.session.userAccount!;
 
       const existingCharacter = await app.db
         .selectFrom('character as c')

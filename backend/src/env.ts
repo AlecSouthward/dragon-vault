@@ -10,7 +10,7 @@ const ENV_SCHEMA = z.strictObject({
     .nonoptional(),
   COOKIE_SECRET: z
     .string()
-    .min(16, 'COOKIE_SECRET should be at least 16 chars')
+    .min(32, 'COOKIE_SECRET should be at least 32 chars')
     .nonempty()
     .nonoptional(),
   DATABASE_URL: z.string().includes('postgresql://').nonempty().nonoptional(),

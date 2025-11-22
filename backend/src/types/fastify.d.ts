@@ -9,8 +9,7 @@ declare module 'fastify' {
     db: Kysely<DB>;
   }
 
-  interface FastifyRequest {
-    userFromCookie?: SelectableUser | null;
-    campaigns?: Array<{ id: string; name: string }> | null;
+  interface Session {
+    userAccount?: SelectableUser | null;
   }
 }
