@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  frontend:
+  lint-and-build:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,56 +24,19 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm clean-install
+        run: npm ci
 
-      - name: Run lint
-        run: npm run lint --workspace frontend
-
-      - name: Run build
-        run: npm run build --workspace frontend
-
-  backend:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'v24.9.0'
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
-
-      - name: Install dependencies
-        run: npm clean-install
-
-      - name: Run lint
+      - name: Lint Backend
         run: npm run lint --workspace backend
-
-      - name: Run build
+      - name: Build Backend
         run: npm run build --workspace backend
 
-  common:
-    runs-on: ubuntu-latest
+      - name: Lint Frontend
+        run: npm run lint --workspace frontend
+      - name: Build Frontend
+        run: npm run build --workspace frontend
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'v24.9.0'
-          cache: npm
-          cache-dependency-path: package-lock.json
-
-      - name: Install dependencies
-        run: npm clean-install
-
-      - name: Run common lint
+      - name: Lint Common
         run: npm run lint --workspace common
-
-      - name: Run common build
+      - name: Build Common
         run: npm run build --workspace common
