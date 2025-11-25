@@ -57,9 +57,5 @@ export const castRollResultsToVO = (diceRoll: DiceRoll): RollResultVO => {
 
   const formattedOutput = getDiceRollOutput(diceRoll);
 
-  return {
-    rolls,
-    output: formattedOutput,
-    result: diceRoll.total,
-  };
+  return { rolls, output: formattedOutput, result: diceRoll.total };
 };

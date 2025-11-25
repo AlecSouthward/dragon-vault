@@ -10,6 +10,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@dragon-vault/common": "0.0.0",
     "@dice-roller/rpg-dice-roller": "^5.5.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

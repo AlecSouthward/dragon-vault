@@ -1,10 +1,9 @@
 import { JSX, useState } from 'react';
 
-import useCampaign from '../../hooks/useCampaign';
-
 import Container from '../../components/common/Container';
 import InputField from '../../components/common/InputField';
 import InputTextArea from '../../components/common/InputTextArea';
+import useCampaign from '../../hooks/useCampaign';
 
 const Information = (): JSX.Element => {
   const { selectedCampaign } = useCampaign();

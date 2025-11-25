@@ -1,0 +1,20 @@
+{
+  "name": "dragon-vault",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend",
+    "common"
+  ],
+  "dependencies": {
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "typescript-eslint": "^8.39.1",
+    "@typescript-eslint/eslint-plugin": "^8.45.0",
+    "@typescript-eslint/parser": "^8.45.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "prettier": "^3.6.2"
+  }
+}

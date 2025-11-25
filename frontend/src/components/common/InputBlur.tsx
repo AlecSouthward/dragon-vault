@@ -1,10 +1,7 @@
 import { FC, JSX, ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
-type InputBlurProps = {
-  open: boolean;
-  children?: ReactNode;
-};
+type InputBlurProps = { open: boolean; children?: ReactNode };
 
 const InputBlur: FC<InputBlurProps> = ({ children, open }): JSX.Element => {
   useEffect(() => {

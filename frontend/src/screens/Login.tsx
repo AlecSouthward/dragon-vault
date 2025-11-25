@@ -1,7 +1,8 @@
 import { JSX, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import RoutePaths from '../constants/RoutePaths';
+
+import { useNavigate } from 'react-router-dom';
 
 import Button from '../components/common/Button';
 import InputField from '../components/common/InputField';

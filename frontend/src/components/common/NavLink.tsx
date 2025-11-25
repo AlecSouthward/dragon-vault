@@ -1,11 +1,8 @@
 import { FC, JSX, ReactNode } from 'react';
+
 import { NavLink as ReactNavLink } from 'react-router-dom';
 
-type NavLinkProps = {
-  to: string;
-  children?: ReactNode;
-  className?: string;
-};
+type NavLinkProps = { to: string; children?: ReactNode; className?: string };
 
 const NavLink: FC<NavLinkProps> = ({
   to,

@@ -6,10 +6,7 @@ import InputField from '../common/InputField';
 import InputTextArea from '../common/InputTextArea';
 import LoadingIcon from '../common/LoadingIcon';
 
-type CreateCampaignMenuProps = {
-  open: boolean;
-  onClose: () => void;
-};
+type CreateCampaignMenuProps = { open: boolean; onClose: () => void };
 
 const CreateCampaignMenu: FC<CreateCampaignMenuProps> = ({
   open,

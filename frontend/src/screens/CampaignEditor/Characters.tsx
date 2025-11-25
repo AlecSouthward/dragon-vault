@@ -10,24 +10,9 @@ import ProgressBar from '../../components/common/ProgressBar';
 
 const Characters = (): JSX.Element => {
   const [resourceBars] = useState<Value[]>([
-    {
-      name: 'Health',
-      value: 100,
-      maxValue: 100,
-      type: 'fractional',
-    },
-    {
-      name: 'Soul Health',
-      value: 100,
-      maxValue: 100,
-      type: 'fractional',
-    },
-    {
-      name: 'Energy',
-      value: 100,
-      type: 'percentage',
-      identifier: ' seconds',
-    },
+    { name: 'Health', value: 100, maxValue: 100, type: 'fractional' },
+    { name: 'Soul Health', value: 100, maxValue: 100, type: 'fractional' },
+    { name: 'Energy', value: 100, type: 'percentage', identifier: ' seconds' },
   ]);
 
   return (

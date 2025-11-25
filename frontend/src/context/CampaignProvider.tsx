@@ -4,9 +4,7 @@ import { Campaign } from '../types/dto';
 
 import { CampaignContext, CampaignContextType } from './campaignContext';
 
-type CampaignProviderProps = {
-  children: ReactNode;
-};
+type CampaignProviderProps = { children: ReactNode };
 
 const CampaignProvider = ({
   children,

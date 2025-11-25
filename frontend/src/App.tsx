@@ -1,10 +1,9 @@
-import { Route, Routes, useMatch } from 'react-router-dom';
-
 import RoutePaths, { CampaignEditorRoutePaths } from './constants/RoutePaths';
+
+import { Route, Routes, useMatch } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
 import CampaignEditorLayout from './layout/CampaignEditorLayout';
-
 import About from './screens/About';
 import Characters from './screens/CampaignEditor/Characters';
 import Information from './screens/CampaignEditor/Information';

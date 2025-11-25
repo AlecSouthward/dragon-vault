@@ -1,10 +1,6 @@
 import { FC, JSX, ReactNode } from 'react';
 
-type ContainerProps = {
-  children: ReactNode;
-  className?: string;
-  key?: string;
-};
+type ContainerProps = { children: ReactNode; className?: string; key?: string };
 
 const Container: FC<ContainerProps> = ({
   children,

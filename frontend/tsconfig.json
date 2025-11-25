@@ -1,10 +1,14 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "types": ["vite/client", "vitest-dom/extend-expect"]
-  }
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "rootDir": "."
+  },
+  "include": ["src"]
 }

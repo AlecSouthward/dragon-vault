@@ -25,10 +25,6 @@ specifically for managing/playing Dungeons & Dragons campaigns remotely
 git clone https://github.com/AlecSouthward/dragon-vault.git
 cd dragon-vault
 
-cd backend/
-npm install
-
-cd ../frontend/
 npm install
 ```
 

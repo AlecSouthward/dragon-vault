@@ -5,9 +5,7 @@ export type Campaign = {
   characterDetails: CampaignCharacterDetails;
 };
 
-export type CampaignCharacterDetails = {
-  expLevelMulti: number;
-};
+export type CampaignCharacterDetails = { expLevelMulti: number };
 
 export type Character = {
   name: string;
@@ -32,15 +30,9 @@ export type CharacterResourcePool = {
   descriptor?: string;
 };
 
-export type CharacterAbilityStat = {
-  name: string;
-  score: number;
-};
+export type CharacterAbilityStat = { name: string; score: number };
 
-export type CharacterCombatStat = {
-  name: string;
-  value: string | number;
-};
+export type CharacterCombatStat = { name: string; value: string | number };
 
 export type CharacterFeature = {
   name: string;

@@ -4,11 +4,10 @@ import { Character as CharacterType } from '../types/dto';
 
 import { formatSignedNumber, getRollBonus } from '../utils/Stats';
 
-import useCampaign from '../hooks/useCampaign';
-
 import Container from '../components/common/Container';
 import Image from '../components/common/Image';
 import ProgressBar from '../components/common/ProgressBar';
+import useCampaign from '../hooks/useCampaign';
 
 const Character = (): JSX.Element => {
   const { selectedCampaign } = useCampaign();
@@ -22,85 +21,32 @@ const Character = (): JSX.Element => {
     exp: 25,
     alive: true,
     resourcePools: [
-      {
-        name: 'Health',
-        value: 25,
-        maxValue: 50,
-      },
-      {
-        name: 'Soul Health',
-        value: 94,
-        maxValue: 100,
-      },
-      {
-        name: 'Soul Essence',
-        value: 94,
-        descriptor: '%',
-      },
-      {
-        name: 'Armor Durability',
-        value: 23,
-      },
+      { name: 'Health', value: 25, maxValue: 50 },
+      { name: 'Soul Health', value: 94, maxValue: 100 },
+      { name: 'Soul Essence', value: 94, descriptor: '%' },
+      { name: 'Armor Durability', value: 23 },
     ],
     abilityStats: [
-      {
-        name: 'Strength',
-        score: 20,
-      },
-      {
-        name: 'Dexterity',
-        score: 11,
-      },
-      {
-        name: 'Speed',
-        score: 4,
-      },
-      {
-        name: 'Wisdom',
-        score: 9,
-      },
+      { name: 'Strength', score: 20 },
+      { name: 'Dexterity', score: 11 },
+      { name: 'Speed', score: 4 },
+      { name: 'Wisdom', score: 9 },
     ],
     combatStats: [
-      {
-        name: 'Initiative',
-        value: 2,
-      },
-      {
-        name: 'Attack',
-        value: '1d10+1',
-      },
+      { name: 'Initiative', value: 2 },
+      { name: 'Attack', value: '1d10+1' },
     ],
     items: [
-      {
-        name: 'Silver Bell',
-        bonus: 1,
-        applier: '1d100',
-      },
-      {
-        name: 'Gun',
-        applier: 200,
-        applierDescriptor: 'AP',
-      },
+      { name: 'Silver Bell', bonus: 1, applier: '1d100' },
+      { name: 'Gun', applier: 200, applierDescriptor: 'AP' },
     ],
     features: [
-      {
-        name: 'Second Wind',
-        description: 'Become one with the wind',
-      },
-      {
-        name: 'Action Boost',
-        description: 'Perform another action in 1 turn',
-      },
+      { name: 'Second Wind', description: 'Become one with the wind' },
+      { name: 'Action Boost', description: 'Perform another action in 1 turn' },
     ],
     skills: [
-      {
-        name: 'Athletics',
-        modifier: 2,
-      },
-      {
-        name: 'Perception',
-        modifier: 4,
-      },
+      { name: 'Athletics', modifier: 2 },
+      { name: 'Perception', modifier: 4 },
     ],
   });
 
