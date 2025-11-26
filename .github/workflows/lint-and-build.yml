@@ -32,9 +32,9 @@ jobs:
         run: npm run build --workspace api
 
       - name: Lint UI
-        run: npm run lint --workspace UI
+        run: npm run lint --workspace ui
       - name: Build UI
-        run: npm run build --workspace UI
+        run: npm run build --workspace ui
 
       - name: Lint Common
         run: npm run lint --workspace common
