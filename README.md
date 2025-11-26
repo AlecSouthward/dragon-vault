@@ -29,17 +29,17 @@ npm install
 ```
 
 Make sure you have a PostgreSQL instance and a Dragon Vault database on it.
-If you do, then run `npm run pg:migrate up` while in the backend directory to build up your database (development only).
+If you do, then run `npm run pg:migrate up` while in the API directory to build up your database (development only).
 
 ### Running
 
-This can be used for either the Frontend or Backend:
+This can be used for either the UI or API:
 
 ```bash
 npm run dev
 ```
 
-**Please note**: The Frontend _requires_ a `.env` file in it's directory, while (for development) the Backend requires a `.env.development` file in it's directory.
+**Please note**: The UI _requires_ a `.env` file in it's directory, while (for development) the API requires a `.env.development` file in it's directory.
 
 ## Contributing
 

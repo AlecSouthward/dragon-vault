@@ -26,15 +26,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint Backend
-        run: npm run lint --workspace backend
-      - name: Build Backend
-        run: npm run build --workspace backend
+      - name: Lint API
+        run: npm run lint --workspace api
+      - name: Build API
+        run: npm run build --workspace api
 
-      - name: Lint Frontend
-        run: npm run lint --workspace frontend
-      - name: Build Frontend
-        run: npm run build --workspace frontend
+      - name: Lint UI
+        run: npm run lint --workspace UI
+      - name: Build UI
+        run: npm run build --workspace UI
 
       - name: Lint Common
         run: npm run lint --workspace common

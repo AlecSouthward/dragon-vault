@@ -2,8 +2,8 @@
   "name": "dragon-vault",
   "private": true,
   "workspaces": [
-    "backend",
-    "frontend",
+    "api",
+    "ui",
     "common"
   ],
   "dependencies": {

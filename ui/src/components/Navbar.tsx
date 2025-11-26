@@ -2,7 +2,7 @@ import { JSX } from 'react';
 
 import RoutePaths from '../constants/RoutePaths';
 
-import NavLink from '../components/common/NavLink';
+import NavLink from './common/NavLink';
 
 const Navbar = (): JSX.Element => {
   return (

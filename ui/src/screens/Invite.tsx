@@ -32,7 +32,7 @@ const Invite = (): JSX.Element => {
 
     setLoading(true);
 
-    // TODO: Call backend
+    // TODO: Call API
     console.warn('Attempted to consume invite: ', inviteId);
     await navigate(RoutePaths.LOGIN);
   };

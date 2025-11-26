@@ -9,42 +9,50 @@ services:
     volumes:
       - ./database/data/:/var/lib/postgresql/18/docker/
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U dragon_vault_user -d dragon_vault" ]
+      test: ['CMD-SHELL', 'pg_isready -U dragon_vault_user -d dragon_vault']
       interval: 5s
       timeout: 5s
       retries: 5
       start_period: 10s
 
-  backend:
-    container_name: dragon-vault-backend
+  api:
+    container_name: dragon-vault-api
     image: node:25.0.0-alpine3.22
-    build: ./backend
+    build: ./api
     env_file:
-      - ./backend/.env.production
+      - ./api/.env.production
     networks:
       - dragon-vault
     depends_on:
       - database
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/api/v1/health']
       interval: 5s
       timeout: 5s
       retries: 2
       start_period: 5s
 
-  frontend:
-    container_name: dragon-vault-frontend
+  ui:
+    container_name: dragon-vault-ui
     image: nginx:1.29.2-alpine3.22-slim
-    build: ./frontend
+    build: ./ui
     ports:
-      - "443:443"
-      - "80:80"
+      - '443:443'
+      - '80:80'
     networks:
       - dragon-vault
     depends_on:
-      - backend
+      - api
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5173/" ]
+      test:
+        [
+          'CMD',
+          'wget',
+          '--no-verbose',
+          '--tries=1',
+          '--spider',
+          'http://localhost:5173/',
+        ]
       interval: 5s
       timeout: 5s
       retries: 2

@@ -1,7 +1,6 @@
 {
-  "name": "dragon-vault-frontend",
+  "name": "@dragon-vault/ui",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "node node_modules/vite/bin/vite.js",
@@ -10,8 +9,8 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@dragon-vault/common": "0.0.0",
     "@dice-roller/rpg-dice-roller": "^5.5.1",
+    "@dragon-vault/common": "*",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
