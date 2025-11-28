@@ -1,23 +1,8 @@
 import { httpErrors } from '@fastify/sensible';
 
-import { Cookie } from '../types/cookie';
-import { SelectableUser } from '../types/domain';
-
 import app from '../server';
 import { throwDragonVaultError } from './error';
 import { hashPassword } from './passwordHash';
-
-export const getUserFromCookie = async (
-  cookie: Cookie
-): Promise<SelectableUser | undefined> => {
-  const user = await app.db
-    .selectFrom('userAccount')
-    .selectAll()
-    .where((eb) => eb('id', '=', cookie.id).and('deleted', '=', false))
-    .executeTakeFirst();
-
-  return user;
-};
 
 export const createUser = async (
   username: string,

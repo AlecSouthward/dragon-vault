@@ -1,4 +1,6 @@
-import RoutePaths, { CampaignEditorRoutePaths } from './constants/RoutePaths';
+import React from 'react';
+
+import RoutePaths, { CampaignEditorRoutePaths } from './constants/routePaths';
 
 import { Route, Routes, useMatch } from 'react-router-dom';
 

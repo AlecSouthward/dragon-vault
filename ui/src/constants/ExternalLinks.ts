@@ -1,5 +1,5 @@
 const ExternalLinks = {
-  GITHUB_LINK: 'http://github.com/AlecSouthward/dragon-vault/',
+  GITHUB_LINK: 'https://github.com/AlecSouthward/dragon-vault/',
 };
 
 export default ExternalLinks;

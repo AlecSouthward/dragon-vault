@@ -2,7 +2,7 @@ import { JSX, useState } from 'react';
 
 import { Character as CharacterType } from '../types/dto';
 
-import { formatSignedNumber, getRollBonus } from '../utils/Stats';
+import { formatSignedNumber, getRollBonus } from '../utils/stats';
 
 import Container from '../components/common/Container';
 import Image from '../components/common/Image';

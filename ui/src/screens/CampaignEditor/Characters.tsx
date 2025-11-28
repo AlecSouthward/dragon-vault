@@ -2,7 +2,7 @@ import { JSX, useState } from 'react';
 
 import { Value } from '../../types/stats';
 
-import { valueToString } from '../../utils/Stats';
+import { valueToString } from '../../utils/stats';
 
 import Button from '../../components/common/Button';
 import Container from '../../components/common/Container';

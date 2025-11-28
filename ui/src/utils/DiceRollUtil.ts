@@ -52,7 +52,7 @@ export const castRollResultsToVO = (diceRoll: DiceRoll): RollResultVO => {
         }) as RollVO
     );
   } else {
-    throw new Error('Failed to cast roll results to VO');
+    throw new TypeError('Failed to cast roll results to VO');
   }
 
   const formattedOutput = getDiceRollOutput(diceRoll);

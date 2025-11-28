@@ -6,7 +6,7 @@ import {
   castRollResultsToVO,
   handleDiceRollAsString,
   validateDiceRoll,
-} from '../utils/DiceRollUtil';
+} from '../utils/diceRollUtil';
 
 import DiceToRoll from '../components/DiceToRoll';
 import Button from '../components/common/Button';

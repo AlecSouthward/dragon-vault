@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
 import App from './App';
-import RootProvider from './context/RootProvider';
+import RootProvider from './context/rootProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

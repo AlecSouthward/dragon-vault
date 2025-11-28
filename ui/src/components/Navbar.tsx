@@ -1,6 +1,6 @@
 import { JSX } from 'react';
 
-import RoutePaths from '../constants/RoutePaths';
+import RoutePaths from '../constants/routePaths';
 
 import NavLink from './common/NavLink';
 

@@ -1,6 +1,6 @@
-import { JSX, useState } from 'react';
+import React, { JSX, useState } from 'react';
 
-import RoutePaths from '../constants/RoutePaths';
+import RoutePaths from '../constants/routePaths';
 
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -38,7 +38,7 @@ const Invite = (): JSX.Element => {
   };
 
   return (
-    <div className="mt-4 flex h-full max-w-128 flex-col items-center justify-center self-center select-none">
+    <div className="mt-4 flex h-full max-w-lg flex-col items-center justify-center self-center select-none">
       <Container className="flex-col items-center p-8">
         <img
           className="fill-light-white pointer-events-none h-32 w-32 self-center select-none"

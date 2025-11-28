@@ -39,7 +39,7 @@ This can be used for either the UI or API:
 npm run dev
 ```
 
-**Please note**: The UI _requires_ a `.env` file in it's directory, while (for development) the API requires a `.env.development` file in it's directory.
+**Please note**: The UI _requires_ a `.env` file in its directory, while (for development) the API requires a `.env.development` file in its directory.
 
 ## Contributing
 

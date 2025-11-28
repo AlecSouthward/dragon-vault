@@ -1,7 +1,7 @@
 import { JSX } from 'react';
 import { PiGithubLogoLight } from 'react-icons/pi';
 
-import ExternalLinks from '../constants/ExternalLinks';
+import ExternalLinks from '../constants/externalLinks';
 
 const About = (): JSX.Element => (
   <div className="mt-4 flex h-full max-w-138 flex-col items-center justify-center self-center select-none">

@@ -3,7 +3,7 @@ import { FaArrowRight } from 'react-icons/fa6';
 
 import { Campaign } from '../types/dto';
 
-import RoutePaths from '../constants/RoutePaths';
+import RoutePaths from '../constants/routePaths';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -32,7 +32,7 @@ const CampaignList = (): JSX.Element => {
         {campaigns.map((campaign) => (
           <Container
             key={campaign.id}
-            className="mb-5 max-h-28 w-128 items-center justify-around p-5"
+            className="mb-5 max-h-28 w-lg items-center justify-around p-5"
           >
             <div className="flex flex-1 flex-col justify-between">
               <p className="text-3xl">{campaign.name}</p>

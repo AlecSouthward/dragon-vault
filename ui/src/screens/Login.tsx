@@ -1,6 +1,6 @@
-import { JSX, useState } from 'react';
+import React, { JSX, useState } from 'react';
 
-import RoutePaths from '../constants/RoutePaths';
+import RoutePaths from '../constants/routePaths';
 
 import { useNavigate } from 'react-router-dom';
 

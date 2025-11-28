@@ -2,7 +2,7 @@ import { JSX, type ReactNode, useMemo, useState } from 'react';
 
 import { Campaign } from '../types/dto';
 
-import { CampaignContext, CampaignContextType } from './campaignContext';
+import { CampaignContext, CampaignContextType } from './CampaignContext';
 
 type CampaignProviderProps = { children: ReactNode };
 

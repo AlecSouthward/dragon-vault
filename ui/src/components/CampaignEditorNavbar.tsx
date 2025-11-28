@@ -1,6 +1,6 @@
 import { JSX } from 'react';
 
-import { CampaignEditorRoutePaths } from '../constants/RoutePaths';
+import { CampaignEditorRoutePaths } from '../constants/routePaths';
 
 import Container from './common/Container';
 import NavLink from './common/NavLink';

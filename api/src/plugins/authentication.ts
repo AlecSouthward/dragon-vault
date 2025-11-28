@@ -40,7 +40,7 @@ export const checkAdminStatus = async (req: FastifyRequest) => {
 
   if (!req.session.userAccount?.admin) {
     throw httpErrors.forbidden(
-      'Your User Account does not have Admin priviledges.'
+      'Your User Account does not have Admin privileges.'
     );
   }
 };

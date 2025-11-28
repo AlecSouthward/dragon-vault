@@ -2,7 +2,7 @@ import { JSX } from 'react';
 import { MdOutlinePrivacyTip } from 'react-icons/md';
 
 const PrivacyPolicy = (): JSX.Element => (
-  <div className="mt-4 flex h-full max-w-128 flex-col items-center justify-center self-center select-none">
+  <div className="mt-4 flex h-full max-w-lg flex-col items-center justify-center self-center select-none">
     <MdOutlinePrivacyTip className="absolute h-64 w-64 self-center opacity-[0.1]" />
 
     <p className="mt-2 text-center text-xl">
