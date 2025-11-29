@@ -52,4 +52,4 @@ This project is licensed under the GNU License – see [LICENSE](LICENSE) for de
 
 ## Contact
 
-If you need help or want to report an issue, open a GitHub issue or email me at [alecsouthward@gmail.com](mailto:alecsouthward@gmail.com).
+If you need help or want to report an issue, open a GitHub issue or email me at [alec@asouth.dev](mailto:alec@asouth.dev).

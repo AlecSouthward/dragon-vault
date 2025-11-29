@@ -21,7 +21,7 @@ export default fp(async (app) => {
         description: 'Dragon Vault Swagger API Specification.',
         version: process.env.npm_package_version!,
         contact: {
-          email: 'alecsouthward@gmail.com',
+          email: 'alec@asouth.dev',
           name: 'Alec Southward',
           url: 'https://asouthdev.co.za',
         },

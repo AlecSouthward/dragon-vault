@@ -22,8 +22,8 @@ const PrivacyPolicy = (): JSX.Element => (
       <br />
       <br />
       Contact: Alec Southward, <br />
-      <a className="underline" href="mailto:alecsouthward@gmail.com">
-        alecsouthward@gmail.com
+      <a className="underline" href="mailto:alec@asouth.dev">
+        alec@asouth.dev
       </a>
     </p>
   </div>
